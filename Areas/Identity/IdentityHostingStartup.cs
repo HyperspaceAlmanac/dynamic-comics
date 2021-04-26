@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ProjectName.Data;
 
 [assembly: HostingStartup(typeof(capstone.Areas.Identity.IdentityHostingStartup))]
 namespace capstone.Areas.Identity
