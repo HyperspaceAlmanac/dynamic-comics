@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using capstone.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +31,7 @@ namespace capstone.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                string userID = User.Identity.Name;
+                var userId = this.User.FindFirstValue("sub");
             }
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
