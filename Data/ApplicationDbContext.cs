@@ -17,5 +17,6 @@ namespace capstone.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
+        public DbSet<Account> Accounts { get; set; }
     }
 }
