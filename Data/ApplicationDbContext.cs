@@ -21,8 +21,9 @@ namespace capstone.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            
             base.OnModelCreating(builder);
-
+            
             builder.Entity<IdentityRole>()
                 .HasData(
                     new IdentityRole
@@ -33,8 +34,48 @@ namespace capstone.Data
                         ConcurrencyStamp = "a0b6873b-bcfd-4880-8987-3a403620f5f2"
                     }
                 );
+            builder.Entity<Review>()
+                .HasKey(review => new { review.ReviewerId, review.ComicId });
+            builder.Entity<Progress>()
+                .HasKey(progress => new { progress.ComicId, progress.AccountId });
+            builder.Entity<Comment>()
+                .HasKey(comment => new { comment.CommentorId, comment.PanelId });
+
+            builder.Entity<Tip>()
+                .HasOne(typeof(Account), "Artist")
+                .WithMany()
+                .HasForeignKey("ArtistId")
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Tip>()
+                .HasOne(typeof(Account), "Customer")
+                .WithMany()
+                .HasForeignKey("CustomerId")
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<ComicAction>()
+                .HasOne(typeof(Panel), "Panel")
+                .WithMany()
+                .HasForeignKey("PanelId")
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<ComicAction>()
+                .HasOne(typeof(Panel), "NextPanel")
+                .WithMany()
+                .HasForeignKey("NextPanelId")
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Progress>()
+                .HasOne(typeof(Panel), "Panel")
+                .WithMany()
+                .HasForeignKey("PanelId")
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<ComicAction> ComicActions { get; set; }
+        public DbSet<Comic> Comics { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Panel> Panels { get; set; }
+        public DbSet<Progress> ProgressTable { get; set; }
+        public DbSet<Resource> Resources { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Tip> Tips { get; set; }
     }
 }

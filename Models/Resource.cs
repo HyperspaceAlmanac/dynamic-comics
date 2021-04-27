@@ -7,5 +7,8 @@ namespace capstone.Models
 {
     public class Resource
     {
+        public int Id { get; set; }
+        public string ImageURL { get; set; }
+        public string Layer { get; set; }
     }
 }

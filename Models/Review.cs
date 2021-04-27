@@ -14,8 +14,8 @@ namespace capstone.Models
         [ForeignKey("Comic")]
         public int ComicId { get; set; }
         public Comic Comic { get; set; }
-        [ForeignKey("Account")]
         public int ReviewerId { get; set; }
+        [ForeignKey("ReviewerId")]
         public Account Reviewer { get; set; }
     }
 }

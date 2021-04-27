@@ -13,8 +13,8 @@ namespace capstone.Models
         public int Id { get; set; }
         public string Theme { get; set; }
         public bool Published { get; set; }
-        [ForeignKey("ApplicationUser")]
-        public int ArtistId { get; set; }
+        public string ArtistId { get; set; }
+        [ForeignKey("ArtistId")]
         public ApplicationUser Artist { get; set; }
 
     }
