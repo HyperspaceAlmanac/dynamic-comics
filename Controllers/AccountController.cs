@@ -24,21 +24,14 @@ namespace capstone.Controllers
         {
             _context = context;
         }
-        // GET: api/<AccountController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
         [HttpGet("Home")]
         public async Task<IActionResult> HomePage()
         {
-            HomeResponse response = new HomeResponse()
+            UserStatus response = new UserStatus()
             {
                 Authenticated = false,
-                LoggedIn = false,
-                Registered = false
+                LoggedIn = false
             };
             try
             {
@@ -50,17 +43,7 @@ namespace capstone.Controllers
                     if (account != null)
                     {
                         response.LoggedIn = true;
-                        response.Registered = account.Registered;
-                    }
-                    else
-                    {
-                        account = new Account()
-                        {
-                            ApplicationUserId = userId,
-                            Registered = false
-                        };
-                        await _context.AddAsync(account);
-                        await _context.SaveChangesAsync();
+                        response.UserName = account.UserName;
                     }
                 }
                 return Ok(response);
@@ -70,30 +53,6 @@ namespace capstone.Controllers
                 return StatusCode(500, response);
             }
         }
-
-        // GET api/<AccountController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<AccountController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<AccountController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<AccountController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
+
 }

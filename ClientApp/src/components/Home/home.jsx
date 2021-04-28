@@ -12,7 +12,7 @@ class Home extends Component {
     super(props);
     this.state = {
       currentPage : "waitForLogin",
-      registered : false,
+      userName : "",
       loading : true
     }
   }
@@ -30,15 +30,12 @@ class Home extends Component {
   handleUserStatusResponse(data) {
     let authenticated = data["authenticated"];
     let loggedIn = data["loggedIn"];
-    let registered = data["registered"];
+    let userName = data["userName"];
     
     let newState = Object.assign({}, this.state);
     if (authenticated && loggedIn) {
-      if (!registered) {
-        newState.currentPage = "profile";
-      } else {
         newState.currentPage = "main";
-      }
+        newState.userName = userName;
     } else {
       newState.currentPage = "waitForLogin";
     }
@@ -50,10 +47,10 @@ class Home extends Component {
       case "waitForLogin":
         return (<WaitForLogin navCallback = {this.setStateFunction} />);
       case "main":
-        return (<Main navCallback = {this.setStateFunction} />);
+        return (<Main userName = {this.state.userName} navCallback = {this.setStateFunction} />);
       case "completeRegistration":
       case "profile":
-        return (<Profile registered = {this.state.registered} navCallback = {this.setStateFunction} />);
+        return (<Profile userName = {this.state.userName} navCallback = {this.setStateFunction} />);
       case "reader":
         return (<Reader navCallback = {this.setStateFunction} />);
       case "workstation":

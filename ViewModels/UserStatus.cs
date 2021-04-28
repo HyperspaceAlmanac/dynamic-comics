@@ -9,6 +9,6 @@ namespace capstone.ViewModels
     {
         public bool Authenticated { get; set; }
         public bool LoggedIn { get; set; }
-        public bool Registered { get; set; }
+        public string UserName { get; set; }
     }
 }

@@ -11,7 +11,7 @@ class Main extends Component {
       return (
         <div>
             <div>Placeholder for main page with a lot of comics displayed, popular comics, latest comments</div>
-            <div>Main screen page. State = {this.state.someState}</div>
+            <div>Main screen page. Welcome back {this.props.userName}</div>
         </div>
       );
     }

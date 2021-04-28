@@ -13,7 +13,6 @@ namespace capstone.Models
         [Key]
         public int Id { get; set; }
         public string UserName { get; set; }
-        public bool Registered { get; set; }
 
         [ForeignKey("ApplicationUser")]
         public string ApplicationUserId { get; set; }

@@ -9,19 +9,11 @@ class Profile extends Component {
       }
     render() {
       console.log(this.props);
-      if (!this.props.registered) {
         return (
           <div>
-            Please complete registration!
+            Welcome back {this.props.userName}.
           </div>
         );
-      } else {
-        return (
-          <div>
-            Profile Page. Either artist's own page, or another user's page.
-          </div>
-        );
-      }
     }
 }
 
