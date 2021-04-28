@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace capstone.ViewModels
 {
-    public class HomeResponse
+    public class UserStatus
     {
         public bool Authenticated { get; set; }
         public bool LoggedIn { get; set; }
