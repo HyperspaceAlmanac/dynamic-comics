@@ -21,7 +21,7 @@ class Home extends Component {
   setPageFunction(page) {
     console.log("Setting current page to " + page)
     let newState = Object.assign({}, this.state);
-    newState.curentPage = page;
+    newState.currentPage = page;
     this.setState(newState);
   }
   
@@ -55,13 +55,12 @@ class Home extends Component {
 
   render () {
     console.log("Home Render");
-    console.log(this.state.currentPage);
+    console.log(this.state);
     switch (this.state.currentPage) {
       case "waitForLogin":
         return (<WaitForLogin navCallback = {this.setPageFunction} />);
       case "main":
         return (<Main userName = {this.state.userName} navCallback = {(page) => this.setPageFunction(page)} visitComic = {(comic) => this.visitComic(comic)}/>);
-      case "completeRegistration":
       case "profile":
         return (<Profile userName = {this.state.userName} navCallback = {(page) => this.setPageFunction(page)} />);
       case "reader":
