@@ -1,9 +1,13 @@
 ﻿using capstone.Data;
+using capstone.Models;
+using capstone.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -25,6 +29,46 @@ namespace capstone.Controllers
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
+        }
+
+        [HttpGet("Home")]
+        public async Task<IActionResult> HomePage()
+        {
+            HomeResponse response = new HomeResponse()
+            {
+                Authenticated = false,
+                LoggedIn = false,
+                Registered = false
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    response.Authenticated = true;
+                    var userId = this.User.FindFirstValue("sub");
+                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account != null)
+                    {
+                        response.LoggedIn = true;
+                        response.Registered = account.Registered;
+                    }
+                    else
+                    {
+                        account = new Account()
+                        {
+                            ApplicationUserId = userId,
+                            Registered = false
+                        };
+                        await _context.AddAsync(account);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
         }
 
         // GET api/<AccountController>/5

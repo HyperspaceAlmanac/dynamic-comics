@@ -11,43 +11,67 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPage : "waitForLogin"
+      currentPage : "waitForLogin",
+      registered : false,
+      loading : true
     }
   }
 
-  setState(page) {
-    this.state = {
-      currentPage : page
-    }
+  setStateFunction(page) {
+    let newState = Object.assign({}, this.state);
+    newState.curentPage = page;
+    this.setState(newState);
   }
 
-  function 
+  componentDidMount() {
+    this.getUserStatus();
+  }
+
+  handleUserStatusResponse(data) {
+    let authenticated = data["authenticated"];
+    let loggedIn = data["loggedIn"];
+    let registered = data["registered"];
+    
+    let newState = Object.assign({}, this.state);
+    if (authenticated && loggedIn) {
+      if (!registered) {
+        newState.currentPage = "profile";
+      } else {
+        newState.currentPage = "main";
+      }
+    } else {
+      newState.currentPage = "waitForLogin";
+    }
+    this.setState(newState);
+  }
 
   render () {
     switch (this.state.currentPage) {
       case "waitForLogin":
-        return (<WaitForLogin navCallback = {this.setState} />);
+        return (<WaitForLogin navCallback = {this.setStateFunction} />);
       case "main":
-        return (<Main navCallback = {this.setState} />);
+        return (<Main navCallback = {this.setStateFunction} />);
       case "completeRegistration":
       case "profile":
-        return (<Profile navCallback = {this.setState} />);
+        return (<Profile registered = {this.state.registered} navCallback = {this.setStateFunction} />);
       case "reader":
-        return (<Reader navCallback = {this.setState} />);
+        return (<Reader navCallback = {this.setStateFunction} />);
       case "workstation":
-        return (<Workstation navCallback = {this.setState} />);
+        return (<Workstation navCallback = {this.setStateFunction} />);
       default:
-        return (<WaitForLogin navCallback = {this.setState} />);
+        return (<WaitForLogin navCallback = {this.setStateFunction} />);
 
     }
   }
 
   async getUserStatus() {
     const token = await authService.getAccessToken();
-    const response = await fetch('api/Account/', {
+    const response = await fetch('api/Account/Home', {
       headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
     });
     const data = await response.json();
+    this.handleUserStatusResponse(data);
+    console.log("handling response data");
   }
 }
 
