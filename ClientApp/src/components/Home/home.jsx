@@ -18,19 +18,11 @@ class Home extends Component {
     }
   }
 
-  setPageFunction(page) {
+  setPageFunction(page, target) {
     console.log("Setting current page to " + page)
     let newState = Object.assign({}, this.state);
     newState.currentPage = page;
-    this.setState(newState);
-  }
-  
-  visitComic(name) {
-    let newState = Object.assign({}, this.state);
-    newState.currentPage = "reader";
-    newState.target = name;
-    console.log("Visiting comic page for");
-    console.log(newState);
+    newState.target = target;
     this.setState(newState);
   }
 
@@ -58,17 +50,17 @@ class Home extends Component {
     console.log(this.state);
     switch (this.state.currentPage) {
       case "waitForLogin":
-        return (<WaitForLogin navCallback = {this.setPageFunction} />);
+        return (<WaitForLogin />);
       case "main":
-        return (<Main userName = {this.state.userName} navCallback = {(page) => this.setPageFunction(page)} visitComic = {(comic) => this.visitComic(comic)}/>);
+        return (<Main userName = {this.state.userName} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
       case "profile":
-        return (<Profile userName = {this.state.userName} navCallback = {(page) => this.setPageFunction(page)} />);
+        return (<Profile target = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
       case "reader":
-        return (<Reader comicTitle = {this.state.target} navCallback = {(page) => this.setPageFunction(page)} />);
+        return (<Reader comicTitle = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
       case "workstation":
-        return (<Workstation navCallback = {(page) => this.setPageFunction(page)} />);
+        return (<Workstation navCallback = {(page, target) => this.setPageFunction(page, target)} />);
       default:
-        return (<WaitForLogin navCallback = {(page) => this.setPageFunction(page)} />);
+        return (<WaitForLogin navCallback = {(page, target) => this.setPageFunction(page, target)} />);
 
     }
   }

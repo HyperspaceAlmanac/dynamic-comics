@@ -11,7 +11,8 @@ class Comic extends Component {
             <div>{this.props.comicName}</div>
             <img src={process.env.PUBLIC_URL + "images/" + this.props.coverURL} alt="Comic book cover" onClick={() => this.props.visitComic(this.props.comicName)}/>
             <div>{this.props.genreOne}, {this.props.genreTwo}</div>
-            <div>Rating: {this.props.rating}/5, Comments: {this.props.numComments} </div>
+            <div>Rating: {this.props.rating}/5</div>
+            <div>Comments: {this.props.numComments} </div>
         </div>
       );
     }
