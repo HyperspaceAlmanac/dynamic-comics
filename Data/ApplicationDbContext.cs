@@ -66,6 +66,11 @@ namespace capstone.Data
                 .WithMany()
                 .HasForeignKey("PanelId")
                 .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Comic>()
+                .HasOne(typeof(Account), "Artist")
+                .WithMany()
+                .HasForeignKey("ArtistId")
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<Account> Accounts { get; set; }
