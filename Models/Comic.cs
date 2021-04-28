@@ -16,6 +16,8 @@ namespace capstone.Models
         public int ArtistId { get; set; }
         [ForeignKey("ArtistId")]
         public Account Artist { get; set; }
+        public string PrimaryGenre { get; set; }
+        public string SecondaryGenre { get; set; }
 
     }
 }
