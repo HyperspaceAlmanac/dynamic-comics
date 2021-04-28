@@ -13,13 +13,24 @@ class Home extends Component {
     this.state = {
       currentPage : "waitForLogin",
       userName : "",
-      loading : true
+      loading : true,
+      target : ""
     }
   }
 
-  setStateFunction(page) {
+  setPageFunction(page) {
+    console.log("Setting current page to " + page)
     let newState = Object.assign({}, this.state);
     newState.curentPage = page;
+    this.setState(newState);
+  }
+  
+  visitComic(name) {
+    let newState = Object.assign({}, this.state);
+    newState.currentPage = "reader";
+    newState.target = name;
+    console.log("Visiting comic page for");
+    console.log(newState);
     this.setState(newState);
   }
 
@@ -43,20 +54,22 @@ class Home extends Component {
   }
 
   render () {
+    console.log("Home Render");
+    console.log(this.state.currentPage);
     switch (this.state.currentPage) {
       case "waitForLogin":
-        return (<WaitForLogin navCallback = {this.setStateFunction} />);
+        return (<WaitForLogin navCallback = {this.setPageFunction} />);
       case "main":
-        return (<Main userName = {this.state.userName} navCallback = {this.setStateFunction} />);
+        return (<Main userName = {this.state.userName} navCallback = {(page) => this.setPageFunction(page)} visitComic = {(comic) => this.visitComic(comic)}/>);
       case "completeRegistration":
       case "profile":
-        return (<Profile userName = {this.state.userName} navCallback = {this.setStateFunction} />);
+        return (<Profile userName = {this.state.userName} navCallback = {(page) => this.setPageFunction(page)} />);
       case "reader":
-        return (<Reader navCallback = {this.setStateFunction} />);
+        return (<Reader comicTitle = {this.state.target} navCallback = {(page) => this.setPageFunction(page)} />);
       case "workstation":
-        return (<Workstation navCallback = {this.setStateFunction} />);
+        return (<Workstation navCallback = {(page) => this.setPageFunction(page)} />);
       default:
-        return (<WaitForLogin navCallback = {this.setStateFunction} />);
+        return (<WaitForLogin navCallback = {(page) => this.setPageFunction(page)} />);
 
     }
   }

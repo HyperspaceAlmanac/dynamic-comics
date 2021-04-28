@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class Main extends Component {
+class Tabs extends Component {
     // Buttons and call backs should be defined in props
     constructor(props) {
         super(props);
@@ -18,4 +18,4 @@ class Main extends Component {
     }
 }
 
-export default Main;
+export default Tabs;
