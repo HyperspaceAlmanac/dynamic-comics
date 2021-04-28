@@ -104,7 +104,9 @@ namespace capstone.Areas.Identity.Pages.Account
                     Models.Account account = new Models.Account()
                     {
                         ApplicationUserId = user.Id,
-                        UserName = Input.UserName
+                        UserName = Input.UserName,
+                        Theme = "default",
+                        Message = "Welcome to my page!"
                     };
                     await _context.AddAsync(account);
                     await _context.SaveChangesAsync();
