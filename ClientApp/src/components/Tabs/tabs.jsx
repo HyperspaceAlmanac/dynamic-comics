@@ -13,7 +13,7 @@ class Tabs extends Component {
         let result = [];
         for (let i = 0; i < this.props.buttons.length; i++) {
             let buttonProperties = this.props.buttons[i];
-            result.push(<div key={i} className={"btn btn-primary" + buttonProperties.width} onClick={() => buttonProperties.buttonAction()}>{buttonProperties.name}</div>);
+            result.push(<div key={i} className={"btn btn-primary " + buttonProperties.width} onClick={() => buttonProperties.buttonAction()}>{buttonProperties.name}</div>);
         }
         return result;
     }

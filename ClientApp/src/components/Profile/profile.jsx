@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import Tabs from '../Tabs/tabs';
 
 class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          pageState : "profile"
+          pageState : "profile",
         }
       }
     setPageState(pageState) {
