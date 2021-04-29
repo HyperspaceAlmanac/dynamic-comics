@@ -79,8 +79,9 @@ class Main extends Component {
       let comics = [];
       for (let i = 0; i < shallowCopy.length; i++) {
         comics.push(<Comic key={i} comicName = {shallowCopy[i].comicName}
-          coverURL = {shallowCopy[i].coverURL} genreOne = {shallowCopy[i].genreOne} genreTwo={shallowCopy[i].genreTwo} author={shallowCopy[i].author}
-          rating = {shallowCopy[i].rating} numComments = {shallowCopy[i].numComments} visitComic = {() => this.props.navCallback("reader", shallowCopy[i].comicName)}/>);
+          coverURL = {shallowCopy[i].coverURL} genreOne = {shallowCopy[i].genreOne} genreTwo={shallowCopy[i].genreTwo} author={shallowCopy[i].author} showAll={true}
+          rating = {shallowCopy[i].rating} numComments = {shallowCopy[i].numComments} visitComic = {() => this.props.navCallback("reader", shallowCopy[i].comicName)}
+          visitAuthor = {() => this.props.navCallback("profile", shallowCopy[i].author)}/>);
       }
       return comics;
     }

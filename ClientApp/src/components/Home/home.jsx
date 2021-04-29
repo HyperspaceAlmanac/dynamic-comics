@@ -5,6 +5,7 @@ import Profile from '../Profile/profile';
 import Reader from '../Reader/reader';
 import WaitForLogin from '../WaitForLogin/waitForLogin';
 import Workstation from '../Workstation/workstation';
+import Donate from '../Donate/donate';
 
 class Home extends Component {
   static displayName = Home.name;
@@ -54,11 +55,13 @@ class Home extends Component {
       case "main":
         return (<Main userName = {this.state.userName} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
       case "profile":
-        return (<Profile target = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
+        return (<Profile userName = {this.state.userName} target = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
       case "reader":
         return (<Reader comicTitle = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
       case "workstation":
         return (<Workstation navCallback = {(page, target) => this.setPageFunction(page, target)} />);
+      case "donate":
+        return (<Donate author = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
       default:
         return (<WaitForLogin navCallback = {(page, target) => this.setPageFunction(page, target)} />);
 
