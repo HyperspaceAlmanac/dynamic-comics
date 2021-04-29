@@ -19,7 +19,7 @@ class Comic extends Component {
             {this.props.progress &&
               <div>{"Progress: " + this.props.progressValue}</div>
             }
-            <div>{} </div>
+            <div>Debug: {this.props.showAuthor}</div>
         </div>
       );
     }

@@ -19,8 +19,6 @@ class Tabs extends Component {
     }
     
     render() {
-        console.log("In Tabs render");
-        console.log(this.state.buttons);
       return (
         <div className = "col-12">
             {this.state.buttons}    

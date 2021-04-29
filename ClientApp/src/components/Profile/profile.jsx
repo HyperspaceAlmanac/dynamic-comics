@@ -20,6 +20,10 @@ class Profile extends Component {
 
     componentDidMount() {
       // Something here
+      let newState = Object.assign({}, this.state);
+      newState.user = "MagicalPaintBrush";
+      this.setState(newState);
+      console.log("Profile mounted");
     }
 
     addThemeButtons() {
@@ -101,13 +105,16 @@ class Profile extends Component {
             <Tabs buttons={this.navigationButtons()} />
           </div>
           {this.addThemeButtons()}
-          <Comics profileOwner = {this.props.target} readComics = {this.state.user !== this.props.target}
+          <Comics profileOwner = {this.props.target} showProgress = {false}
             visitOwnComic = {(name) => this.props.navCallback("workstation", name)} 
-            visitOtherComic = {(name) => this.props.navCallback("reader", name)}/>
+            visitOtherComic = {(name) => this.props.navCallback("reader", name)}
+            visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
+
           {this.state.user === this.props.target &&
-            <Comics profileOwner = {this.props.target} readComics = {true}
+            <Comics profileOwner = {this.props.target} showProgress = {true}
             visitOwnComic = {(name) => this.props.navCallback("workstation", name)} 
-            visitOtherComic = {(name) => this.props.navCallback("reader", name)}/>
+            visitOtherComic = {(name) => this.props.navCallback("reader", name)}
+            visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
           }
         </div>
       );
