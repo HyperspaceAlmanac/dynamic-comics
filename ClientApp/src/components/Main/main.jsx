@@ -79,7 +79,7 @@ class Main extends Component {
       let comics = [];
       for (let i = 0; i < shallowCopy.length; i++) {
         comics.push(<Comic key={i} comicName = {shallowCopy[i].comicName}
-          coverURL = {shallowCopy[i].coverURL} genreOne = {shallowCopy[i].genreOne} genreTwo={shallowCopy[i].genreTwo} author={shallowCopy[i].author} showAll={true}
+          coverURL = {shallowCopy[i].coverURL} genreOne = {shallowCopy[i].genreOne} genreTwo={shallowCopy[i].genreTwo} author={shallowCopy[i].author} showAuthor={true}
           rating = {shallowCopy[i].rating} numComments = {shallowCopy[i].numComments} visitComic = {() => this.props.navCallback("reader", shallowCopy[i].comicName)}
           visitAuthor = {() => this.props.navCallback("profile", shallowCopy[i].author)}/>);
       }
@@ -111,7 +111,7 @@ class Main extends Component {
       console.log(this.state.allComics);
       return (
         <div className="row">
-          <div className="btn btn-info" onClick = {() => this.props.navCallback("profile", "")}>Got to Profile</div>
+          <div className="btn btn-info" onClick = {() => this.props.navCallback("profile", "MagicalPaintBrush")}>Got to Profile</div>
           <Tabs buttons={this.addButtons()}/>
           <br/>
           <div className="col-12">Filter By</div>

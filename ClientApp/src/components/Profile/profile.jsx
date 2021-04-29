@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Tabs from '../Tabs/tabs';
+import Comics from '../Comics/comics';
 //import Donate from '../Donate/donate'
 
 class Profile extends Component {
@@ -21,8 +22,8 @@ class Profile extends Component {
       // Something here
     }
 
-    addThemeButtons(values) {
-      values.push(
+    addThemeButtons() {
+      return(
         <div className="row col-12">
           <div className="col-4">Current Theme: {this.state.theme}</div>
           <div className="col-1 btn btn-primary">Sci-fi</div>
@@ -33,45 +34,31 @@ class Profile extends Component {
         </div>
       );
     }
-    addSeries(values) {
-    }
 
-    addComments(values) {
-
-    }
-
-    addReviews(values) {
-
-    }
-    
-    addDonations(values) {
-
-    }
-
-    addHistory(values) {
-
-    }
     // If your own profile page
     // Show your reviews, donations, and history. (No comments, those only in series)
     // In workshop, show reviews inside of series.
     // If someone else's page:
     // Show series and reviews
     generatePage() {
-      let values = [];
       // Add theme buttons
-      this.addThemeButtons(values);
       
-      if (this.state.pageState == "profile") {
-        values.push(<div>row1</div>);
-        values.push(<div>row2</div>);
-        values.push(<div>row3</div>);
-      } else if (this.state.pageState == "workshop") {
+      if (this.state.pageState === "profile") {
+        return (
+          <div>
+            <div>row1</div>
+            <div>row2</div>
+            <div>row3</div>
+            <div>{"user: " + this.state.user + ", author: " + this.props.target}</div>
+          </div>
+          );
+      } else if (this.state.pageState === "workshop") {
 
-      } else if (this.state.pageState == "history") {
+      } else if (this.state.pageState === "history") {
 
-      } else if (this.state.pageState == "reviews") {
+      } else if (this.state.pageState === "reviews") {
 
-      } else if (this.state.pageState == "donations") {
+      } else if (this.state.pageState === "donations") {
 
       } else {
         return (
@@ -87,13 +74,10 @@ class Profile extends Component {
             <div>My Series</div>
             <div>Continue Reading</div>
             <div>My Reviews</div>
-            <div>My Comments</div>
             <div>Donations</div>
           </div>
         );
       }
-      values.push(<div>{"user: " + this.state.user + ", author: " + this.props.target}</div>)
-      return values;
     }
 
     navigationButtons() {
@@ -104,6 +88,11 @@ class Profile extends Component {
       }
       return buttons;
     }
+    // Scendarios:
+    // 1. Own account = display own series, display history, display donations
+    // 2. Other account = this account's series
+    // Common: Display Reviews.
+    // Always show comics created by this profile
     render() {
       console.log(this.props);
       return (
@@ -111,20 +100,24 @@ class Profile extends Component {
           <div className="row col-12">
             <Tabs buttons={this.navigationButtons()} />
           </div>
-          {this.generatePage()}
+          {this.addThemeButtons()}
+          <Comics profileOwner = {this.props.target} readComics = {this.state.user !== this.props.target}
+            visitOwnComic = {(name) => this.props.navCallback("workstation", name)} 
+            visitOtherComic = {(name) => this.props.navCallback("reader", name)}/>
+          {this.state.user === this.props.target &&
+            <Comics profileOwner = {this.props.target} readComics = {true}
+            visitOwnComic = {(name) => this.props.navCallback("workstation", name)} 
+            visitOtherComic = {(name) => this.props.navCallback("reader", name)}/>
+          }
         </div>
       );
     }
-    fetchOwnSeries() {
-
-    }
-    fetchHistory() {
-
-    }
+    
+    
     fetchDonations() {
 
     }
-    fetchComments() {
+    fetchReviews() {
 
     }
 }
