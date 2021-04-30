@@ -1,0 +1,120 @@
+.monaco {
+    font-family: monaco, Consolas, "Lucida Console", monospace;
+  }
+  
+  .cursive {
+    font-family: "Brush Script MT", cursive;
+  }
+  
+  .courier {
+    font-family: "Lucida Console", "Courier New", monospace;
+  }
+  
+  .arial {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  .luminari {
+    font-family: "Luminari", fantasy;
+  }
+  
+  .sweets-font-color {
+    color : #9d8189;
+  }
+  
+  .sweets-bg1 {
+    background-color : #d8e2dc;
+  }
+  
+  .sweets-bg2 {
+    background-color : #ffe5d9;
+  }
+  
+  .sweets-btn-one {
+    background-color: #ffcad4 !important;
+  }
+  
+  .sweets-btn-two {
+    background-color: #f4acb7 !important;
+  }
+  
+  .danger-font-color {
+    color : #f1faee;
+  }
+  
+  .danger-bg1 {
+    background-color : #e63946;
+  }
+  
+  .danger-bg2 {
+    background-color : #a8dadc;
+  }
+  
+  .danger-btn-one {
+    background-color: #457b9d !important;
+  }
+  
+  .danger-btn-two {
+    background-color: #1d3557 !important;
+  }
+  
+  .science-font-color {
+    color : #6fffe9;
+  }
+  
+  .science-bg1 {
+    background-color : #0b132b;
+  }
+  
+  .science-bg2 {
+    background-color : #1c2541;
+  }
+  
+  .science-btn-one {
+    background-color: #3a506b !important;
+  }
+  
+  .science-btn-two {
+    background-color: #5bc0be !important;
+  }
+  
+  .noir-font-color {
+    color : white;
+  }
+  
+  .noir-bg1 {
+    background-color : black;
+  }
+  
+  .noir-bg2 {
+    background-color : darkgray;
+  }
+  
+  .noir-btn-one {
+    background-color: gray !important;
+  }
+  
+  .noir-btn-two {
+    background-color: lightgray !important;
+  }
+  
+  .fantasy-font-color {
+    color : #fdfffc;
+  }
+  
+  .fantasy-bg2 {
+    background-color : #011627;
+  }
+  
+  .fantasy-bg1 {
+    background-color : #ff9f1c;
+  }
+  
+  .fantasy-btn-one {
+    background-color: #2ec4b6 !important;
+  }
+  
+  .fantasy-btn-two {
+    background-color: #e71d36 !important;
+  }
+  

@@ -4,13 +4,13 @@ import Comics from '../Comics/comics';
 import Reviews from '../Reviews/reviews';
 import Donations from '../Donations/donations';
 import Workstation from '../Workstation/workstation';
-import './profile.css';
+import '../themes.css'
 class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
           pageState : "profile",
-          theme : "sci-fi",
+          theme : "science",
           user : "",
           font : "arial"
         }
@@ -29,13 +29,15 @@ class Profile extends Component {
       console.log("Profile mounted");
     }
 
-    getThemeArray() {
-      
-    }
-
     setFont(font) {
       let newState = Object.assign({}, this.state);
       newState.font = font;
+      this.setState(newState);
+    }
+
+    setTheme(theme) {
+      let newState = Object.assign({}, this.state);
+      newState.theme = theme;
       this.setState(newState);
     }
 
@@ -56,11 +58,11 @@ class Profile extends Component {
       return(
         <div className="row col-12">
           <div className="col-4">Current Theme: {this.state.theme}</div>
-          <div className="col-1 btn btn-primary">Sci-fi</div>
-          <div className="col-1 btn btn-secondary">Dystopian</div>
-          <div className="col-1 btn btn-success">Nature</div>
-          <div className="col-1 btn btn-danger">Danger</div>
-          <div className="col-1 btn btn-dark">Noir</div>
+          <div className="col-1 btn science-btn-one science-font-color" onClick={() => this.setTheme("science")}>Science</div>
+          <div className="col-1 btn fantasy-btn-one fantasy-font-color" onClick={() => this.setTheme("fantasy")}>Fantasy</div>
+          <div className="col-1 btn sweets-btn-one sweets-font-color" onClick={() => this.setTheme("sweets")}>Sweets</div>
+          <div className="col-1 btn danger-btn-one danger-font-color" onClick={() => this.setTheme("danger")}>Danger</div>
+          <div className="col-1 btn noir-btn-one noir-font-color" onClick={() => this.setTheme("noir")}>Noir</div>
         </div>
       );
     }
@@ -98,7 +100,7 @@ class Profile extends Component {
       console.log(this.props);
       console.log(this.state);
       return (
-        <div className={this.state.font}>
+        <div className={`${this.state.font} ${this.state.theme}-font-color ${this.state.theme}-bg1`}>
           <div className="row col-12">
             <Tabs buttons={this.navigationButtons()} />
           </div>
