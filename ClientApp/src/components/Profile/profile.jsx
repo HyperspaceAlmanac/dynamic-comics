@@ -116,18 +116,17 @@ class Profile extends Component {
             <Workstation navCallback = {(page, target) => this.props.navCallback(page, target)}/>
           }
           {this.state.pageState === "donations" &&
-            <Donations navCallback = {(page, target) => this.props.navCallback(page, target)}/>
+            <div className="row">
+              <Donations receivedDonations = {true}
+                navCallback = {(page, target) => this.props.navCallback(page, target)}
+                returnToProfile = {() => this.setPageState("profile")}/>
+              <Donations receivedDonations = {false}
+                navCallback = {(page, target) => this.props.navCallback(page, target)}
+                returnToProfile = {() => this.setPageState("profile")}/>
+            </div>
           }
         </div>
       );
-    }
-    
-    
-    fetchDonations() {
-
-    }
-    fetchReviews() {
-
     }
 }
 

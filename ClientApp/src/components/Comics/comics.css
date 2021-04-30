@@ -1,0 +1,4 @@
+.overflow-horizontal {
+    overflow-x : scroll;
+    display: inline;
+}

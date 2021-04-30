@@ -17,7 +17,6 @@ class Main extends Component {
 
     componentDidMount() {
       this.fetchComics();
-      console.log("Main mount is called");
     }
     handleChange(event) {
       let newState = Object.assign({}, this.state);
