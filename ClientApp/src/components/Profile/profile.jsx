@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Tabs from '../Tabs/tabs';
 import Comics from '../Comics/comics';
+import Reviews from '../Reviews/reviews';
 //import Donate from '../Donate/donate'
 
 class Profile extends Component {
@@ -116,6 +117,9 @@ class Profile extends Component {
             visitOtherComic = {(name) => this.props.navCallback("reader", name)}
             visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
           }
+          <Reviews profileOwner = {this.props.target}
+            visitComic = {(name) => this.props.navCallback("reader", name)}
+            visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
         </div>
       );
     }
