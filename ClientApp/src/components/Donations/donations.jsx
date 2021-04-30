@@ -21,6 +21,7 @@ class Donations extends Component {
     render() {
         return(
             <div className="row">
+                <div style={{overflowX : 'scroll', width: window.innerWidth}}>{this.generateValues()}</div>
                 <div className="col-6" style={{overflowY : 'scroll', height: window.innerHeight}}>
                     {this.generateValues()}
                 </div>
