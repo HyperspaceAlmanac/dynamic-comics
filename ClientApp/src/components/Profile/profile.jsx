@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import Tabs from '../Tabs/tabs';
 import Comics from '../Comics/comics';
 import Reviews from '../Reviews/reviews';
-import Donations from '../Donations/donations'
-import Workstation from '../Workstation/workstation'
-
+import Donations from '../Donations/donations';
+import Workstation from '../Workstation/workstation';
+import './profile.css';
 class Profile extends Component {
     constructor(props) {
         super(props);
@@ -12,7 +12,7 @@ class Profile extends Component {
           pageState : "profile",
           theme : "sci-fi",
           user : "",
-          font : "font1"
+          font : "arial"
         }
       }
     setPageState(pageState) {
@@ -29,15 +29,25 @@ class Profile extends Component {
       console.log("Profile mounted");
     }
 
+    getThemeArray() {
+      
+    }
+
+    setFont(font) {
+      let newState = Object.assign({}, this.state);
+      newState.font = font;
+      this.setState(newState);
+    }
+
     addFontButtons() {
       return(
         <div className="row col-12">
           <div className="col-4">Current Font: {this.state.font}</div>
-          <div className="col-1 btn btn-secondary">Font1</div>
-          <div className="col-1 btn btn-secondary">Font2</div>
-          <div className="col-1 btn btn-secondary">Font3</div>
-          <div className="col-1 btn btn-secondary">Font4</div>
-          <div className="col-1 btn btn-secondary">Font5</div>
+          <div className="col-1 btn btn-secondary" onClick={() => this.setFont("arial")}>Arial</div>
+          <div className="col-1 btn btn-secondary" onClick={() => this.setFont("luminari")}>Luminari</div>
+          <div className="col-1 btn btn-secondary" onClick={() => this.setFont("monaco")}>Monaco</div>
+          <div className="col-1 btn btn-secondary" onClick={() => this.setFont("courier")}>Courier</div>
+          <div className="col-1 btn btn-secondary" onClick={() => this.setFont("cursive")}>Cursive</div>
         </div>
       );
     }
@@ -88,7 +98,7 @@ class Profile extends Component {
       console.log(this.props);
       console.log(this.state);
       return (
-        <div>
+        <div className={this.state.font}>
           <div className="row col-12">
             <Tabs buttons={this.navigationButtons()} />
           </div>
