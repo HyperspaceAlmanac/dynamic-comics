@@ -9,6 +9,15 @@ class Tabs extends Component {
           buttons : this.setupButtons()
         }
     }
+
+    componentDidUpdate(prevProps, prevState) {
+      if (prevProps.buttons !== this.props.buttons) {
+        //console.log("Comics component did change, updating state");
+        let newState = Object.assign({}, this.state);
+        newState.buttons = this.setupButtons();
+        this.setState(newState);
+      }
+  }
     setupButtons() {
         let result = [];
         for (let i = 0; i < this.props.buttons.length; i++) {
