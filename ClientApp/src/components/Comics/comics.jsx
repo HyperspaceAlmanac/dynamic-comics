@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import Comic from '../Comic/comic';
+import '../themes.css';
 
 class Comics extends Component {
     constructor(props) {
       super(props);
       this.state = {
         comics : [],
-        user : ""
+        user : "",
+        theme: "science"
       }
     }
 
@@ -15,6 +17,7 @@ class Comics extends Component {
         let newState = Object.assign({}, this.state);
         newState.comics = this.getComics();
         newState.user = "MagicalPaintBrush";
+        newState.theme = "noir";
         this.setState(newState);
     }
     componentDidUpdate(prevProps, prevState) {
@@ -67,7 +70,7 @@ class Comics extends Component {
         let comics = [];
         //console.log(this.state.user !== this.props.profileOwner);
         for (let i = 0; i < jsonComics.length; i++) {
-            comics.push(<Comic key={i} comicName = {jsonComics[i].comicName}
+            comics.push(<Comic key={i} comicName = {jsonComics[i].comicName} theme={this.state.theme}
             coverURL = {jsonComics[i].coverURL} genreOne = {jsonComics[i].genreOne} genreTwo={jsonComics[i].genreTwo} author={jsonComics[i].author}
             showAuthor = {this.props.showProgress || (this.state.user !== this.props.profileOwner)}
             rating = {jsonComics[i].rating} numComments = {jsonComics[i].numComments} progress = {this.props.showProgress} progressValue = {jsonComics[i].progress}  

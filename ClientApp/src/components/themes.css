@@ -18,8 +18,11 @@
     font-family: "Luminari", fantasy;
   }
   
-  .sweets-font-color {
+  .sweets-font-color2 {
     color : #9d8189;
+  }
+  .sweet-font-color {
+    color: black;
   }
   
   .sweets-bg1 {
@@ -38,19 +41,22 @@
     background-color: #f4acb7 !important;
   }
   
-  .danger-font-color {
+  .elements-font-color {
+    color : #f1faee;
+  }
+  .elements-font-color2 {
     color : #f1faee;
   }
   
-  .danger-bg1 {
+  .elements-bg1 {
     background-color : #e63946;
   }
   
-  .danger-bg2 {
+  .elements-bg2 {
     background-color : #a8dadc;
   }
   
-  .danger-btn-one {
+  .elements-btn-one {
     background-color: #457b9d !important;
   }
   
@@ -60,6 +66,9 @@
   
   .science-font-color {
     color : #6fffe9;
+  }
+  .science-font-color2 {
+    color : black;
   }
   
   .science-bg1 {
@@ -81,6 +90,10 @@
   .noir-font-color {
     color : white;
   }
+
+  .noir-font-color2 {
+    color : black;
+  }
   
   .noir-bg1 {
     background-color : black;
@@ -100,6 +113,9 @@
   
   .fantasy-font-color {
     color : #fdfffc;
+  }
+  .fantasy-font-color2 {
+    color: black;
   }
   
   .fantasy-bg2 {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Comic from '../Comic/comic';
+import '../themes.css';
 
 class Reviews extends Component {
     constructor(props) {
@@ -46,8 +47,8 @@ class Reviews extends Component {
         for (let i = 0; i < reviewsJson.length; i++) {
             reviews.push(
                 <div className="col-3" key={i}>
-                    <div className="btn btn-primary col-12" onClick={() => this.props.visitComic(reviewsJson[i].name)}>{reviewsJson[i].name}</div>
-                    <div className="btn btn-info col-12"onClick={() => this.props.visitAuthor(reviewsJson[i].author)}>{reviewsJson[i].author}</div>
+                    <div className={`${this.props.theme}-btn-one ${this.props.theme}-font-color` + " btn col-12"} onClick={() => this.props.visitComic(reviewsJson[i].name)}>{reviewsJson[i].name}</div>
+                    <div className={`${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn col-12"} onClick={() => this.props.visitAuthor(reviewsJson[i].author)}>{reviewsJson[i].author}</div>
                     <div>{"Average Rating: " + reviewsJson[i].average + "/5"}</div>
                     <div>{(this.props.profileOwner === this.props.user ? "Your Rating: " : "This User's Rating: ") + `${reviewsJson[i].rating}/5`}</div>
                     <div>{"Description: " + reviewsJson[i].description}</div>

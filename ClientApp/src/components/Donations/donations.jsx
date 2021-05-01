@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Tabs from '../Tabs/tabs';
 import './donations.css';
+import '../themes.css';
 
 class Donations extends Component {
     constructor(props) {
@@ -83,7 +84,7 @@ class Donations extends Component {
               <div>{shallowCopy[i].date}</div>
               <div>{shallowCopy[i].comment}</div>
               {!this.props.receivedDonations &&
-                <div className="btn btn-primary" onClick={() => this.cancelDonation(shallowCopy[i].transactionId)}>Cancel</div>}
+                <div className={"btn " + `${this.props.theme}-btn-one ${this.props.theme}-font-color1`} onClick={() => this.cancelDonation(shallowCopy[i].transactionId)}>Cancel</div>}
           </div>);
         }
         return donations;
@@ -99,7 +100,7 @@ class Donations extends Component {
       //style={{overflowY : 'scroll', height: window.innerHeight}}
     render() {
         return(
-            <div className="col-6 vertical-overflow">
+            <div className= {(this.props.receivedDonations ? `${this.props.theme}-bg1` : `${this.props.theme}-bg2`) + " col-6 vertical-overflow"}>
                <div className="col-12">{this.props.receivedDonations ? "Received Donations:" : "Your Donations:"}</div>
                <Tabs buttons={this.addButtons()}/>
                <form className="row col-12">

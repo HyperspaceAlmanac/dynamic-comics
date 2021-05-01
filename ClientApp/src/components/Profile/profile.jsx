@@ -4,7 +4,7 @@ import Comics from '../Comics/comics';
 import Reviews from '../Reviews/reviews';
 import Donations from '../Donations/donations';
 import Workstation from '../Workstation/workstation';
-import '../themes.css'
+import '../themes.css';
 class Profile extends Component {
     constructor(props) {
         super(props);
@@ -61,7 +61,7 @@ class Profile extends Component {
           <div className="col-1 btn science-btn-one science-font-color" onClick={() => this.setTheme("science")}>Science</div>
           <div className="col-1 btn fantasy-btn-one fantasy-font-color" onClick={() => this.setTheme("fantasy")}>Fantasy</div>
           <div className="col-1 btn sweets-btn-one sweets-font-color" onClick={() => this.setTheme("sweets")}>Sweets</div>
-          <div className="col-1 btn danger-btn-one danger-font-color" onClick={() => this.setTheme("danger")}>Danger</div>
+          <div className="col-1 btn elements-btn-one elements-font-color" onClick={() => this.setTheme("elements")}>Elements</div>
           <div className="col-1 btn noir-btn-one noir-font-color" onClick={() => this.setTheme("noir")}>Noir</div>
         </div>
       );
@@ -120,7 +120,7 @@ class Profile extends Component {
             visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
           }
           {this.state.pageState === "profile" &&
-            <Reviews profileOwner = {this.props.target}
+            <Reviews profileOwner = {this.props.target} theme = {this.state.theme}
               visitComic = {(name) => this.props.navCallback("reader", name)}
               visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
           }
@@ -129,10 +129,10 @@ class Profile extends Component {
           }
           {this.state.pageState === "donations" &&
             <div className="row">
-              <Donations receivedDonations = {true}
+              <Donations theme={this.state.theme} receivedDonations = {true}
                 navCallback = {(page, target) => this.props.navCallback(page, target)}
                 returnToProfile = {() => this.setPageState("profile")}/>
-              <Donations receivedDonations = {false}
+              <Donations theme={this.state.theme} receivedDonations = {false}
                 navCallback = {(page, target) => this.props.navCallback(page, target)}
                 returnToProfile = {() => this.setPageState("profile")}/>
             </div>

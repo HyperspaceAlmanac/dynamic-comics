@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import '../themes.css';
 
 class Comic extends Component {
     constructor(props) {
@@ -9,9 +10,9 @@ class Comic extends Component {
     render() {
       return (
         <div className="col-3">
-            <div className="btn btn-primary col-12" onClick={() => this.props.visitComic()}>{this.props.comicName}</div>
+            <div className={`${this.props.theme}-btn-one ${this.props.theme}-font-color` + " btn col-12"} onClick={() => this.props.visitComic()}>{this.props.comicName}</div>
             {this.props.showAuthor &&
-              <div className="btn btn-info col-12" onClick={() => this.props.visitAuthor()}>{"by " + this.props.author}</div>
+              <div className={`${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn col-12"} onClick={() => this.props.visitAuthor()}>{"by " + this.props.author}</div>
             }
             <img src={process.env.PUBLIC_URL + "images/" + this.props.coverURL} alt="Comic book cover" className="img-fluid" onClick={() => this.props.visitComic()}/>
             <div>{this.props.genreOne + ", " + this.props.genreTwo}</div>
