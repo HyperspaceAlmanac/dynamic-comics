@@ -34,6 +34,16 @@ namespace capstone.Data
                         ConcurrencyStamp = "a0b6873b-bcfd-4880-8987-3a403620f5f2"
                     }
                 );
+            builder.Entity<Resource>()
+                .HasData(
+                    new Resource
+                    {
+                        Id = 1,
+                        ImageURL = "grayDefault.png",
+                        Layer = 0,
+                        ResourceType = "image",
+                    }
+                );
             builder.Entity<Review>()
                 .HasKey(review => new { review.ReviewerId, review.ComicId });
             builder.Entity<Progress>()

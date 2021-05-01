@@ -9,7 +9,7 @@ namespace capstone.Models
     {
         public int Id { get; set; }
         public string ImageURL { get; set; }
-        public string Layer { get; set; }
+        public int Layer { get; set; }
         public string Text { get; set; }
         public string ResourceType { get; set; }
     }

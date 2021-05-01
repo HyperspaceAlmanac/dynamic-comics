@@ -5,6 +5,7 @@ import Comics from '../Comics/comics';
 import Reviews from '../Reviews/reviews';
 import Donations from '../Donations/donations';
 import Workstation from '../Workstation/workstation';
+import CreateComic from '../CreateComic/createComic';
 import '../themes.css';
 class Profile extends Component {
     constructor(props) {
@@ -114,6 +115,9 @@ class Profile extends Component {
           </div>
           {this.state.pageState === "profile" && this.state.user === this.props.target && this.addThemeButtons()}
           {this.state.pageState === "profile" && this.state.user === this.props.target && this.addFontButtons()}
+          {this.state.pageState === "profile" && this.state.user === this.props.target &&
+            <CreateComic theme = {this.state.theme} navCallback = {(page, target) => this.props.navCallback(page, target)}
+          />}
           {this.state.pageState === "profile" &&
             <Comics profileOwner = {this.props.target} showProgress = {false}
             visitOwnComic = {(name) => this.props.navCallback("workstation", name)} 

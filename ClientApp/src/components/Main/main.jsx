@@ -111,7 +111,7 @@ class Main extends Component {
       console.log(this.state.allComics);
       return (
         <div className="row">
-          <div className="btn btn-info" onClick = {() => this.props.navCallback("profile", "MagicalPaintBrush")}>Got to Profile</div>
+          <div className="btn btn-info" onClick = {() => this.props.navCallback("profile", this.props.userName)}>Got to Profile</div>
           <Tabs buttons={this.addButtons()}/>
           <br/>
           <div className="col-12">Filter By</div>

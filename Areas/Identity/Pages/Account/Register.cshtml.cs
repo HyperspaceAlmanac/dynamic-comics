@@ -105,7 +105,7 @@ namespace capstone.Areas.Identity.Pages.Account
                     {
                         ApplicationUserId = user.Id,
                         UserName = Input.UserName,
-                        Theme = "default",
+                        Theme = "science",
                         Font = "arial",
                         Message = "Welcome to my page!"
                     };

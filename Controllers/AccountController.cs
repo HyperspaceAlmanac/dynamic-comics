@@ -46,6 +46,10 @@ namespace capstone.Controllers
                         response.UserName = account.UserName;
                     }
                 }
+                else
+                {
+                    return StatusCode(400, response);
+                }
                 return Ok(response);
             }
             catch
@@ -66,17 +70,21 @@ namespace capstone.Controllers
                     Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
                     if (account == null)
                     {
-                        return StatusCode(500, response);
+                        return StatusCode(400, response);
                     }
                     Account current = await _context.Accounts.Where(a => a.UserName == profile.CurrentProfile).SingleOrDefaultAsync();
                     if (account == null)
                     {
-                        return StatusCode(500, response);
+                        return StatusCode(400, response);
                     }
                     response.LoggedInUser = account.UserName;
                     response.Theme = current.Theme;
                     response.Font = current.Font;
                     response.Message = current.Message;
+                }
+                else
+                {
+                    return StatusCode(400, response);
                 }
                 return Ok(response);
             }
@@ -104,22 +112,122 @@ namespace capstone.Controllers
                     {
                         return StatusCode(500, response);
                     }
-                    if (profile.OptionName == "font") {
+                    if (profile.OptionName == "font")
+                    {
                         current.Font = profile.OptionValue;
                         _context.Update(current);
                         await _context.SaveChangesAsync();
-                    } else if (profile.OptionName == "theme") {
+                    }
+                    else if (profile.OptionName == "theme")
+                    {
                         current.Theme = profile.OptionValue;
                         _context.Update(current);
                         await _context.SaveChangesAsync();
-                    } else if (profile.OptionName == "message") {
+                    }
+                    else if (profile.OptionName == "message")
+                    {
                         current.Message = profile.OptionValue;
                         _context.Update(current);
                         await _context.SaveChangesAsync();
                     }
-                    
+                    return Ok(response);
+
                 }
-                return Ok(response);
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("CreateComic")]
+        public async Task<IActionResult> CreateComic([FromBody] CreateComic request)
+        {
+            SimpleResponse response = new SimpleResponse() {Result = "Fail"};
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    Comic exists = await _context.Comics.Where(c => c.Name.ToLower() == request.Name.ToLower()).SingleOrDefaultAsync();
+                    if (exists != null)
+                    {
+                        return Ok(response);
+                    }
+                    Comic comic = new Comic
+                    {
+                        ArtistId = account.Id,
+                        Name = request.Name,
+                        Published = false,
+                        PrimaryGenre = request.GenreOne,
+                        SecondaryGenre = request.GenreTwo,
+                        ComicCoverId = 1 // Seeded value for grayDefault.png
+                    };
+                    _context.Add(comic);
+                    await _context.SaveChangesAsync();
+                    Panel panel = new Panel
+                    {
+                        ComicId = comic.Id,
+                        PanelNumber = 1,
+                        StartingPanel = true
+                    };
+                    _context.Add(panel);
+                    await _context.SaveChangesAsync();
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("GetComics")]
+        public async Task<IActionResult> GetComics([FromBody] ComicsRequest request)
+        {
+            SimpleResponse response = new SimpleResponse() { Result = "Fail" };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    if (request.RequestType == "all")
+                    {
+                    }
+                    else if (request.RequestType == "history")
+                    {
+                    }
+                    else if (request.RequestType == "userWorks")
+                    {
+                    }
+                    else if (request.RequestType == "othersWorks")
+                    {
+                    }
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
             }
             catch
             {

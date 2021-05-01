@@ -12,6 +12,7 @@ namespace capstone.Models
         [Key]
         public int Id { get; set; }
         public string Theme { get; set; }
+        public string Name { get; set; }
         public bool Published { get; set; }
         public string PrimaryGenre { get; set; }
         public string SecondaryGenre { get; set; }

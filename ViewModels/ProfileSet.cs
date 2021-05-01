@@ -7,8 +7,8 @@ namespace capstone.ViewModels
 {
     public class ProfileSet
     {
-        public String UserName { get; set; }
-        public String OptionName { get; set; }
-        public String OptionValue { get; set; }
+        public string UserName { get; set; }
+        public string OptionName { get; set; }
+        public string OptionValue { get; set; }
     }
 }
