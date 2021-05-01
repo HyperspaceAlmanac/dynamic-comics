@@ -53,6 +53,79 @@ namespace capstone.Controllers
                 return StatusCode(500, response);
             }
         }
+
+        [HttpPut("GetUser")]
+        public async Task<IActionResult> GetUser([FromBody] ProfileRequest profile)
+        {
+            ProfileResponse response = new ProfileResponse();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    Account current = await _context.Accounts.Where(a => a.UserName == profile.CurrentProfile).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    response.LoggedInUser = account.UserName;
+                    response.Theme = current.Theme;
+                    response.Font = current.Font;
+                    response.Message = current.Message;
+                }
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+        [HttpPut("SetUserPage")]
+        public async Task<IActionResult> SetUserPage([FromBody] ProfileSet profile)
+        {
+            ProfileResponse response = new ProfileResponse();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    Account current = await _context.Accounts.Where(a => a.UserName == profile.UserName).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    if (profile.OptionName == "font") {
+                        current.Font = profile.OptionValue;
+                        _context.Update(current);
+                        await _context.SaveChangesAsync();
+                    } else if (profile.OptionName == "theme") {
+                        current.Theme = profile.OptionValue;
+                        _context.Update(current);
+                        await _context.SaveChangesAsync();
+                    } else if (profile.OptionName == "message") {
+                        current.Message = profile.OptionValue;
+                        _context.Update(current);
+                        await _context.SaveChangesAsync();
+                    }
+                    
+                }
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
     }
 
 }

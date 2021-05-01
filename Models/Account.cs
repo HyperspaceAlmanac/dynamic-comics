@@ -14,6 +14,7 @@ namespace capstone.Models
         public int Id { get; set; }
         public string UserName { get; set; }
         public string Theme { get; set; }
+        public string Font { get; set; }
         public string Message { get; set; }
 
         [ForeignKey("ApplicationUser")]

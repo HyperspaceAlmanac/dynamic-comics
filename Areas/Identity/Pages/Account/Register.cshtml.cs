@@ -106,6 +106,7 @@ namespace capstone.Areas.Identity.Pages.Account
                         ApplicationUserId = user.Id,
                         UserName = Input.UserName,
                         Theme = "default",
+                        Font = "arial",
                         Message = "Welcome to my page!"
                     };
                     await _context.AddAsync(account);

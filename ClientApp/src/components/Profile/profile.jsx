@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import authService from '../api-authorization/AuthorizeService';
 import Tabs from '../Tabs/tabs';
 import Comics from '../Comics/comics';
 import Reviews from '../Reviews/reviews';
@@ -23,21 +24,28 @@ class Profile extends Component {
 
     componentDidMount() {
       // Something here
+      this.fetchUser();
+    }
+
+    handleUserResponse(data) {
       let newState = Object.assign({}, this.state);
-      newState.user = "MagicalPaintBrush";
+      newState.user = data.loggedInUser;
+      newState.theme = data.theme;
+      newState.font = data.font;
       this.setState(newState);
-      console.log("Profile mounted");
     }
 
     setFont(font) {
       let newState = Object.assign({}, this.state);
       newState.font = font;
+      this.setUserProperty("font", font);
       this.setState(newState);
     }
 
     setTheme(theme) {
       let newState = Object.assign({}, this.state);
       newState.theme = theme;
+      this.setUserProperty("theme", theme);
       this.setState(newState);
     }
 
@@ -139,6 +147,30 @@ class Profile extends Component {
           }
         </div>
       );
+    }
+
+    async fetchUser() {
+      const token = await authService.getAccessToken();
+      const requestOptions = {
+        method: 'Put',
+        headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+        body: JSON.stringify({ currentProfile : this.props.target})
+      }
+      const response = await fetch('api/Account/GetUser', requestOptions);
+      const data = await response.json();
+      this.handleUserResponse(data);
+    }
+
+    async setUserProperty(pageOption, valueName) {
+      const token = await authService.getAccessToken();
+      const requestOptions = {
+        method: 'Put',
+        headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+        body: JSON.stringify({ userName : this.state.user, optionName : pageOption, optionValue : valueName })
+      }
+      const response = await fetch('api/Account/SetUserPage', requestOptions);
+      const data = await response.json();
+      // Don't do anything
     }
 }
 
