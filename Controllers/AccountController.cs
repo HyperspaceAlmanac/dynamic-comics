@@ -199,7 +199,7 @@ namespace capstone.Controllers
         [HttpPut("GetComics")]
         public async Task<IActionResult> GetComics([FromBody] ComicsRequest request)
         {
-            SimpleResponse response = new SimpleResponse() { Result = "Fail" };
+            ComicsResponse response = new ComicsResponse();
             try
             {
                 if (User.Identity.IsAuthenticated)
@@ -210,18 +210,30 @@ namespace capstone.Controllers
                     {
                         return StatusCode(500, response);
                     }
+                    response.Result = "fail";
+                    response.UserName = account.UserName;
                     if (request.RequestType == "all")
                     {
+                        response.ComicObjects = await GetAllComics();
                     }
                     else if (request.RequestType == "history")
                     {
+                        response.ComicObjects = await GetComicsHistory(account.Id);
                     }
                     else if (request.RequestType == "userWorks")
                     {
+                        response.ComicObjects = await GetOwnComics(account.Id);
                     }
                     else if (request.RequestType == "othersWorks")
                     {
+                        Account author = await _context.Accounts.Where(a => a.UserName == request.User).SingleOrDefaultAsync();
+                        if (author == null)
+                        {
+                            return StatusCode(400, response);
+                        }
+                        response.ComicObjects = await GetOtherWorks(author.Id);
                     }
+                    response.Result = "success";
                     return Ok(response);
                 }
                 else
@@ -233,6 +245,108 @@ namespace capstone.Controllers
             {
                 return StatusCode(500, response);
             }
+        }
+        private async Task<double> GetAverageReviews(string comicName, int id)
+        {
+            int count = await _context.Reviews.Where(r => r.ComicId == id).Select(r => r.Stars).SumAsync();
+            int numReviews = await _context.Reviews.Where(r => r.ComicId == id).CountAsync();
+            if (numReviews == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                return Math.Round((double) count / numReviews, 2);
+            }
+        }
+
+        private async Task<int> GetNumComments(string comicName, int id)
+        {
+            int count = await _context.Comments.Include(c => c.Panel).Where(c => c.Panel.ComicId == id).CountAsync();
+            return count;
+        }
+
+        private async Task<int> ComicToId(string comic)
+        {
+            return await _context.Comics.Where(c => c.Name == comic).Select(c => c.Id).FirstOrDefaultAsync();
+        }
+        private async Task<List<ComicObj>> GetAllComics()
+        {
+            List<ComicObj> result = await _context.Comics.Include(c => c.Artist).Include(c => c.ComicCover).Where(c => c.Published)
+                .Select(c => new ComicObj {ComicName = c.Name, Author = c.Artist.UserName, GenreOne = c.PrimaryGenre,
+                GenreTwo = c.SecondaryGenre, CoverURL = c.ComicCover.ImageURL}).ToListAsync();
+            
+            for (int i = 0; i < result.Count; i++)
+            {
+                int comicId = await ComicToId(result[i].ComicName);
+                result[i].Rating = await GetAverageReviews(result[i].ComicName, comicId);
+                result[i].NumComments = await GetNumComments(result[i].ComicName, comicId);
+            }
+            return result;
+        }
+
+        private async Task<List<ComicObj>> GetOwnComics(int id)
+        {
+            List<ComicObj> result = await _context.Comics.Include(c => c.Artist).Include(c => c.ComicCover).Where(c => c.ArtistId == id)
+                .Select(c => new ComicObj
+                {
+                    ComicName = c.Name,
+                    Author = c.Artist.UserName,
+                    GenreOne = c.PrimaryGenre,
+                    GenreTwo = c.SecondaryGenre,
+                    CoverURL = c.ComicCover.ImageURL,
+                    Published = c.Published
+                }).ToListAsync();
+            for (int i = 0; i < result.Count; i++)
+            {
+                int comicId = await ComicToId(result[i].ComicName);
+                result[i].Rating = await GetAverageReviews(result[i].ComicName, comicId);
+                result[i].NumComments = await GetNumComments(result[i].ComicName, comicId);
+            }
+            return result;
+        }
+
+        private async Task<List<ComicObj>> GetComicsHistory(int id)
+        {
+            List<ComicObj> result = await _context.ProgressTable.Include(p => p.Comic).Include(p => p.Account).Include(p => p.Panel)
+                .Include(p => p.Comic.Artist).Include(p => p.Comic.ComicCover).Where(p => p.AccountId == id && !p.Panel.StartingPanel)
+                .Select(p => new ComicObj
+                {
+                    ComicName = p.Comic.Name,
+                    Author = p.Comic.Artist.UserName,
+                    GenreOne = p.Comic.PrimaryGenre,
+                    GenreTwo = p.Comic.SecondaryGenre,
+                    CoverURL = p.Comic.ComicCover.ImageURL,
+                    Progress = p.Panel.PanelNumber
+                }).ToListAsync();
+            for (int i = 0; i < result.Count; i++)
+            {
+                int comicId = await ComicToId(result[i].ComicName);
+                result[i].Rating = await GetAverageReviews(result[i].ComicName, comicId);
+                result[i].NumComments = await GetNumComments(result[i].ComicName, comicId);
+            }
+            return result;
+        }
+
+        private async Task<List<ComicObj>> GetOtherWorks(int id)
+        {
+            List<ComicObj> result = await _context.Comics.Include(c => c.Artist).Include(c => c.ComicCover).Where(c => c.ArtistId == id && c.Published)
+                .Select(c => new ComicObj
+                {
+                    ComicName = c.Name,
+                    Author = c.Artist.UserName,
+                    GenreOne = c.PrimaryGenre,
+                    GenreTwo = c.SecondaryGenre,
+                    CoverURL = c.ComicCover.ImageURL,
+                    Published = c.Published
+                }).ToListAsync();
+            for (int i = 0; i < result.Count; i++)
+            {
+                int comicId = await ComicToId(result[i].ComicName);
+                result[i].Rating = await GetAverageReviews(result[i].ComicName, comicId);
+                result[i].NumComments = await GetNumComments(result[i].ComicName, comicId);
+            }
+            return result;
         }
     }
 
