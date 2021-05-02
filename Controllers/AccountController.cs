@@ -147,7 +147,7 @@ namespace capstone.Controllers
         [HttpPut("CreateComic")]
         public async Task<IActionResult> CreateComic([FromBody] CreateComic request)
         {
-            SimpleResponse response = new SimpleResponse() {Result = "Fail"};
+            SimpleResponse response = new SimpleResponse() { Result = "Fail" };
             try
             {
                 if (User.Identity.IsAuthenticated)
@@ -211,6 +211,7 @@ namespace capstone.Controllers
                         return StatusCode(500, response);
                     }
                     response.Theme = account.Theme;
+                    response.Font = account.Font;
                     response.Result = "Fail";
                     response.UserName = account.UserName;
                     if (request.RequestType == "all")
@@ -235,6 +236,7 @@ namespace capstone.Controllers
                                 return StatusCode(400, response);
                             }
                             response.ComicObjects = await GetOtherWorks(author.Id);
+                            response.Theme = author.Theme;
                         }
                     }
                     response.Result = "Success";
@@ -250,7 +252,91 @@ namespace capstone.Controllers
                 return StatusCode(500, response);
             }
         }
-        private async Task<double> GetAverageReviews(string comicName, int id)
+
+        [HttpPut("GetReviews")]
+        public async Task<IActionResult> GetReviews([FromBody] ReviewRequest request)
+        {
+            ReviewResponse response = new ReviewResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    response.User = account.UserName;
+                    if (request.RequestType == "User")
+                    {
+                        if (account.UserName == request.Target)
+                        {
+                            response.Reviews = await GetUserReviews(account.Id);
+                        }
+                        else
+                        {
+                            Account user = await _context.Accounts.Where(a => a.UserName == request.Target).SingleOrDefaultAsync();
+                            if (user == null)
+                            {
+                                return StatusCode(400, response);
+                            }
+                            response.Reviews = await GetUserReviews(user.Id);
+                        }
+                    }
+                    else if (request.RequestType == "Comic")
+                    {
+                        Comic comic = await _context.Comics.Where(c => c.Name == request.Target).SingleOrDefaultAsync();
+                        if (comic == null)
+                        {
+                            return StatusCode(400, response);
+                        }
+                        response.Reviews = await GetComicReviews(comic.Id);
+                    }
+                    response.Result = "Success";
+                    return Ok(response);
+
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+        private async Task<List<ReviewObj>> GetUserReviews(int id) {
+            List<ReviewObj> reviews = await _context.Reviews.Include(r => r.Comic).Include(r => r.Reviewer).Where(r => r.ReviewerId == id)
+                .Select(r => new ReviewObj {Name = r.Comic.Name, Date = r.Date, Description = r.Description,
+                PersonalRating = r.Stars}).ToListAsync();
+            for (int i = 0; i < reviews.Count; i++)
+            {
+                int comicId = await ComicToId(reviews[i].Name);
+                reviews[i].AverageRating = await GetAverageReviews(comicId);
+            }
+            return reviews;
+        }
+
+        private async Task<List<ReviewObj>> GetComicReviews(int id)
+        {
+            List<ReviewObj> reviews = await _context.Reviews.Include(r => r.Comic).Include(r => r.Reviewer).Where(r => r.ReviewerId == id)
+                .Select(r => new ReviewObj
+                {
+                    Name = r.Comic.Name,
+                    Author = r.Reviewer.UserName,
+                    Date = r.Date,
+                    Description = r.Description,
+                    PersonalRating = r.Stars
+                }).ToListAsync();
+            return reviews;
+        }
+
+        private async Task<double> GetAverageReviews(int id)
         {
             int count = await _context.Reviews.Where(r => r.ComicId == id).Select(r => r.Stars).SumAsync();
             int numReviews = await _context.Reviews.Where(r => r.ComicId == id).CountAsync();
@@ -264,7 +350,7 @@ namespace capstone.Controllers
             }
         }
 
-        private async Task<int> GetNumComments(string comicName, int id)
+        private async Task<int> GetNumComments(int id)
         {
             int count = await _context.Comments.Include(c => c.Panel).Where(c => c.Panel.ComicId == id).CountAsync();
             return count;
@@ -283,8 +369,8 @@ namespace capstone.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 int comicId = await ComicToId(result[i].ComicName);
-                result[i].Rating = await GetAverageReviews(result[i].ComicName, comicId);
-                result[i].NumComments = await GetNumComments(result[i].ComicName, comicId);
+                result[i].Rating = await GetAverageReviews(comicId);
+                result[i].NumComments = await GetNumComments(comicId);
             }
             return result;
         }
@@ -304,8 +390,8 @@ namespace capstone.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 int comicId = await ComicToId(result[i].ComicName);
-                result[i].Rating = await GetAverageReviews(result[i].ComicName, comicId);
-                result[i].NumComments = await GetNumComments(result[i].ComicName, comicId);
+                result[i].Rating = await GetAverageReviews(comicId);
+                result[i].NumComments = await GetNumComments(comicId);
             }
             return result;
         }
@@ -326,8 +412,8 @@ namespace capstone.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 int comicId = await ComicToId(result[i].ComicName);
-                result[i].Rating = await GetAverageReviews(result[i].ComicName, comicId);
-                result[i].NumComments = await GetNumComments(result[i].ComicName, comicId);
+                result[i].Rating = await GetAverageReviews(comicId);
+                result[i].NumComments = await GetNumComments(comicId);
             }
             return result;
         }
@@ -347,8 +433,8 @@ namespace capstone.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 int comicId = await ComicToId(result[i].ComicName);
-                result[i].Rating = await GetAverageReviews(result[i].ComicName, comicId);
-                result[i].NumComments = await GetNumComments(result[i].ComicName, comicId);
+                result[i].Rating = await GetAverageReviews(comicId);
+                result[i].NumComments = await GetNumComments(comicId);
             }
             return result;
         }

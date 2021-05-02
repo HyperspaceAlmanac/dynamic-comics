@@ -119,20 +119,20 @@ class Profile extends Component {
             <CreateComic theme = {this.state.theme} navCallback = {(page, target) => this.props.navCallback(page, target)}
           />}
           {this.state.pageState === "profile" &&
-            <Comics profileOwner = {this.props.target} showProgress = {false}
+            <Comics profileOwner = {this.props.target} showProgress = {false} theme = {this.state.theme}
             visitOwnComic = {(name) => this.props.navCallback("workstation", name)} 
             visitOtherComic = {(name) => this.props.navCallback("reader", name)}
             visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
           }
           {this.state.pageState === "profile" &&
             this.state.user === this.props.target &&
-            <Comics profileOwner = {this.props.target} showProgress = {true}
+            <Comics profileOwner = {this.props.target} showProgress = {true} theme = {this.state.theme}
             visitOwnComic = {(name) => this.props.navCallback("workstation", name)} 
             visitOtherComic = {(name) => this.props.navCallback("reader", name)}
             visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
           }
           {this.state.pageState === "profile" &&
-            <Reviews profileOwner = {this.props.target} theme = {this.state.theme}
+            <Reviews profileOwner = {this.props.target} theme = {this.state.theme} perUser = {true}
               visitComic = {(name) => this.props.navCallback("reader", name)}
               visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
           }

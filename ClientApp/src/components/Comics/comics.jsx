@@ -18,12 +18,14 @@ class Comics extends Component {
         this.getComics();
     }
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.profileOwner !== this.props.profileOwner) {
-            //console.log("Comics component did change, updating state");
-            this.getComics();
+        if (prevProps.profileOwner !== this.props.profileOwner ||
+            prevState.user !== this.state.user ||
+            (this.state.user === this.props.profileOwner &&
+                this.props.theme !== prevProps.theme)) {
+                //console.log("Comics component did change, updating state");
+                this.getComics();
         }
     }
-
     clickComicAction(comicName) {
         if (this.props.profileOwner !== this.state.user) {
             this.props.visitOtherComic(comicName);
@@ -33,9 +35,6 @@ class Comics extends Component {
     }
 
     render() {
-        //console.log("In render comics");
-        //console.log(this.state.comics);
-        //console.log(`Render Time User = ${this.state.user}, Render Time ProfileOwner = ${this.props.profileOwner} RenderTime length: ${this.state.comics.length}`);
         if (this.state.comics.length > 0) {
             return (
                 <div className="row col-12">
@@ -67,7 +66,7 @@ class Comics extends Component {
             jsonComics = data.comicObjects;
             let comics = [];
             for (let i = 0; i < jsonComics.length; i++) {
-                comics.push(<Comic key={i} comicName = {jsonComics[i].comicName} theme={this.state.theme}
+                comics.push(<Comic key={i} comicName = {jsonComics[i].comicName} theme={this.props.profileOwner === data.userName ? this.props.theme : data.theme}
                 coverURL = {jsonComics[i].coverURL} genreOne = {jsonComics[i].genreOne} genreTwo={jsonComics[i].genreTwo} author={jsonComics[i].author}
                 showAuthor = {this.props.showProgress || (data.userName !== this.props.profileOwner)}
                 rating = {jsonComics[i].rating} numComments = {jsonComics[i].numComments} progress = {this.props.showProgress} progressValue = {jsonComics[i].progress}  
@@ -78,11 +77,12 @@ class Comics extends Component {
             let newState = Object.assign({}, this.state);
             newState.comics = comics;
             newState.user = data.userName;
+            if (this.props.profileOwner !== this.state.user) {
+                newState.theme = data.theme;
+            }
             newState.theme = data.theme;
             this.setState(newState);
-        } else {
-            alert('Something went wrong');
-        }       
+        }     
     }
 }
 

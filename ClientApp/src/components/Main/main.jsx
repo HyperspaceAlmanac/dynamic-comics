@@ -8,6 +8,8 @@ class Main extends Component {
         super(props);
         this.state = {
           allComics : [],
+          theme : "science",
+          font : "arial",
           sorting: "all",
           filterName: "",
           filterAuthor: "",
@@ -79,7 +81,7 @@ class Main extends Component {
       console.log(shallowCopy);
       let comics = [];
       for (let i = 0; i < shallowCopy.length; i++) {
-        comics.push(<Comic key={i} comicName = {shallowCopy[i].comicName} theme = {"science"}
+        comics.push(<Comic key={i} comicName = {shallowCopy[i].comicName} theme = {this.state.theme}
           coverURL = {shallowCopy[i].coverURL} genreOne = {shallowCopy[i].genreOne} genreTwo={shallowCopy[i].genreTwo} author={shallowCopy[i].author} showAuthor={true}
           rating = {shallowCopy[i].rating} numComments = {shallowCopy[i].numComments} visitComic = {() => this.props.navCallback("reader", shallowCopy[i].comicName)}
           visitAuthor = {() => this.props.navCallback("profile", shallowCopy[i].author)}/>);
@@ -111,7 +113,7 @@ class Main extends Component {
       console.log("comics: ");
       console.log(this.state.allComics);
       return (
-        <div className="row">
+        <div className={`row ${this.state.theme}-bg1 ${this.state.font} ${this.state.theme}-font-color`}>
           <div className="btn btn-info" onClick = {() => this.props.navCallback("profile", this.props.userName)}>Got to Profile</div>
           <Tabs buttons={this.addButtons()}/>
           <br/>
@@ -162,6 +164,8 @@ class Main extends Component {
       
       let newState = Object.assign({}, this.state);
       newState.allComics = comics;
+      newState.theme = data.theme;
+      newState.font = data.font;
       this.setState(newState);
     }
 }

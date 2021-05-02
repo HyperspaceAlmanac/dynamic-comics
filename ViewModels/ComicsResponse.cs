@@ -10,6 +10,7 @@ namespace capstone.ViewModels
         public string UserName { get; set; }
         public string Result { get; set; }
         public string Theme { get; set; }
+        public string Font { get; set; }
         public List<ComicObj> ComicObjects { get; set; }
     }
 }

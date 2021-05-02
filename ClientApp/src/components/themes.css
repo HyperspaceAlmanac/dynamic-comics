@@ -45,7 +45,7 @@
     color : #f1faee;
   }
   .elements-font-color2 {
-    color : #f1faee;
+    color : black;
   }
   
   .elements-bg1 {
@@ -58,6 +58,9 @@
   
   .elements-btn-one {
     background-color: #457b9d !important;
+  }
+  .elements-btn-two {
+    background-color: green !important;
   }
   
   .danger-btn-two {
