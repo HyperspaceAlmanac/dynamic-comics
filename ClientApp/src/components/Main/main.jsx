@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import authService from '../api-authorization/AuthorizeService'
 import Comic from '../Comic/comic';
 import Tabs from '../Tabs/tabs';
 
@@ -140,12 +141,25 @@ class Main extends Component {
       );
     }
 
-    fetchComics() {
-      let comics = [];
-      for (let i = 0; i < 11; i++) {
-        comics.push({comicName: "something" + i, coverURL : "grayDefault.png", genreOne : "Comedy", genreTwo : "Action",
-        rating : i % 6, numComments : Math.min(20, 2 * i), author : "somebody"});
+    async fetchComics() {
+      const token = await authService.getAccessToken();
+        const requestOptions = {
+          method: 'Put',
+          headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+          body: JSON.stringify({ requestType : "all", user : this.props.userName })
+        }
+        // In case user continues typing and it becomes something different
+        const response = await fetch('api/Account/GetComics', requestOptions);
+        const data = await response.json();
+        let comics = [];
+        if (data.result === "Success") {
+            for (let i = 0; i < data.comicObjects.length; i++) {
+              comics.push(data.comicObjects[i]);
+            }
+        } else {
+            alert('Something went wrong');
       }
+      
       let newState = Object.assign({}, this.state);
       newState.allComics = comics;
       this.setState(newState);

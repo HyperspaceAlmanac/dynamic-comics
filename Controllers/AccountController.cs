@@ -210,7 +210,8 @@ namespace capstone.Controllers
                     {
                         return StatusCode(500, response);
                     }
-                    response.Result = "fail";
+                    response.Theme = account.Theme;
+                    response.Result = "Fail";
                     response.UserName = account.UserName;
                     if (request.RequestType == "all")
                     {
@@ -220,20 +221,23 @@ namespace capstone.Controllers
                     {
                         response.ComicObjects = await GetComicsHistory(account.Id);
                     }
-                    else if (request.RequestType == "userWorks")
+                    else if (request.RequestType == "partial")
                     {
-                        response.ComicObjects = await GetOwnComics(account.Id);
-                    }
-                    else if (request.RequestType == "othersWorks")
-                    {
-                        Account author = await _context.Accounts.Where(a => a.UserName == request.User).SingleOrDefaultAsync();
-                        if (author == null)
+                        if (request.User == account.UserName)
                         {
-                            return StatusCode(400, response);
+                            response.ComicObjects = await GetOwnComics(account.Id);
                         }
-                        response.ComicObjects = await GetOtherWorks(author.Id);
+                        else
+                        {
+                            Account author = await _context.Accounts.Where(a => a.UserName == request.User).SingleOrDefaultAsync();
+                            if (author == null)
+                            {
+                                return StatusCode(400, response);
+                            }
+                            response.ComicObjects = await GetOtherWorks(author.Id);
+                        }
                     }
-                    response.Result = "success";
+                    response.Result = "Success";
                     return Ok(response);
                 }
                 else

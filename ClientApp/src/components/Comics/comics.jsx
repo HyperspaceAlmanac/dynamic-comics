@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import authService from '../api-authorization/AuthorizeService';
 import Comic from '../Comic/comic';
 import '../themes.css';
 
@@ -14,20 +15,12 @@ class Comics extends Component {
 
 
     componentDidMount() {
-        let newState = Object.assign({}, this.state);
-        newState.comics = this.getComics();
-        newState.user = "MagicalPaintBrush";
-        newState.theme = "noir";
-        this.setState(newState);
+        this.getComics();
     }
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.profileOwner !== this.props.profileOwner
-            || prevState.user !== this.state.user) {
-                //console.log("Comics component did change, updating state");
-                let newState = Object.assign({}, this.state);
-                newState.comics = this.getComics();
-                newState.user = "MagicalPaintBrush";
-                this.setState(newState);
+        if (prevProps.profileOwner !== this.props.profileOwner) {
+            //console.log("Comics component did change, updating state");
+            this.getComics();
         }
     }
 
@@ -52,34 +45,38 @@ class Comics extends Component {
       );
     }
 
-    getComics() {
+    async getComics() {
+        const token = await authService.getAccessToken();
+        let requestParam = this.props.showProgress ? "history" : "partial";
+        const requestOptions = {
+            method: 'Put',
+            headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+            body: JSON.stringify({ requestType : requestParam, user : this.props.profileOwner })
+        }
+        // In case user continues typing and it becomes something different
+        const response = await fetch('api/Account/GetComics', requestOptions);
+        const data = await response.json();
         let jsonComics = [];
-        if (this.props.showProgress) {
-            for (let i = 0; i < 5; i++) {
-                jsonComics.push({comicName: "something" + i, coverURL : "grayDefault.png", genreOne : "Comedy", genreTwo : "Action",
-                rating : i % 6, numComments : Math.min(20, 2 * i), author : "somebody", progress : 10});
-
+        if (data.result === "Success") {
+            jsonComics = data.comicObjects;
+            let comics = [];
+            for (let i = 0; i < jsonComics.length; i++) {
+                comics.push(<Comic key={i} comicName = {jsonComics[i].comicName} theme={this.state.theme}
+                coverURL = {jsonComics[i].coverURL} genreOne = {jsonComics[i].genreOne} genreTwo={jsonComics[i].genreTwo} author={jsonComics[i].author}
+                showAuthor = {this.props.showProgress || (data.userName !== this.props.profileOwner)}
+                rating = {jsonComics[i].rating} numComments = {jsonComics[i].numComments} progress = {this.props.showProgress} progressValue = {jsonComics[i].progress}  
+                visitComic = {() => this.clickComicAction(jsonComics[i].comicName)}
+                visitAuthor = {() => this.props.visitAuthor(jsonComics[i].author)}/>);
             }
 
+            let newState = Object.assign({}, this.state);
+            newState.comics = comics;
+            newState.user = data.userName;
+            newState.theme = data.theme;
+            this.setState(newState);
         } else {
-            for (let i = 0; i < 3; i++) {
-                jsonComics.push({comicName: "fun series" + i, coverURL : "grayDefault.png", genreOne : "Comedy", genreTwo : "Action",
-                rating : (2 + i) % 6, numComments : Math.min(20, 2 * i), author : this.props.profileOwner, progress : 0});
-            }
-        }
-        let comics = [];
-        //console.log(this.state.user !== this.props.profileOwner);
-        for (let i = 0; i < jsonComics.length; i++) {
-            comics.push(<Comic key={i} comicName = {jsonComics[i].comicName} theme={this.state.theme}
-            coverURL = {jsonComics[i].coverURL} genreOne = {jsonComics[i].genreOne} genreTwo={jsonComics[i].genreTwo} author={jsonComics[i].author}
-            showAuthor = {this.props.showProgress || (this.state.user !== this.props.profileOwner)}
-            rating = {jsonComics[i].rating} numComments = {jsonComics[i].numComments} progress = {this.props.showProgress} progressValue = {jsonComics[i].progress}  
-            visitComic = {() => this.clickComicAction(jsonComics[i].comicName)}
-            visitAuthor = {() => this.props.visitAuthor(jsonComics[i].author)}/>);
-        }
-        //console.log("Get comics");
-        //console.log(comics);
-        return comics;
+            alert('Something went wrong');
+        }       
     }
 }
 
