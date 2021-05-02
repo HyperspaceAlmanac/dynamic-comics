@@ -36,13 +36,19 @@ class Comics extends Component {
         //console.log("In render comics");
         //console.log(this.state.comics);
         //console.log(`Render Time User = ${this.state.user}, Render Time ProfileOwner = ${this.props.profileOwner} RenderTime length: ${this.state.comics.length}`);
-      return (
-        <div className="row col-12">
-            <div className="col-12">{this.props.showProgress ? "Continue Reading:" :
-                (this.props.profileOwner !== this.state.user ? `Comic Series by ${this.props.profileOwner}:` : "Your Comic Series:")}</div>
-            {this.state.comics}
-        </div>
-      );
+        if (this.state.comics.length > 0) {
+            return (
+                <div className="row col-12">
+                    <div className="col-12">{this.props.showProgress ? "Continue Reading:" :
+                        (this.props.profileOwner !== this.state.user ? `Comic Series by ${this.props.profileOwner}:` : "Your Comic Series:")}</div>
+                    {this.state.comics}
+                </div>
+            );
+        } else {
+            return (
+                <div></div>
+            );
+        }
     }
 
     async getComics() {
