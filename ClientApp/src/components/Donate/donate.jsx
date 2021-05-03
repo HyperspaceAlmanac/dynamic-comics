@@ -14,7 +14,7 @@ class Donate extends Component {
         this.state = {
           amount : "1.00",
           status : "settingAmount",
-          message : "",
+          message : "Leave a nice message here!",
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -101,7 +101,7 @@ class Donate extends Component {
           <div>
             <div className="btn btn-info" onClick = {() => this.backButton()}>Update Amount or Message</div>
             <Elements stripe={stripePromise}>
-              <CheckoutForm author={this.props.author} amount={this.state.amount} message= {this.state.message} />
+              <CheckoutForm author={this.props.author} amount={this.state.amount} message= {this.state.message} mainPage = {() => this.props.navCallback("main", "")}/>
             </Elements>
           </div>
         );

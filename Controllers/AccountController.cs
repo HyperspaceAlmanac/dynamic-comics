@@ -317,33 +317,57 @@ namespace capstone.Controllers
         [HttpPut("MakeDonation")]
         public async Task<IActionResult> MakeDonation([FromBody] DonationRequest request)
         {
-            DonationResponse response = new DonationResponse();
-            int port = this.HttpContext.Connection.LocalPort;
+            SimpleResponse response = new SimpleResponse();
+            response.Result = "Fail";
 
-            var options = new ChargeCreateOptions
+            try
             {
-                Amount = 1000,
-                Currency = "usd",
-                Source = request.TokenId,
-                Description = "Test payment of 10 dollars"
-            };
+                var userId = this.User.FindFirstValue("sub");
+                Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                if (account == null) {
+                    return StatusCode(400, response);
+                }
+                Models.Account artist = await _context.Accounts.Where(a => a.UserName == request.User).SingleOrDefaultAsync();
+                if (artist == null)
+                {
+                    return StatusCode(400, response);
+                }
+                double donationValue = Convert.ToDouble(request.Amount);
+                long cents = Convert.ToInt64( donationValue* 100);
+                var options = new ChargeCreateOptions
+                {
+                    Amount = cents,
+                    Currency = "usd",
+                    Source = request.TokenId,
+                    Description = $"Donation from {account.UserName} to {request.User}"
+                };
 
-            var service = new ChargeService();
-            Charge charge = service.Create(options);
-            response.Result = "Success";
-            return Ok(response);
-        }
-
-        [HttpGet("DonationSuccess/{id}")]
-        public async Task<IActionResult> DonationSuccess(string id)
-        {
-            return Ok();
-        }
-
-        [HttpGet("DonationFailed/{id}")]
-        public async Task<IActionResult> DonationFailed(string id)
-        {
-            return Ok();
+                var service = new ChargeService();
+                Charge charge = service.Create(options);
+                if (charge.Status == "succeeded")
+                {
+                    Tip donation = new Tip
+                    {
+                        Date = DateTime.Now,
+                        Amount = donationValue,
+                        Message = request.Message,
+                        CustomerId = account.Id,
+                        ArtistId = artist.Id
+                    };
+                    await _context.AddAsync(donation);
+                    await _context.SaveChangesAsync();
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
         }
 
         private async Task<List<ReviewObj>> GetUserReviews(int id) {

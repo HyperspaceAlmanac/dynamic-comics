@@ -11,5 +11,7 @@ namespace capstone.ViewModels
     {
         public string User { get; set; }
         public string TokenId { get; set; }
+        public string Message { get; set; }
+        public string Amount { get; set; }
     }
 }
