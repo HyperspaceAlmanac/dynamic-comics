@@ -1,5 +1,6 @@
 import React from "react";
 import {CardElement, useStripe, useElements} from '@stripe/react-stripe-js';
+import authService from '../api-authorization/AuthorizeService';
 import './donate.css';
 
 // minimal example from react.stripes.js documentation
@@ -32,6 +33,17 @@ const CheckoutForm = ({author, amount}) => {
       console.log('[error]', error);
     } else {
       console.log('[PaymentMethod]', paymentMethod);
+      // Do API call to backend here
+
+      const token = await authService.getAccessToken();
+        const requestOptions = {
+            method: 'Put',
+            headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+            body: JSON.stringify({ user : author })
+        }
+        // In case user continues typing and it becomes something different
+        const response = await fetch('api/Account/MakeDonation', requestOptions);
+        const data = await response.json();
     }
   };
 

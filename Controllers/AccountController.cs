@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Stripe;
+using Stripe.Checkout;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,6 +26,7 @@ namespace capstone.Controllers
         public AccountController(ApplicationDbContext context)
         {
             _context = context;
+            StripeConfiguration.ApiKey = "";
         }
 
         [HttpGet("Home")]
@@ -39,7 +43,7 @@ namespace capstone.Controllers
                 {
                     response.Authenticated = true;
                     var userId = this.User.FindFirstValue("sub");
-                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
                     if (account != null)
                     {
                         response.LoggedIn = true;
@@ -67,12 +71,12 @@ namespace capstone.Controllers
                 if (User.Identity.IsAuthenticated)
                 {
                     var userId = this.User.FindFirstValue("sub");
-                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
                     if (account == null)
                     {
                         return StatusCode(400, response);
                     }
-                    Account current = await _context.Accounts.Where(a => a.UserName == profile.CurrentProfile).SingleOrDefaultAsync();
+                    Models.Account current = await _context.Accounts.Where(a => a.UserName == profile.CurrentProfile).SingleOrDefaultAsync();
                     if (account == null)
                     {
                         return StatusCode(400, response);
@@ -102,12 +106,12 @@ namespace capstone.Controllers
                 if (User.Identity.IsAuthenticated)
                 {
                     var userId = this.User.FindFirstValue("sub");
-                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
                     if (account == null)
                     {
                         return StatusCode(500, response);
                     }
-                    Account current = await _context.Accounts.Where(a => a.UserName == profile.UserName).SingleOrDefaultAsync();
+                    Models.Account current = await _context.Accounts.Where(a => a.UserName == profile.UserName).SingleOrDefaultAsync();
                     if (account == null)
                     {
                         return StatusCode(500, response);
@@ -153,7 +157,7 @@ namespace capstone.Controllers
                 if (User.Identity.IsAuthenticated)
                 {
                     var userId = this.User.FindFirstValue("sub");
-                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
                     if (account == null)
                     {
                         return StatusCode(500, response);
@@ -205,7 +209,7 @@ namespace capstone.Controllers
                 if (User.Identity.IsAuthenticated)
                 {
                     var userId = this.User.FindFirstValue("sub");
-                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
                     if (account == null)
                     {
                         return StatusCode(500, response);
@@ -230,7 +234,7 @@ namespace capstone.Controllers
                         }
                         else
                         {
-                            Account author = await _context.Accounts.Where(a => a.UserName == request.User).SingleOrDefaultAsync();
+                            Models.Account author = await _context.Accounts.Where(a => a.UserName == request.User).SingleOrDefaultAsync();
                             if (author == null)
                             {
                                 return StatusCode(400, response);
@@ -265,7 +269,7 @@ namespace capstone.Controllers
                 if (User.Identity.IsAuthenticated)
                 {
                     var userId = this.User.FindFirstValue("sub");
-                    Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
                     if (account == null)
                     {
                         return StatusCode(500, response);
@@ -279,7 +283,7 @@ namespace capstone.Controllers
                         }
                         else
                         {
-                            Account user = await _context.Accounts.Where(a => a.UserName == request.Target).SingleOrDefaultAsync();
+                            Models.Account user = await _context.Accounts.Where(a => a.UserName == request.Target).SingleOrDefaultAsync();
                             if (user == null)
                             {
                                 return StatusCode(400, response);
@@ -310,6 +314,57 @@ namespace capstone.Controllers
                 return StatusCode(500, response);
             }
         }
+        [HttpPut("MakeDonation")]
+        public async Task<IActionResult> MakeDonation([FromBody] DonationRequest request)
+        {
+            DonationResponse response = new DonationResponse();
+            Token token = request.DonationToken;
+            int port = this.HttpContext.Connection.LocalPort;
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string>
+                {
+                  "card",
+                },
+                LineItems = new List<SessionLineItemOptions>
+                {
+                  new SessionLineItemOptions
+                  {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                      UnitAmount = 2000,
+                      Currency = "usd",
+                      ProductData = new SessionLineItemPriceDataProductDataOptions
+                      {
+                        Name = "Stubborn Attachments",
+                      },
+                    },
+                    Quantity = 1,
+                  },
+                },
+                Mode = "payment",
+                SuccessUrl = "https://localhost:" + port + "/api/Account/DonationSuccess/{CHECKOUT_SESSION_ID}",
+                CancelUrl = "https://localhost:" + port + "/api/Account/DonationFailed/{CHECKOUT_SESSION_ID}",
+            };
+            var service = new SessionService();
+            Session session = service.Create(options);
+            //return Json(new { id = session.Id });
+            response.Result = "Success";
+            return Ok(response);
+        }
+
+        [HttpGet("DonationSuccess/{id}")]
+        public async Task<IActionResult> DonationSuccess(string id)
+        {
+            return Ok();
+        }
+
+        [HttpGet("DonationFailed/{id}")]
+        public async Task<IActionResult> DonationFailed(string id)
+        {
+            return Ok();
+        }
+
         private async Task<List<ReviewObj>> GetUserReviews(int id) {
             List<ReviewObj> reviews = await _context.Reviews.Include(r => r.Comic).Include(r => r.Reviewer).Where(r => r.ReviewerId == id)
                 .Select(r => new ReviewObj {Name = r.Comic.Name, Date = r.Date, Description = r.Description,
