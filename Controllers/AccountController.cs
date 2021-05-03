@@ -26,7 +26,7 @@ namespace capstone.Controllers
         public AccountController(ApplicationDbContext context)
         {
             _context = context;
-            StripeConfiguration.ApiKey = "";
+            StripeConfiguration.ApiKey = Secrets.StripeSecretKey;
         }
 
         [HttpGet("Home")]
@@ -318,37 +318,18 @@ namespace capstone.Controllers
         public async Task<IActionResult> MakeDonation([FromBody] DonationRequest request)
         {
             DonationResponse response = new DonationResponse();
-            Token token = request.DonationToken;
             int port = this.HttpContext.Connection.LocalPort;
-            var options = new SessionCreateOptions
+
+            var options = new ChargeCreateOptions
             {
-                PaymentMethodTypes = new List<string>
-                {
-                  "card",
-                },
-                LineItems = new List<SessionLineItemOptions>
-                {
-                  new SessionLineItemOptions
-                  {
-                    PriceData = new SessionLineItemPriceDataOptions
-                    {
-                      UnitAmount = 2000,
-                      Currency = "usd",
-                      ProductData = new SessionLineItemPriceDataProductDataOptions
-                      {
-                        Name = "Stubborn Attachments",
-                      },
-                    },
-                    Quantity = 1,
-                  },
-                },
-                Mode = "payment",
-                SuccessUrl = "https://localhost:" + port + "/api/Account/DonationSuccess/{CHECKOUT_SESSION_ID}",
-                CancelUrl = "https://localhost:" + port + "/api/Account/DonationFailed/{CHECKOUT_SESSION_ID}",
+                Amount = 1000,
+                Currency = "usd",
+                Source = request.TokenId,
+                Description = "Test payment of 10 dollars"
             };
-            var service = new SessionService();
-            Session session = service.Create(options);
-            //return Json(new { id = session.Id });
+
+            var service = new ChargeService();
+            Charge charge = service.Create(options);
             response.Result = "Success";
             return Ok(response);
         }

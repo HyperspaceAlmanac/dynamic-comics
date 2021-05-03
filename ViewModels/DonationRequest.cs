@@ -10,6 +10,6 @@ namespace capstone.ViewModels
     public class DonationRequest
     {
         public string User { get; set; }
-        public Token DonationToken { get; set; }
+        public string TokenId { get; set; }
     }
 }
