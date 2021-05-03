@@ -7,6 +7,7 @@ import Reviews from '../Reviews/reviews';
 import Donations from '../Donations/donations';
 import Workstation from '../Workstation/workstation';
 import CreateComic from '../CreateComic/createComic';
+import WelcomeMessage from './WelcomeMessage';
 import '../themes.css';
 class Profile extends Component {
     constructor(props) {
@@ -15,7 +16,8 @@ class Profile extends Component {
           pageState : "profile",
           theme : "science",
           user : "",
-          font : "arial"
+          font : "arial",
+          message : "welcome"
         }
       }
     setPageState(pageState) {
@@ -34,6 +36,7 @@ class Profile extends Component {
       newState.user = data.loggedInUser;
       newState.theme = data.theme;
       newState.font = data.font;
+      newState.message = data.message;
       this.setState(newState);
     }
 
@@ -96,8 +99,6 @@ class Profile extends Component {
       } else {
         buttons.push({name: "Profile", buttonAction: () => this.setProfilePage("profile")});
       }
-      console.log("Navigation buttons");
-      console.log(buttons);
       return buttons;
     }
     // Scendarios:
@@ -106,19 +107,21 @@ class Profile extends Component {
     // Common: Display Reviews.
     // Always show comics created by this profile
     render() {
-      console.log("Render profile");
-      console.log(this.props);
-      console.log(this.state);
       return (
         <div className={`${this.state.font} ${this.state.theme}-font-color ${this.state.theme}-bg1`}>
           <div className="row col-12">
             <Tabs buttons={this.navigationButtons()} />
           </div>
+          <div className="h2">{this.props.target}</div>
           {this.state.pageState === "profile" && this.state.user === this.props.target && this.addThemeButtons()}
           {this.state.pageState === "profile" && this.state.user === this.props.target && this.addFontButtons()}
           {this.state.pageState === "profile" && this.state.user === this.props.target &&
             <CreateComic theme = {this.state.theme} navCallback = {(page, target) => this.props.navCallback(page, target)}
           />}
+          {this.state.pageState === "profile" &&
+            <WelcomeMessage message = {this.state.message} allowEdit = {this.props.target == this.state.user}
+              updateMessage = {(message) => this.setUserProperty("message", message)} />
+          }
           {this.state.pageState === "profile" &&
             <Comics profileOwner = {this.props.target} showProgress = {false} theme = {this.state.theme}
             visitOwnComic = {(name) => this.props.navCallback("workstation", name)} 

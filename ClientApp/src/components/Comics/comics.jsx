@@ -39,7 +39,7 @@ class Comics extends Component {
         if (this.state.comics.length > 0) {
             return (
                 <div className="row col-12">
-                    <div className="col-12">{this.props.showProgress ? "Continue Reading:" :
+                    <div className="col-12 h3">{this.props.showProgress ? "Continue Reading:" :
                         (this.props.profileOwner !== this.state.user ? `Comic Series by ${this.props.profileOwner}:` : "Your Comic Series:")}</div>
                     {this.state.comics}
                 </div>
