@@ -370,6 +370,52 @@ namespace capstone.Controllers
             }
         }
 
+        [HttpPut("GetDonations")]
+        public async Task<IActionResult> GetDonations([FromBody] DonationsRequest request)
+        {
+            DonationsResponse response = new DonationsResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+     
+                    response.Donations = await GetAllDonations(account.Id, request.ReceivedDonations);
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        private async Task<List<DonationObj>> GetAllDonations(int id, bool received)
+        {
+            return await _context.Tips.Include(t => t.Artist).Include(t => t.Customer)
+                .Where(t => received ? t.ArtistId == id : t.CustomerId == id).Select(t =>
+                new DonationObj {
+                    Artist = t.Artist.UserName,
+                    Customer = t.Customer.UserName,
+                    Amount = t.Amount,
+                    Comment = t.Message,
+                    Date = t.Date
+                }).ToListAsync();
+        }
+
         private async Task<List<ReviewObj>> GetUserReviews(int id) {
             List<ReviewObj> reviews = await _context.Reviews.Include(r => r.Comic).Include(r => r.Reviewer).Where(r => r.ReviewerId == id)
                 .Select(r => new ReviewObj {Name = r.Comic.Name, Date = r.Date, Description = r.Description,

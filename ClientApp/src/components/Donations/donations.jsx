@@ -1,8 +1,10 @@
 'use strict';
 import React, { Component } from 'react';
+import authService from '../api-authorization/AuthorizeService';
 import Tabs from '../Tabs/tabs';
 import './donations.css';
 import '../themes.css';
+import { isThisTypeNode } from 'typescript';
 
 class Donations extends Component {
     constructor(props) {
@@ -30,17 +32,31 @@ class Donations extends Component {
         newState.sorting = criteria;
         this.setState(newState);
     }
+    formatAmount(amount) {
+      let total = amount;
+      let stripeCut = total * 0.029 + 0.30;
+      let platformCut = Math.max(total * 0.05 - 0.30, 0.1);
+      let artistAmount = total - stripeCut - platformCut;
+      return `Processing Fees: $${stripeCut.toFixed(2)}, Platform Maintenance: $${platformCut.toFixed(2)}`;
+    }
 
-    cancelDonation(id) {
-        let result = this.fetchCancelDonation(id);
-        if (result) {
-            alert("Donation successfully cancelled!");
-            this.props.returnToProfile();
-        }
+    artistCut(amount) {
+      let total = amount;
+      let stripeCut = total * 0.029 + 0.30;
+      let platformCut = Math.max(total * 0.05 - 0.30, 0.1);
+      let artistAmount = total - stripeCut - platformCut;
+      return artistAmount;
     }
-    returnYes(value) {
-        return true;
+    calculateTotal() {
+      let result = 0.0;
+      let donation;
+      for (let i = 0; i < this.state.donations.length; i++) {
+        donation = this.state.donations[i];
+        result += this.artistCut(donation.amount);
+      }
+      return "$" + result.toFixed(2);
     }
+ 
     sortDonations() {
         let shallowCopy = [...this.state.donations];
         // Check filter first
@@ -80,10 +96,17 @@ class Donations extends Component {
         for (let i = 0; i < shallowCopy.length; i++) {
           donations.push(
           <div className="row-6" key={i} >
-              <div>{this.props.receivedDonations ? "From: " + shallowCopy[i].customer : "To: " + shallowCopy[i].artist}</div>
-              <div>{"$" + shallowCopy[i].amount}</div>
+              <div className="h4">{this.props.receivedDonations ? "From: " + shallowCopy[i].customer : "To: " + shallowCopy[i].artist}</div>
+              <div className="h5">{`Donation Amount: $${shallowCopy[i].amount.toFixed(2)}`}</div>
+              {this.props.receivedDonations &&
+                <div>{"Amount added to account: $" + this.artistCut(shallowCopy[i].amount).toFixed(2)}</div>
+              }
+              {this.props.receivedDonations &&
+               <div> {this.formatAmount(shallowCopy[i].amount)} </div>
+              }
               <div>{shallowCopy[i].date}</div>
-              <div>{shallowCopy[i].comment}</div>
+              <div className="h4">{shallowCopy[i].comment}</div>
+              <br/>
           </div>);
         }
         return donations;
@@ -98,38 +121,43 @@ class Donations extends Component {
       }
       //style={{overflowY : 'scroll', height: window.innerHeight}}
     render() {
-        return(
-            <div className= {(this.props.receivedDonations ? `${this.props.theme}-bg1` : `${this.props.theme}-bg2`) + " col-6 vertical-overflow"}>
-               <div className="col-12 h3">{this.props.receivedDonations ? "Received Donations:" : "Your Donations:"}</div>
-               <Tabs buttons={this.addButtons()}/>
-               <br/>
-               <form className="row col-12">
-                    <span className="col-4">Search by Name:  </span>
-                    <input className="col-6" type="text" name="filterName" value={this.state.filterName}
-                    onChange={this.handleChange} />
-                </form>
-               {this.sortDonations()}
-            </div>
-        );
+      return(
+        <div className= {(this.props.receivedDonations ? `${this.props.theme}-bg1` : `${this.props.theme}-bg2`) + " col-6 vertical-overflow"}>
+            <div className="col-12 h3">{this.props.receivedDonations ? "Received Donations:" : "Your Donations:"}</div>
+            {this.props.receivedDonations &&
+            <div className="h3">{"Total amount on account: " + this.calculateTotal()}</div>
+            }
+            <Tabs buttons={this.addButtons()}/>
+            <br/>
+            <form className="row col-12">
+                <span className="col-4">Search by Name:  </span>
+                <input className="col-6" type="text" name="filterName" value={this.state.filterName}
+                onChange={this.handleChange} />
+            </form>
+            {this.state.donations.length > 0 &&
+              this.sortDonations()
+            }
+        </div>
+      );
     }
-    fetchDonations() {
-      let donations = [];
-      for (let i = 0; i < 10; i++) {
-        if (this.props.receivedDonations) {
-            donations.push({artist : "MagicalPaintBrush", customer :  "Patron " + i, amount : 2 * i + 10, date : Date(), comment : "Love your work!"});
-            donations.push({artist : "MagicalPaintBrush", customer :  "Patron " + i, amount : 2 * i + 10, date : Date(), comment : "Love your work!"});
-        } else {
-            donations.push({artist : "Good Artist" + i, customer : "MagicalPaintBrush", amount : 2 * i + 10, date : Date(), comment : "Love your work!"});
+    async fetchDonations() {
+      const token = await authService.getAccessToken();
+        let requestParam = this.props.showProgress ? "history" : "partial";
+        const requestOptions = {
+            method: 'Put',
+            headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+            body: JSON.stringify({ receivedDonations : this.props.receivedDonations })
         }
-      }
-      let newState = Object.assign({}, this.state);
-      newState.donations = donations;
-      this.setState(newState);
-    }
-
-    fetchCancelDonation(id) {
-        // API call
-        return true;
+        // In case user continues typing and it becomes something different
+        const response = await fetch('api/Account/GetDonations', requestOptions);
+        const data = await response.json();
+        if (data.result === "Success") {
+          let newState = Object.assign({}, this.state);
+          newState.donations = data.donations;
+          this.setState(newState);
+        } else {
+          alert("Something went wrong with donations");
+        }
     }
 }
 

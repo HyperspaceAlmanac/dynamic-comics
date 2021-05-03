@@ -56,6 +56,22 @@ class Donate extends Component {
       this.setState(newState);
     }
 
+    formatAmount(party) {
+      let total = parseFloat(this.state.amount);
+      let stripeCut = total * 0.029 + 0.30;
+      let platformCut = Math.max(total * 0.05 - 0.30, 0.1);
+      let artistAmount = total - stripeCut - platformCut;
+      if (party === "artist") {
+        return "$" + artistAmount.toFixed(2);
+      } else if (party === "stripe") {
+        return "$" + stripeCut.toFixed(2);
+      } else if (party === "platform") {
+        return "$" + platformCut.toFixed(2);
+      } else {
+        return "Invalid Amount"
+      }
+    }
+
     handleSubmit(event) {
       event.preventDefault();
       if (this.numberCheck()) {
@@ -94,6 +110,14 @@ class Donate extends Component {
                         </div>
                     </div>
                 </form>
+                {this.numberCheck() &&
+                  <div>
+                    <div className="h3">Donation Amount Breakdown</div>
+                    <div>{"Cost to for Procesing Payment (2.9% + $0.30): " + this.formatAmount('stripe')}</div> 
+                    <div>{"Cost to Maintain Platform (5% - $0.30, minimum $0.10): " + this.formatAmount('platform')}</div> 
+                    <div>{"Amount to Artist: " + this.formatAmount('artist')}</div> 
+                  </div>
+                }
             </div>
           );
       } else {
