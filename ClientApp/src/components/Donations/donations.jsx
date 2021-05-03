@@ -45,8 +45,15 @@ class Donations extends Component {
       let stripeCut = total * 0.029 + 0.30;
       let platformCut = Math.max(total * 0.05 - 0.30, 0.1);
       let artistAmount = total - stripeCut - platformCut;
-      return artistAmount;
+      return artistAmount + this.handleRounding(artistAmount, stripeCut, platformCut, amount);
     }
+    handleRounding(artist, stripe, platform, original) {
+      let a = parseFloat(artist.toFixed(2));
+      let s = parseFloat(stripe.toFixed(2));
+      let p = parseFloat(platform.toFixed(2));
+      return original - s -a - p;
+    }
+
     calculateTotal() {
       let result = 0.0;
       let donation;

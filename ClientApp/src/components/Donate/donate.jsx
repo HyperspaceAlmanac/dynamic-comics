@@ -61,6 +61,7 @@ class Donate extends Component {
       let stripeCut = total * 0.029 + 0.30;
       let platformCut = Math.max(total * 0.05 - 0.30, 0.1);
       let artistAmount = total - stripeCut - platformCut;
+      artistAmount += this.handleRounding(artistAmount, stripeCut, platformCut, total);
       if (party === "artist") {
         return "$" + artistAmount.toFixed(2);
       } else if (party === "stripe") {
@@ -70,6 +71,13 @@ class Donate extends Component {
       } else {
         return "Invalid Amount"
       }
+    }
+
+    handleRounding(artist, stripe, platform, original) {
+      let a = parseFloat(artist.toFixed(2));
+      let s = parseFloat(stripe.toFixed(2));
+      let p = parseFloat(platform.toFixed(2));
+      return original - s -a - p;
     }
 
     handleSubmit(event) {
@@ -115,7 +123,12 @@ class Donate extends Component {
                     <div className="h3">Donation Amount Breakdown</div>
                     <div>{"Cost to for Procesing Payment (2.9% + $0.30): " + this.formatAmount('stripe')}</div> 
                     <div>{"Cost to Maintain Platform (5% - $0.30, minimum $0.10): " + this.formatAmount('platform')}</div> 
-                    <div>{"Amount to Artist: " + this.formatAmount('artist')}</div> 
+                    <div>{"Amount to Artist: " + this.formatAmount('artist')}</div>
+                    <div className="h3">Note About Rounding:</div>
+                    <div>In case of rounding edge cases, $0.01 will be subtracted from artist's cut.</div>
+                    <div>This is due to Stripe always taking their cut, and how the platform will not go above $0.10 on donations less than $8.10.</div>
+                    <div>The 5% cut and minimum $0.10 is as low as we can go for the site to function.</div>
+                    <div>This adjustment is already done for the displayed values.</div>
                   </div>
                 }
             </div>

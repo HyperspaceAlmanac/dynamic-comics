@@ -44,7 +44,7 @@ class WelcomeMessage extends Component {
             <div>
                 <form onSubmit={this.handleSubmit}>
                     <div>
-                        <div className="h3">Message(300 characters limit):</div>
+                        <div className="h3">Welcome Message(300 characters limit):</div>
                         <textarea className="col-md-10 larger-box" type="text" name="message" value={this.state.message}
                          onChange={this.handleChange} />
                     </div>
