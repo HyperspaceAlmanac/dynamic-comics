@@ -11,12 +11,9 @@ namespace capstone.Models
     {
         [Key]
         public int Id { get; set; }
-        public string RequestId { get; set; }
         public double Amount { get; set; }
         public DateTime Date { get; set; }
         public string Message { get; set; }
-        public bool Success { get; set; }
-        public bool Refund { get; set; }
 
         public int ArtistId { get; set; }
         [ForeignKey("ArtistId")]

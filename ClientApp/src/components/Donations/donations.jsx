@@ -84,8 +84,6 @@ class Donations extends Component {
               <div>{"$" + shallowCopy[i].amount}</div>
               <div>{shallowCopy[i].date}</div>
               <div>{shallowCopy[i].comment}</div>
-              {!this.props.receivedDonations &&
-                <div className={"btn " + `${this.props.theme}-btn-one ${this.props.theme}-font-color1`} onClick={() => this.cancelDonation(shallowCopy[i].transactionId)}>Cancel</div>}
           </div>);
         }
         return donations;
@@ -102,8 +100,9 @@ class Donations extends Component {
     render() {
         return(
             <div className= {(this.props.receivedDonations ? `${this.props.theme}-bg1` : `${this.props.theme}-bg2`) + " col-6 vertical-overflow"}>
-               <div className="col-12">{this.props.receivedDonations ? "Received Donations:" : "Your Donations:"}</div>
+               <div className="col-12 h3">{this.props.receivedDonations ? "Received Donations:" : "Your Donations:"}</div>
                <Tabs buttons={this.addButtons()}/>
+               <br/>
                <form className="row col-12">
                     <span className="col-4">Search by Name:  </span>
                     <input className="col-6" type="text" name="filterName" value={this.state.filterName}
@@ -117,10 +116,10 @@ class Donations extends Component {
       let donations = [];
       for (let i = 0; i < 10; i++) {
         if (this.props.receivedDonations) {
-            donations.push({artist : "MagicalPaintBrush", customer :  "Patron " + i, amount : 2 * i + 10, date : Date(), comment : "Love your work!", transactionId : 1000 +i});
-            donations.push({artist : "MagicalPaintBrush", customer :  "Patron " + i, amount : 2 * i + 10, date : Date(), comment : "Love your work!", transactionId : 2000 +i});
+            donations.push({artist : "MagicalPaintBrush", customer :  "Patron " + i, amount : 2 * i + 10, date : Date(), comment : "Love your work!"});
+            donations.push({artist : "MagicalPaintBrush", customer :  "Patron " + i, amount : 2 * i + 10, date : Date(), comment : "Love your work!"});
         } else {
-            donations.push({artist : "Good Artist" + i, customer : "MagicalPaintBrush", amount : 2 * i + 10, date : Date(), comment : "Love your work!", transactionId : 3000 + i});
+            donations.push({artist : "Good Artist" + i, customer : "MagicalPaintBrush", amount : 2 * i + 10, date : Date(), comment : "Love your work!"});
         }
       }
       let newState = Object.assign({}, this.state);

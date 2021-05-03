@@ -115,13 +115,14 @@ class Profile extends Component {
           <div className="h2">{this.props.target}</div>
           {this.state.pageState === "profile" && this.state.user === this.props.target && this.addThemeButtons()}
           {this.state.pageState === "profile" && this.state.user === this.props.target && this.addFontButtons()}
+          {this.state.pageState === "profile" &&
+            <WelcomeMessage theme = {this.state.theme} message = {this.state.message}
+              allowEdit = {this.props.target == this.state.user}
+              updateMessage = {(message) => this.setUserProperty("message", message)} />
+          }
           {this.state.pageState === "profile" && this.state.user === this.props.target &&
             <CreateComic theme = {this.state.theme} navCallback = {(page, target) => this.props.navCallback(page, target)}
           />}
-          {this.state.pageState === "profile" &&
-            <WelcomeMessage message = {this.state.message} allowEdit = {this.props.target == this.state.user}
-              updateMessage = {(message) => this.setUserProperty("message", message)} />
-          }
           {this.state.pageState === "profile" &&
             <Comics profileOwner = {this.props.target} showProgress = {false} theme = {this.state.theme}
             visitOwnComic = {(name) => this.props.navCallback("workstation", name)} 

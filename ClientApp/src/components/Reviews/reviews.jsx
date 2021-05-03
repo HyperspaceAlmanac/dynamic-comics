@@ -29,12 +29,20 @@ class Reviews extends Component {
 
     render() {
         if (this.props.perUser) {
-            return (
-                <div className="row col-12">
-                    <div className="col-12">{this.props.profileOwner === this.state.user ? "Your Reviews (Can only be Edited in Comic Reader):": "Reviews by " + this.props.profileOwner}</div>
-                    {this.state.reviews.length > 0 && this.state.reviews}
-                </div>
-            );
+            if (this.state.reviews.lenght > 0 && this.state.reviews) {
+                return (
+                    <div className="row col-12">
+                        <div className="col-12 h3">{this.props.profileOwner === this.state.user ? "Your Reviews (Can only be Edited in Comic Reader):": "Reviews by " + this.props.profileOwner}</div>
+                        {this.state.reviews}
+                    </div>);
+            } else {
+                return (
+                    <div className="h3">
+                        No Reviews Found
+                    </div>
+                );
+            }
+            
         } else {
             return (
                 <div>Reviews on Comic Page</div>

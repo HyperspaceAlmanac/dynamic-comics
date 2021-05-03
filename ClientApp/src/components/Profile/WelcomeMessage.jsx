@@ -49,7 +49,7 @@ class WelcomeMessage extends Component {
                          onChange={this.handleChange} />
                     </div>
                     <div>
-                        <input className="btn btn-primary" type="submit" value="Update" />
+                        <input className={`${this.props.theme}-btn-one ${this.props.theme}-font-color btn`} type="submit" value="Update" />
                     </div>
                    
                 </form>

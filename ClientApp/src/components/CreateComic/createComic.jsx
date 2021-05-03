@@ -26,7 +26,7 @@ class CreateComic extends Component {
     render() {
       return (
         <div>
-            <div>Create a new Comic Seriess</div>
+            <div className="h3">Create a new Comic Series</div>
             <form onSubmit={this.handleSubmit}>
                 <div className="row">
                     <div className="col-4">
@@ -46,7 +46,7 @@ class CreateComic extends Component {
                     </div>
                     <div className="col-2">
                         <br/>
-                        <input className={`${this.props.theme}-btn-one ${this.props.theme}-font-color btn`} type="submit" value="Add" />
+                        <input className={`${this.props.theme}-btn-one ${this.props.theme}-font-color btn`} type="submit" value="Create" />
                     </div>
                 </div>
             </form>
