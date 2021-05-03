@@ -1,3 +1,4 @@
+'use strict';
 import React, { Component } from 'react';
 import authService from '../api-authorization/AuthorizeService'
 import Comic from '../Comic/comic';

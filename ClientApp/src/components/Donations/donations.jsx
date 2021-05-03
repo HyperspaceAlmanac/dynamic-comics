@@ -1,3 +1,4 @@
+'use strict';
 import React, { Component } from 'react';
 import Tabs from '../Tabs/tabs';
 import './donations.css';
