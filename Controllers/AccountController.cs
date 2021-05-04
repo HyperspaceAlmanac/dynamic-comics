@@ -298,7 +298,7 @@ namespace capstone.Controllers
                         {
                             return StatusCode(400, response);
                         }
-                        response.Reviews = await GetComicReviews(comic.Id);
+                        response.Reviews = await GetComicReviews(comic.Id, account.Id);
                     }
                     response.Result = "Success";
                     return Ok(response);
@@ -403,6 +403,115 @@ namespace capstone.Controllers
             }
         }
 
+        [HttpPut("GetReview")]
+        public async Task<IActionResult> GetReview([FromBody] ReviewRequest request)
+        {
+            ReviewResponse response = new ReviewResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    Models.Review review = await _context.Reviews.Include(r => r.Comic)
+                        .Where(r => r.ReviewerId == account.Id && r.Comic.Name == request.Target).SingleOrDefaultAsync();
+                    if (review == null)
+                    {
+                        return StatusCode(400, response);
+                    }
+                    response.Reviews = new List<ReviewObj>() {
+                        new ReviewObj {
+                            Name = review.Comic.Name,
+                            Author = account.UserName,
+                            PersonalRating = review.Stars,
+                            Description = review.Description,
+                            Date = review.Date
+                        } 
+                    };
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("PostReview")]
+        public async Task<IActionResult> PostReview([FromBody] PostReviewRequest request)
+        {
+            ReviewResponse response = new ReviewResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    Models.Review review = await _context.Reviews.Include(r => r.Comic)
+                        .Where(r => r.ReviewerId == account.Id && r.Comic.Name == request.ComicSeries).SingleOrDefaultAsync();
+                    if (review == null)
+                    {
+                        Comic comic = await _context.Comics.Where(c => c.Name == request.ComicSeries).SingleOrDefaultAsync();
+                        if (comic == null) {
+                            return StatusCode(400, response);
+                        }
+                        review = new Models.Review()
+                        {
+                            ComicId = comic.Id,
+                            ReviewerId = account.Id
+                        };
+                        await _context.AddAsync(review);
+                        await _context.SaveChangesAsync();
+                    }
+                    review.Stars = request.Rating;
+                    review.Description = request.Description;
+                    review.Date = DateTime.Now;
+
+                    _context.Update(review);
+                    await _context.SaveChangesAsync();
+
+                    response.Reviews = new List<ReviewObj>() {
+                        new ReviewObj {
+                            Name = review.Comic.Name,
+                            Author = account.UserName,
+                            PersonalRating = review.Stars,
+                            Description = review.Description,
+                            Date = review.Date
+                        }
+                    };
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
         private async Task<List<DonationObj>> GetAllDonations(int id, bool received)
         {
             return await _context.Tips.Include(t => t.Artist).Include(t => t.Customer)
@@ -428,9 +537,9 @@ namespace capstone.Controllers
             return reviews;
         }
 
-        private async Task<List<ReviewObj>> GetComicReviews(int id)
+        private async Task<List<ReviewObj>> GetComicReviews(int id, int userId)
         {
-            List<ReviewObj> reviews = await _context.Reviews.Include(r => r.Comic).Include(r => r.Reviewer).Where(r => r.ReviewerId == id)
+            List<ReviewObj> reviews = await _context.Reviews.Include(r => r.Comic).Include(r => r.Reviewer).Where(r => r.ComicId == id && r.ReviewerId != userId)
                 .Select(r => new ReviewObj
                 {
                     Name = r.Comic.Name,

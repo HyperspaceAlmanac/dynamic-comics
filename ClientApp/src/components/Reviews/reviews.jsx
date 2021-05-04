@@ -29,7 +29,7 @@ class Reviews extends Component {
 
     render() {
         if (this.props.perUser) {
-            if (this.state.reviews.lenght > 0 && this.state.reviews) {
+            if (this.state.reviews.length > 0) {
                 return (
                     <div className="row col-12">
                         <div className="col-12 h3">{this.props.profileOwner === this.state.user ? "Your Reviews (Can only be Edited in Comic Reader):": "Reviews by " + this.props.profileOwner}</div>
@@ -44,9 +44,19 @@ class Reviews extends Component {
             }
             
         } else {
-            return (
-                <div>Reviews on Comic Page</div>
-            );
+            if (this.state.reviews.length > 0) {
+                return (
+                    <div className="row col-12">
+                        <div className="col-12 h3">{"Reviews for: " + this.props.SeriesName}</div>
+                        {this.state.reviews}
+                    </div>);
+            } else {
+                return (
+                    <div className="h3">
+                        No Reviews Found
+                    </div>
+                );
+            }
         }
     }
 
@@ -55,7 +65,8 @@ class Reviews extends Component {
         const requestOptions = {
             method: 'Put',
             headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
-            body: JSON.stringify({ requestType : this.props.perUser ? "User" : "Comic", target : this.props.profileOwner })
+            body: JSON.stringify({ requestType : this.props.perUser ? "User" : "Comic",
+                target : this.props.perUser ? this.props.profileOwner : this.props.seriesName })
         }
         // In case user continues typing and it becomes something different
         const response = await fetch('api/Account/GetReviews', requestOptions);
@@ -76,7 +87,14 @@ class Reviews extends Component {
                         </div>
                     );
                 } else {
-                    // Alternate for Comic Page
+                    reviews.push(
+                        <div className="col-12" key={i}>
+                            <div className={`${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn col-12"} onClick={() => this.props.visitAuthor(reviewsJson[i].author)}>{reviewsJson[i].author}</div>
+                            <div>{`Rating: ${reviewsJson[i].rating}/5`}</div>
+                            <div>{"Date: " + reviewsJson[i].date}</div>
+                            <div>{"Description: " + reviewsJson[i].description}</div>
+                        </div>
+                    );
                 }
             }
             let newState = Object.assign({}, this.state);

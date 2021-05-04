@@ -7,7 +7,9 @@ class Reader extends Component {
 
         this.state = {
             theme : 'science',
-            font : 'arial'
+            font : 'arial',
+            user : "",
+            sideBar : "timeline"
         }
     }
     render() {
