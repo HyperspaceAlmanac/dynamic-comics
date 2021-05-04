@@ -40,7 +40,7 @@ class Comics extends Component {
             return (
                 <div className="row col-12">
                     <div className="col-12 h3">{this.props.showProgress ? "Continue Reading:" :
-                        (this.props.profileOwner !== this.state.user ? `Comic Series by ${this.props.profileOwner}:` : "Your Comic Series:")}</div>
+                        (this.props.profileOwner !== this.state.user ? `Comic Series by ${this.props.profileOwner}:` : "Your Comic Series (Click to Edit in Workstation):")}</div>
                     {this.state.comics}
                 </div>
             );
@@ -70,7 +70,8 @@ class Comics extends Component {
                 comics.push(<Comic key={i} comicName = {jsonComics[i].comicName} theme={this.props.profileOwner === data.userName ? this.props.theme : data.theme}
                 coverURL = {jsonComics[i].coverURL} genreOne = {jsonComics[i].genreOne} genreTwo={jsonComics[i].genreTwo} author={jsonComics[i].author}
                 showAuthor = {this.props.showProgress || (data.userName !== this.props.profileOwner)}
-                rating = {jsonComics[i].rating} numComments = {jsonComics[i].numComments} progress = {this.props.showProgress} progressValue = {jsonComics[i].progress}  
+                rating = {jsonComics[i].rating} numComments = {jsonComics[i].numComments} progress = {this.props.showProgress}
+                progressValue = {jsonComics[i].progress} published = {jsonComics[i].published}  
                 visitComic = {() => this.clickComicAction(jsonComics[i].comicName)}
                 visitAuthor = {() => this.props.visitAuthor(jsonComics[i].author)}/>);
             }

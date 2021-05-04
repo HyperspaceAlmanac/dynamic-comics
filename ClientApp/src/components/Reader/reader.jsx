@@ -4,6 +4,11 @@ import React, { Component } from 'react';
 class Reader extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            theme : 'science',
+            font : 'arial'
+        }
     }
     render() {
         console.log(this.props);

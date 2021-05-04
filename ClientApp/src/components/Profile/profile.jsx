@@ -9,6 +9,7 @@ import Workstation from '../Workstation/workstation';
 import CreateComic from '../CreateComic/createComic';
 import WelcomeMessage from './WelcomeMessage';
 import '../themes.css';
+
 class Profile extends Component {
     constructor(props) {
         super(props);
@@ -94,7 +95,6 @@ class Profile extends Component {
           buttons.push({name: "Donate", buttonAction: () => this.props.navCallback("donate", this.props.target)});
         } else {
           buttons.push({name: "Donations", buttonAction: () => this.setProfilePage("donations")});
-          buttons.push({name: "Workshop", buttonAction: () => this.setProfilePage("workstation")});
         }
       } else {
         buttons.push({name: "Profile", buttonAction: () => this.setProfilePage("profile")});
@@ -142,7 +142,7 @@ class Profile extends Component {
               visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
           }
           {this.state.pageState === "workstation" &&
-            <Workstation navCallback = {(page, target) => this.props.navCallback(page, target)}/>
+            <Workstation theme = {this.props.theme} navCallback = {(page, target) => this.props.navCallback(page, target)}/>
           }
           {this.state.pageState === "donations" &&
             <div className="row">

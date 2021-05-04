@@ -21,6 +21,9 @@ class Comic extends Component {
             {this.props.progress &&
               <div>{"Progress: " + this.props.progressValue}</div>
             }
+            {!this.props.showAuthor &&
+              <div>{"Published: " + (this.props.published ? "Yes" : "No")}</div>
+            }
         </div>
       );
     }

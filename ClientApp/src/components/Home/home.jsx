@@ -25,6 +25,12 @@ class Home extends Component {
     let newState = Object.assign({}, this.state);
     newState.currentPage = page;
     newState.target = target;
+    /**
+    if (page === "workstation") {
+      this.props.setContainerState(true);
+    } else {
+      this.props.setContainerState(false);
+    } **/
     this.setState(newState);
   }
 
@@ -52,20 +58,40 @@ class Home extends Component {
     console.log(this.state);
     switch (this.state.currentPage) {
       case "waitForLogin":
-        return (<WaitForLogin />);
+        return (
+          <div className="container">
+            <WaitForLogin />
+          </div>);
       case "main":
-        return (<Main userName = {this.state.userName} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
+        return (
+          <div className="container">
+            <Main userName = {this.state.userName} navCallback = {(page, target) => this.setPageFunction(page, target)} />
+          </div>);
       case "profile":
-        return (<Profile userName = {this.state.userName} target = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
+        return (
+          <div className="container">
+            <Profile userName = {this.state.userName} target = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />
+          </div>);
       case "reader":
-        return (<Reader comicTitle = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
+        return (
+          <div className="container-fluid">
+            <Reader comicTitle = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />
+          </div>);
       case "workstation":
-        return (<Workstation navCallback = {(page, target) => this.setPageFunction(page, target)} />);
+        return (
+          <div className="container-fluid">
+            <Workstation comicTitle = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />
+          </div>);
       case "donate":
-        return (<Donate author = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />);
+        return (
+          <div className="container">
+            <Donate author = {this.state.target} navCallback = {(page, target) => this.setPageFunction(page, target)} />
+          </div>);
       default:
-        return (<WaitForLogin navCallback = {(page, target) => this.setPageFunction(page, target)} />);
-
+        return (
+          <div className="container">
+            <WaitForLogin navCallback = {(page, target) => this.setPageFunction(page, target)} />
+          </div>);  
     }
   }
 
