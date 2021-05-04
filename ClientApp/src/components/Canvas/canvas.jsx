@@ -39,8 +39,11 @@ class Canvas extends Component {
         //console.log(this.props);
         return (
             <div className="main-canvas" onMouseEnter={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}>
-                <div>
+                <div className="overflow-wrapper">
+                    <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover"/>
                     <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover" style={{position : "absolute", top : "10vh", left: "10vw"}}/>
+                    <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover" style={{position : "absolute", top : "10vh", left: "-5vw"}}/>
+                    <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover" style={{position : "absolute", top : "-5vh", right: "5vw"}}/>
                 </div>
             </div>
         );

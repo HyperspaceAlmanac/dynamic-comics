@@ -138,8 +138,10 @@
 }
 
 .main-canvas {
+  position: relative;
   background-color: black;
   height : 75vh;
+  overflow : hidden;
 }
 
 .sidebar {
