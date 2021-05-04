@@ -22,7 +22,6 @@ class Reviews extends Component {
         if (prevProps.profileOwner !== this.props.profileOwner
             || prevState.user !== this.state.user || 
             (this.props.profileOwner === this.state.user && this.props.theme !== prevProps.theme)) {
-                //console.log("Comics component did change, updating state");
                 this.getReviews();
         }
     }
@@ -47,7 +46,8 @@ class Reviews extends Component {
             if (this.state.reviews.length > 0) {
                 return (
                     <div className="row col-12">
-                        <div className="col-12 h3">{"Reviews for: " + this.props.SeriesName}</div>
+                        <div className="col-12 h3">Reviews for:</div>
+                        <div className="col-12 h5">{this.props.seriesName}</div>
                         {this.state.reviews}
                     </div>);
             } else {
@@ -72,7 +72,6 @@ class Reviews extends Component {
         const response = await fetch('api/Account/GetReviews', requestOptions);
         const data = await response.json();
         if (data.result === "Success") {
-            console.log(data);
             let reviewsJson = data.reviews;
             let reviews = [];
             for (let i = 0; i < reviewsJson.length; i++) {
@@ -91,7 +90,7 @@ class Reviews extends Component {
                     reviews.push(
                         <div className="col-12" key={i}>
                             <div className={`${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn col-12"} onClick={() => this.props.visitAuthor(reviewsJson[i].author)}>{reviewsJson[i].author}</div>
-                            <div>{`Rating: ${reviewsJson[i].rating}/5`}</div>
+                            <div>{`Rating: ${reviewsJson[i].personalRating}/5`}</div>
                             <div>{"Date: " + reviewsJson[i].date}</div>
                             <div>{"Description: " + reviewsJson[i].description}</div>
                         </div>
