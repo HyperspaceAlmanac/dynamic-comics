@@ -54,8 +54,6 @@ class Home extends Component {
   }
 
   render () {
-    console.log("Home Render");
-    console.log(this.state);
     switch (this.state.currentPage) {
       case "waitForLogin":
         return (

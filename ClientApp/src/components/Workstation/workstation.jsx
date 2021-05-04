@@ -31,7 +31,7 @@ class Workstation extends Component {
     render() {
         return (
             <div className={`${this.state.font} ${this.state.theme}-font-color ${this.state.theme}-bg1`}>
-                <div className="h2">"Workstation</div>
+                <div className="h2">Workstation</div>
                 <div>
                     <div className={`${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"} onClick = {() => this.props.navCallback('main', "")}>Back to Main</div>
                     <div className={`${this.state.theme}-btn-two ${this.state.theme}-font-color2` + " btn"} onClick = {() => this.props.navCallback('profile', this.state.user)}>Back to Profile</div>
@@ -45,7 +45,7 @@ class Workstation extends Component {
                         <Canvas />
                     </div>
                     <div className="col-3">
-                        <div className="comments-section">
+                        <div className="sidebar">
                             {this.generateManyValues()}
                         </div>
                     </div>

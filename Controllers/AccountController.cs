@@ -512,6 +512,49 @@ namespace capstone.Controllers
             }
         }
 
+        [HttpPut("GetComicSeries")]
+        public async Task<IActionResult> GetComicSeries([FromBody] ComicSeriesRequest request)
+        {
+            ComicSeriesResponse response = new ComicSeriesResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    Tuple<Models.Account, Comic> values = await _context.Comics.Include(c => c.Artist).Where(c => c.Name == request.ComicName)
+                        .Select(c => new Tuple<Models.Account, Comic>(c.Artist, c)).SingleOrDefaultAsync();
+                    if (values != null && values.Item1 != null && values.Item2 != null)
+                    {
+                        response.Author = values.Item1.UserName;
+                        response.User = account.UserName;
+                        response.Theme = values.Item1.Theme;
+                        response.Font = values.Item1.Font;
+                        // Process resources and Panels using Comic
+                        response.Resources = new List<ResourceObj>();
+                        response.Panels = new List<PanelObj>();
+                    }
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
         private async Task<List<DonationObj>> GetAllDonations(int id, bool received)
         {
             return await _context.Tips.Include(t => t.Artist).Include(t => t.Customer)
@@ -528,7 +571,7 @@ namespace capstone.Controllers
         private async Task<List<ReviewObj>> GetUserReviews(int id) {
             List<ReviewObj> reviews = await _context.Reviews.Include(r => r.Comic).Include(r => r.Reviewer).Where(r => r.ReviewerId == id)
                 .Select(r => new ReviewObj {Name = r.Comic.Name, Date = r.Date, Description = r.Description,
-                PersonalRating = r.Stars}).ToListAsync();
+                PersonalRating = r.Stars, Author = r.Comic.Artist.UserName}).ToListAsync();
             for (int i = 0; i < reviews.Count; i++)
             {
                 int comicId = await ComicToId(reviews[i].Name);

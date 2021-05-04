@@ -72,6 +72,7 @@ class Reviews extends Component {
         const response = await fetch('api/Account/GetReviews', requestOptions);
         const data = await response.json();
         if (data.result === "Success") {
+            console.log(data);
             let reviewsJson = data.reviews;
             let reviews = [];
             for (let i = 0; i < reviewsJson.length; i++) {
@@ -81,7 +82,7 @@ class Reviews extends Component {
                             <div className={`${this.props.theme}-btn-one ${this.props.theme}-font-color` + " btn col-12"} onClick={() => this.props.visitComic(reviewsJson[i].name)}>{reviewsJson[i].name}</div>
                             <div className={`${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn col-12"} onClick={() => this.props.visitAuthor(reviewsJson[i].author)}>{reviewsJson[i].author}</div>
                             <div>{"Average Rating: " + reviewsJson[i].averageRating + "/5"}</div>
-                            <div>{(this.props.profileOwner === this.props.user ? "Your Rating: " : "This User's Rating: ") + `${reviewsJson[i].rating}/5`}</div>
+                            <div>{(this.props.profileOwner === this.state.user ? "Your Rating: " : "This User's Rating: ") + `${reviewsJson[i].personalRating}/5`}</div>
                             <div>{"Date: " + reviewsJson[i].date}</div>
                             <div>{"Description: " + reviewsJson[i].description}</div>
                         </div>

@@ -41,10 +41,12 @@ class SubmitReview extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    
+    this.postReview();
   }
 
   handleReviewResponse(review) {
+    console.log("review:");
+    console.log(review);
     let newState = Object.assign({}, this.state);
     newState.rating = review.rating;
     newState.message = review.message;
@@ -54,14 +56,15 @@ class SubmitReview extends Component {
   render() {
     return (
       <div>
+          <div className="h5">Your Review:</div>
           <form onSubmit={this.handleSubmit}>
               <div>
-                  <div className="h3">Rating (out of 5):</div>
+                  <div>Rating (out of 5):</div>
                   <input type="text" name="rating" value={this.state.rating}
                     onChange={this.handleChange} />
               </div>
               <div>
-                  <div className="h3">Description (200 characters limit):</div>
+                  <div>Description (200 characters limit):</div>
                   <textarea className="col-md-10 larger-box" type="text" name="message" value={this.state.message}
                     onChange={this.handleChange} />
               </div>

@@ -142,8 +142,7 @@
   height : 75vh;
 }
 
-.comments-section {
-  background-color: white;
+.sidebar {
   height : 75vh;
   overflow-y: scroll;
 }
