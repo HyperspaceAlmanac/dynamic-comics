@@ -14,6 +14,8 @@ namespace capstone.Models
         public Account Commentor { get; set; }
         [ForeignKey("Panel")]
         public int PanelId { get; set; }
+        public int PanelNumber { get; set; }
+        public DateTime Time { get; set; }
         public Panel Panel { get; set; }
     }
 }

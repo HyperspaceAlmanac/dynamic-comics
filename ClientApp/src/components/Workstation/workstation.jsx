@@ -11,13 +11,35 @@ class Workstation extends Component {
         this.state = {
             theme : 'science',
             font : 'arial',
-            user : ""
+            user : "",
+            sideBar : "timeline",
+            preview : false
         }
     }
 
     componentDidMount() {
         let newState = Object.assign({}, this.state);
         newState.user = "MagicalPaintBrush";
+        this.setState(newState);
+    }
+    setSideBarState(value) {
+        let newState = Object.assign({}, this.state);
+        newState.sideBar = value;
+        this.setState(newState);
+    }
+
+    togglePreview() {
+        let newState = Object.assign({}, this.state);
+        newState.preview = !this.state.preview;
+        if (newState.preview) {
+            if (newState.sideBar == "panels" || newState.sideBar == "resources") {
+                newState.sideBar = "timeline";
+            }
+        } else {
+            if (newState.sideBar == "comments" || newState.sideBar == "reviews") {
+                newState.sideBar = "timeline";
+            }
+        }
         this.setState(newState);
     }
 
@@ -46,6 +68,26 @@ class Workstation extends Component {
                     </div>
                     <div className="col-3">
                         <div className="sidebar">
+                            <div className={`col-12 ${this.state.theme}-btn-two ${this.state.theme}-font-color2` + " btn"}
+                                onClick = {() => this.togglePreview()}>{"Preview: " + (this.state.preview ? "enabled" : "disabled")}</div>
+                            <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.setSideBarState("timeline")}>Timeline</div>
+                            {!this.state.preview &&
+                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.setSideBarState("panel")}>Panel</div>
+                            }
+                            {!this.state.preview &&
+                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.setSideBarState("resources")}>Resources</div>
+                            }
+                            {this.state.preview &&
+                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.setSideBarState("reviews")}>Reviews</div>
+                            }
+                            {this.state.preview &&
+                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.setSideBarState("comments")}>Comments</div>
+                            }
                             {this.generateManyValues()}
                         </div>
                     </div>
