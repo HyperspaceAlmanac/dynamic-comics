@@ -125,9 +125,9 @@ class Donate extends Component {
                     <div>{"Cost to Maintain Platform (5% - $0.30, minimum $0.10): " + this.formatAmount('platform')}</div> 
                     <div>{"Amount to Artist: " + this.formatAmount('artist')}</div>
                     <div className="h3">Note About Rounding:</div>
-                    <div>In case of rounding edge cases, $0.01 will be subtracted from artist's cut.</div>
-                    <div>This is due to Stripe always taking their cut, and how the platform will not go above $0.10 on donations less than $8.10.</div>
-                    <div>The 5% cut and minimum $0.10 is as low as we can go for the site to function.</div>
+                    <div>In case of rounding edge cases, artist will gain or lose $0.01.</div>
+                    <div>Artist will receive an additional penny if all three parties have a remainder of less than half of a cent.</div>
+                    <div>If two parties are both at exactly half of a cent, a penny will be subtracted from artist's cut.</div>
                     <div>This adjustment is already done for the displayed values.</div>
                   </div>
                 }
