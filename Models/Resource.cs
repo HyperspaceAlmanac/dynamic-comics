@@ -12,5 +12,6 @@ namespace capstone.Models
         public int Layer { get; set; }
         public string Text { get; set; }
         public string ResourceType { get; set; }
+        public string Options { get; set; }
     }
 }

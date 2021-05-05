@@ -92,5 +92,7 @@ namespace capstone.Data
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Tip> Tips { get; set; }
+        public DbSet<CommonResource> CommonResources { get; set; }
+        public DbSet<UserResource> UserResources { get; set; }
     }
 }

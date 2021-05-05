@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace capstone.ViewModels
 {
-    public class ResourceObj
+    public class GetResourceRequest
     {
     }
 }

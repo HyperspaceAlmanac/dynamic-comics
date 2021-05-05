@@ -7,7 +7,8 @@ import Reviews from '../Reviews/reviews';
 import Donations from '../Donations/donations';
 import Workstation from '../Workstation/workstation';
 import CreateComic from '../CreateComic/createComic';
-import WelcomeMessage from './WelcomeMessage';
+import WelcomeMessage from './welcomeMessage';
+import Resources from './resources';
 import '../themes.css';
 
 class Profile extends Component {
@@ -95,6 +96,7 @@ class Profile extends Component {
           buttons.push({name: "Donate", buttonAction: () => this.props.navCallback("donate", this.props.target)});
         } else {
           buttons.push({name: "Donations", buttonAction: () => this.setProfilePage("donations")});
+          buttons.push({name: "Resources", buttonAction: () => this.setProfilePage("resources")});
         }
       } else {
         buttons.push({name: "Profile", buttonAction: () => this.setProfilePage("profile")});
@@ -153,6 +155,9 @@ class Profile extends Component {
                 navCallback = {(page, target) => this.props.navCallback(page, target)}
                 returnToProfile = {() => this.setPageState("profile")}/>
             </div>
+          }
+          {this.state.pageState === "resources" &&
+            <Resources theme={this.state.theme}/>
           }
         </div>
       );

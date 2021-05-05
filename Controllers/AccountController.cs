@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Stripe;
 using Stripe.Checkout;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,6 +24,7 @@ namespace capstone.Controllers
     public class AccountController : ControllerBase
     {
         public ApplicationDbContext _context;
+        private readonly string _resources = "ClientApp\\public\\images\\";
         public AccountController(ApplicationDbContext context)
         {
             _context = context;
@@ -512,6 +514,167 @@ namespace capstone.Controllers
             }
         }
 
+        [HttpPut("GetResources")]
+        public async Task<IActionResult> GetResources([FromBody] ReviewRequest request)
+        {
+            ResourceResponse response = new ResourceResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                var userId = this.User.FindFirstValue("sub");
+                Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                if (account == null)
+                {
+                    return StatusCode(500, response);
+                }
+
+                response.User = await _context.UserResources.Include(ur => ur.Resource).Where(ur => ur.AccountId == account.Id).Select(ur => ur.Resource).ToListAsync();
+                response.Common = await _context.CommonResources.Include(cr => cr.Resource).Select(cr => cr.Resource).ToListAsync();
+                response.Result = "Success";
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("PostTextResource")]
+        public async Task<IActionResult> PostTextResource([FromBody] PostReviewRequest request)
+        {
+            ReviewResponse response = new ReviewResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    Models.Review review = await _context.Reviews.Include(r => r.Comic)
+                        .Where(r => r.ReviewerId == account.Id && r.Comic.Name == request.ComicSeries).SingleOrDefaultAsync();
+                    if (review == null)
+                    {
+                        Comic comic = await _context.Comics.Where(c => c.Name == request.ComicSeries).SingleOrDefaultAsync();
+                        if (comic == null)
+                        {
+                            return StatusCode(400, response);
+                        }
+                        review = new Models.Review()
+                        {
+                            ComicId = comic.Id,
+                            ReviewerId = account.Id
+                        };
+                        await _context.AddAsync(review);
+                        await _context.SaveChangesAsync();
+                    }
+                    review.Stars = request.Rating;
+                    review.Description = request.Description;
+                    review.Date = DateTime.Now;
+
+                    _context.Update(review);
+                    await _context.SaveChangesAsync();
+
+                    response.Reviews = new List<ReviewObj>() {
+                        new ReviewObj {
+                            Name = review.Comic.Name,
+                            Author = account.UserName,
+                            PersonalRating = review.Stars,
+                            Description = review.Description,
+                            Date = review.Date
+                        }
+                    };
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("PostResource")]
+        public async Task<IActionResult> PostResource()
+        {
+            ResourceResponse response = new ResourceResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                var userId = this.User.FindFirstValue("sub");
+                Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                if (account == null)
+                {
+                    return StatusCode(500, response);
+                }
+                
+
+                Resource resource = new Resource
+                {
+                    ResourceType = "image",
+                };
+                await _context.AddAsync(resource);
+                await _context.SaveChangesAsync();
+
+                // Create Resource and add to DB first
+                var file = Request.Form.Files[0];
+                resource.ImageURL = $"{account.Id}.{resource.Id}.{file.FileName}";
+
+                
+                _context.Update(resource);
+                await _context.SaveChangesAsync();
+
+                using (var stream = System.IO.File.Create(_resources + resource.ImageURL))
+                {
+                    await file.CopyToAsync(stream);
+                    stream.Close();
+                }
+                bool shared = Request.Form["Common"] == "yes";
+                if (shared)
+                {
+                    CommonResource commonResource = new CommonResource
+                    {
+                        ResourceId = resource.Id
+                    };
+                    await _context.AddAsync(commonResource);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    UserResource userResource = new UserResource
+                    {
+                        AccountId = account.Id,
+                        ResourceId = resource.Id
+                    };
+                    await _context.AddAsync(userResource);
+                    await _context.SaveChangesAsync();
+                }
+
+                
+                response.User = await _context.UserResources.Include(ur => ur.Resource).Where(ur => ur.AccountId == account.Id).Select(ur => ur.Resource).ToListAsync();
+                response.Common = await _context.CommonResources.Include(cr => cr.Resource).Select(cr => cr.Resource).ToListAsync();
+                response.Result = "Success";
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
         [HttpPut("GetComicSeries")]
         public async Task<IActionResult> GetComicSeries([FromBody] ComicSeriesRequest request)
         {
@@ -538,7 +701,7 @@ namespace capstone.Controllers
                         response.Theme = values.Item1.Theme;
                         response.Font = values.Item1.Font;
                         // Process resources and Panels using Comic
-                        response.Resources = new List<ResourceObj>();
+                        response.Resources = new List<Resource>();
                         response.Panels = new List<PanelObj>();
                     }
                     response.Result = "Success";

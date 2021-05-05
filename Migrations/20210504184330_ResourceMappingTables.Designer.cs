@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using capstone.Data;
 
 namespace capstone.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210504184330_ResourceMappingTables")]
+    partial class ResourceMappingTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -450,23 +452,6 @@ namespace capstone.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("capstone.Models.CommonResource", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ResourceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.ToTable("CommonResources");
-                });
-
             modelBuilder.Entity("capstone.Models.Panel", b =>
                 {
                     b.Property<int>("Id")
@@ -601,28 +586,6 @@ namespace capstone.Migrations
                     b.ToTable("Tips");
                 });
 
-            modelBuilder.Entity("capstone.Models.UserResource", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ResourceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("ResourceId");
-
-                    b.ToTable("UserResources");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -748,17 +711,6 @@ namespace capstone.Migrations
                     b.Navigation("Panel");
                 });
 
-            modelBuilder.Entity("capstone.Models.CommonResource", b =>
-                {
-                    b.HasOne("capstone.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-                });
-
             modelBuilder.Entity("capstone.Models.Panel", b =>
                 {
                     b.HasOne("capstone.Models.Comic", "Comic")
@@ -833,25 +785,6 @@ namespace capstone.Migrations
                     b.Navigation("Artist");
 
                     b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("capstone.Models.UserResource", b =>
-                {
-                    b.HasOne("capstone.Models.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("capstone.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-
-                    b.Navigation("Resource");
                 });
 #pragma warning restore 612, 618
         }
