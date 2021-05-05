@@ -21,7 +21,9 @@ class TimelineEditor extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.panels !== this.props.panels) {
-            this.updatePanels();
+            let newState = Object.assign({}, this.state);
+            newState.panels = this.props.panels;
+            this.setState(newState);
         }
     }
 
@@ -33,7 +35,30 @@ class TimelineEditor extends Component {
 
     addPanel() {
         let newState = Object.assign({}, this.state);
-        newState.panels = [];
+        newState.panels.push({id: 0, number: 1, start: false, active : false, actions : []});
+        this.setState(newState);
+    }
+
+    panelsList() {
+        let result = [];
+        let i;
+        let options;
+        let active = this.props.panel ? this.props.panel.id : -1;
+        for (i = 0; i < this.state.panels.length; i++) {
+            options = this.state.panels[i].id === active?
+                (`col-11 ${this.props.theme}-btn-one ${this.props.theme}-font-color` + " btn")
+                : (`col-11 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn");
+            result.push(<div key={i} className = {options}>
+                {"Id: " + this.state.panels[i].id + ", Number: "
+                  + this.state.panels[i].number + (this.state.panels[i].active ? ", Active" : ", Hidden")}
+                </div>)
+        }
+        return result;
+    }
+
+    cancelNewEntries() {
+        let newState = Object.assign({}, this.state);
+        newState.panels = this.state.panels.filter(p => p.id !== 0);
         this.setState(newState);
     }
 
@@ -45,7 +70,18 @@ class TimelineEditor extends Component {
     render() {
       return (
         <div>
-            Timeline of Panels
+            <div className="row">
+                <div className={`col-4 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"}
+                    onClick = {() => this.addPanel()}>Add</div>
+                <div className={`col-4 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"}
+                    onClick = {() => this.saveChanges}>Save</div>
+                <div className={`col-4 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"}
+                    onClick = {() => this.cancelNewEntries()}>Cancel</div>
+            </div>
+            <br/>
+            <div className="row">
+                {this.panelsList()}
+            </div>
         </div>
       );
     }

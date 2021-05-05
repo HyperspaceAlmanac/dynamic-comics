@@ -57,10 +57,13 @@ class PanelEditor extends Component {
                 Panels Editor
             </div>
             <div>
-                {"Panel ID: " + this.props.panelId}
+                {"Panel ID: " + this.props.panel.Id}
             </div>
             <div>
                 Need to pass in Panel Number
+            </div>
+            <div>
+                Make Sure to save before going to Timeline or Resources page!
             </div>
         </div>
       );
@@ -72,7 +75,7 @@ class PanelEditor extends Component {
         const requestOptions = {
             method: 'Put',
             headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
-            body: JSON.stringify({ panelId : this.props.panelId, })
+            body: JSON.stringify({ panelId : this.props.panel.Id, })
         }
         // In case user continues typing and it becomes something different
         //const response = await fetch('api/Account/GetComics', requestOptions);

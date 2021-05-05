@@ -25,12 +25,6 @@ class Home extends Component {
     let newState = Object.assign({}, this.state);
     newState.currentPage = page;
     newState.target = target;
-    /**
-    if (page === "workstation") {
-      this.props.setContainerState(true);
-    } else {
-      this.props.setContainerState(false);
-    } **/
     this.setState(newState);
   }
 

@@ -20,17 +20,45 @@ class Workstation extends Component {
             sideBar : "timeline",
             preview : false,
             published : true,
-            panel : 1,
             panels: [],
             current : 1,
+            panel : {id : -1},
             pageState : []
         }
     }
 
     componentDidMount() {
-        let newState = Object.assign({}, this.state);
-        newState.user = "MagicalPaintBrush";
-        this.setState(newState);
+        this.handleResponse(this.getSereis());
+    }
+
+    handleResponse(data) {
+        if (data.result == "Success") {
+            let newState = Object.assign({}, this.state);
+            newState.theme = data.theme;
+            newState.font = data.font;
+            newState.user = data.user;
+            newState.panels = data.panels;
+            newState.pageState = [];
+            newState.current = 0;
+            let index = this.findFirstPage(data.panels);
+            newState.panel = data.panels[index];
+            this.setState(newState);
+        }
+        console.log("Handle getSeries");
+        console.log(this.state);
+    }
+
+    findFirstPage(panels) {
+        let i;
+        console.log("Panels");
+        console.log(panels);
+        for (i = 0; i < panels.length; i++) {
+            if (panels[i].start && panels[i].active) {
+                return i;
+            }
+        }
+        alert("Could not find first page");
+        return 0;
     }
     setSideBarState(value) {
         let newState = Object.assign({}, this.state);
@@ -77,7 +105,9 @@ class Workstation extends Component {
     updateAllValues() {
         alert("Sending request to backend");
     }
-
+    getPanelActions() {
+        return [];
+    }
 
     togglePreview() {
         let newState = Object.assign({}, this.state);
@@ -98,10 +128,6 @@ class Workstation extends Component {
         let newState = Object.assign({}, this.state);
         newState.published = !this.state.published;
         this.setState(newState);
-    }
-    
-    getPanelActions() {
-        return [];
     }
 
     generateManyValues() {
@@ -137,6 +163,10 @@ class Workstation extends Component {
                                 onClick = {() => this.setSideBarState("timeline")}>Timeline</div>
                             {!this.state.preview &&
                                 <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.setSideBarState("panel")}>Panel</div>
+                            }
+                            {!this.state.preview &&
+                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
                                 onClick = {() => this.setSideBarState("resources")}>Resources</div>
                             }
                             {this.state.preview &&
@@ -164,14 +194,15 @@ class Workstation extends Component {
                             }
                             {!this.state.preview &&
                               this.state.sideBar == "timeline" &&
-                              <TimelineEditor panels={this.state.panels} panelState = {this.state.panel}
+                              <TimelineEditor theme = {this.state.theme}
+                                panels={this.state.panels} panel = {this.state.panel}
                                 goToPanel = {(num) => this.goToPanel(num)}
                                 updateAll = {() => this.updateAllValues()}/>
                             }
                             {!this.state.preview &&
                               this.state.sideBar == "panel" &&
-                              <PanelEditor theme = {this.state.theme} actions={this.getPanelActions()}
-                                paneId = {this.state.panel} active = {this.panelActive(this.state.panel)}
+                              <PanelEditor theme = {this.state.theme}
+                                panel = {this.state.panel}
                                 updateAll = {() => this.updateAllValues()} />
                             }
                         </div>
@@ -179,6 +210,22 @@ class Workstation extends Component {
                 </div>
             </div>
         );
+    }
+    async getSereis() {
+        const token = await authService.getAccessToken();
+        let requestParam = this.props.showProgress ? "history" : "partial";
+        const requestOptions = {
+            method: 'Put',
+            headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+            body: JSON.stringify({ comicName : this.props.comicTitle, edit : true})
+        }
+        const response = await fetch('api/Account/GetComicSeries', requestOptions);
+        const data = await response.json();
+        if (data.result == "Success") {
+            this.handleResponse(data);
+        } else {
+            alert("Something went wrong with get series");
+        }          
     }
 }
 

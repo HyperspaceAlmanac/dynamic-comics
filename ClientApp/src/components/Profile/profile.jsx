@@ -164,6 +164,7 @@ class Profile extends Component {
     }
 
     async fetchUser() {
+      console.log("User: " + this.props.target);
       const token = await authService.getAccessToken();
       const requestOptions = {
         method: 'Put',

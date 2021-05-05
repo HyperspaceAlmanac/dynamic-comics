@@ -79,7 +79,7 @@ namespace capstone.Controllers
                         return StatusCode(400, response);
                     }
                     Models.Account current = await _context.Accounts.Where(a => a.UserName == profile.CurrentProfile).SingleOrDefaultAsync();
-                    if (account == null)
+                    if (current == null)
                     {
                         return StatusCode(400, response);
                     }
@@ -184,7 +184,8 @@ namespace capstone.Controllers
                     {
                         ComicId = comic.Id,
                         PanelNumber = 1,
-                        StartingPanel = true
+                        StartingPanel = true,
+                        Active = true
                     };
                     _context.Add(panel);
                     await _context.SaveChangesAsync();
@@ -692,17 +693,8 @@ namespace capstone.Controllers
                     {
                         return StatusCode(500, response);
                     }
-                    Tuple<Models.Account, Comic> values = await _context.Comics.Include(c => c.Artist).Where(c => c.Name == request.ComicName)
-                        .Select(c => new Tuple<Models.Account, Comic>(c.Artist, c)).SingleOrDefaultAsync();
-                    if (values != null && values.Item1 != null && values.Item2 != null)
-                    {
-                        response.Author = values.Item1.UserName;
-                        response.User = account.UserName;
-                        response.Theme = values.Item1.Theme;
-                        response.Font = values.Item1.Font;
-                        response.Panels = await GetAllPanels(values.Item1.Id, request.Edit);
-                    }
-                    response.Result = "Success";
+                    response = await PopulateComicSeriesResponse(account, request.ComicName, request.Edit);
+                    
                     return Ok(response);
                 }
                 else
@@ -714,6 +706,25 @@ namespace capstone.Controllers
             {
                 return StatusCode(500, response);
             }
+        }
+        private async Task<ComicSeriesResponse> PopulateComicSeriesResponse(Models.Account account, string comicName, bool edit)
+        {
+            ComicSeriesResponse response = new ComicSeriesResponse()
+            {
+                Result = "Fail"
+            };
+            Tuple<Models.Account, Comic> values = await _context.Comics.Include(c => c.Artist).Where(c => c.Name == comicName)
+                        .Select(c => new Tuple<Models.Account, Comic>(c.Artist, c)).SingleOrDefaultAsync();
+            if (values != null && values.Item1 != null && values.Item2 != null)
+            {
+                response.Author = values.Item1.UserName;
+                response.User = account.UserName;
+                response.Theme = values.Item1.Theme;
+                response.Font = values.Item1.Font;
+                response.Panels = await GetAllPanels(values.Item1.Id, edit);
+            }
+            response.Result = "Success";
+            return response;
         }
 
         [HttpPut("UpdatePanels")]
@@ -733,17 +744,8 @@ namespace capstone.Controllers
                     {
                         return StatusCode(500, response);
                     }
-                    Tuple<Models.Account, Comic> values = await _context.Comics.Include(c => c.Artist).Where(c => c.Name == request.ComicName)
-                        .Select(c => new Tuple<Models.Account, Comic>(c.Artist, c)).SingleOrDefaultAsync();
-                    if (values != null && values.Item1 != null && values.Item2 != null)
-                    {
-                        response.Author = values.Item1.UserName;
-                        response.User = account.UserName;
-                        response.Theme = values.Item1.Theme;
-                        response.Font = values.Item1.Font;
-                        response.Panels = await GetAllPanels(values.Item1.Id, request.Edit);
-                    }
-                    response.Result = "Success";
+                    // Logic for processing request
+                    response = await PopulateComicSeriesResponse(account, request.ComicName, true);
                     return Ok(response);
                 }
                 else
@@ -774,17 +776,9 @@ namespace capstone.Controllers
                     {
                         return StatusCode(500, response);
                     }
-                    Tuple<Models.Account, Comic> values = await _context.Comics.Include(c => c.Artist).Where(c => c.Name == request.ComicName)
-                        .Select(c => new Tuple<Models.Account, Comic>(c.Artist, c)).SingleOrDefaultAsync();
-                    if (values != null && values.Item1 != null && values.Item2 != null)
-                    {
-                        response.Author = values.Item1.UserName;
-                        response.User = account.UserName;
-                        response.Theme = values.Item1.Theme;
-                        response.Font = values.Item1.Font;
-                        response.Panels = await GetAllPanels(values.Item1.Id, request.Edit);
-                    }
-                    response.Result = "Success";
+
+                    // Logic for processing request
+                    response = await PopulateComicSeriesResponse(account, request.ComicName, true);
                     return Ok(response);
                 }
                 else
