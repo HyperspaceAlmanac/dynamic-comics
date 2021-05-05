@@ -15,7 +15,7 @@ class Reader extends Component {
             font : 'arial',
             user : "",
             author : "",
-            sideBar : "review"
+            sideBar : "reviews"
         }
     }
     componentDidMount() {
@@ -30,6 +30,12 @@ class Reader extends Component {
             values.push(<div key={i} className="h3">A lot of Text. Should Overflow</div>)
         }
         return values;
+    }
+
+    setSideBarState(value) {
+        let newState = Object.assign({}, this.state);
+        newState.sideBar = value;
+        this.setState(newState);
     }
 
     handleServerResponse(data) {
@@ -60,17 +66,30 @@ class Reader extends Component {
                     </div>
                     <div className="col-3">
                         <div className={"sidebar " + `${this.state.theme}-bg2`}>
-                        {this.state.sideBar === "review" &&
-                            <div>
-                                {this.state.author !== this.state.user &&
-                                    <SubmitReview theme = {this.state.theme} comicSeries = {this.props.comicTitle}/>
-                                }
-                                <Reviews profileOwner = {this.state.author} theme = {this.state.theme} perUser = {false}
-                                    seriesName = {this.props.comicTitle}
-                                    visitComic = {(name) => this.props.navCallback("reader", name)}
-                                    visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
-                            </div>
-                        }
+                            <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.setSideBarState("timeline")}>Timeline</div>
+                            <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.setSideBarState("reviews")}>Reviews</div>
+                            <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.setSideBarState("comments")}>Comments</div>
+                            
+                            {this.state.sideBar === "timeline" &&
+                                <div>Timeline</div>
+                            }
+                            {this.state.sideBar === "reviews" &&
+                                <div>
+                                    {this.state.author !== this.state.user &&
+                                        <SubmitReview theme = {this.state.theme} comicSeries = {this.props.comicTitle}/>
+                                    }
+                                    <Reviews profileOwner = {this.state.author} theme = {this.state.theme} perUser = {false}
+                                        seriesName = {this.props.comicTitle}
+                                        visitComic = {(name) => this.props.navCallback("reader", name)}
+                                        visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
+                                </div>
+                            }
+                            {this.state.sideBar === "comments" &&
+                                <div>Comments</div>
+                            }
                         </div>
                     </div>
                 </div>

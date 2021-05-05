@@ -17,6 +17,10 @@ class SubmitReview extends Component {
       this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidMount() {
+    this.getReview();
+  }
+
   handleChange(event) {
     if (event.target.name == "rating") {
       let value = event.target.value;
@@ -48,8 +52,8 @@ class SubmitReview extends Component {
     console.log("review:");
     console.log(review);
     let newState = Object.assign({}, this.state);
-    newState.rating = review.rating;
-    newState.message = review.message;
+    newState.rating = review.personalRating;
+    newState.message = review.description;
     this.setState(newState);
   }
 
