@@ -83,7 +83,8 @@ class Reviews extends Component {
                             <div>{"Average Rating: " + reviewsJson[i].averageRating + "/5"}</div>
                             <div>{(this.props.profileOwner === this.state.user ? "Your Rating: " : "This User's Rating: ") + `${reviewsJson[i].personalRating}/5`}</div>
                             <div>{"Date: " + reviewsJson[i].date}</div>
-                            <div>{"Description: " + reviewsJson[i].description}</div>
+                            <div>Description:</div>
+                            <div>{reviewsJson[i].description}</div>
                         </div>
                     );
                 } else {
@@ -92,7 +93,8 @@ class Reviews extends Component {
                             <div className={`${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn col-12"} onClick={() => this.props.visitAuthor(reviewsJson[i].author)}>{reviewsJson[i].author}</div>
                             <div>{`Rating: ${reviewsJson[i].personalRating}/5`}</div>
                             <div>{"Date: " + reviewsJson[i].date}</div>
-                            <div>{"Description: " + reviewsJson[i].description}</div>
+                            <div>Description:</div>
+                            <div>{reviewsJson[i].description}</div>
                         </div>
                     );
                 }

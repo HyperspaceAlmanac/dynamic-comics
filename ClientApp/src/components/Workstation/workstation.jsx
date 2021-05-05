@@ -13,7 +13,8 @@ class Workstation extends Component {
             font : 'arial',
             user : "",
             sideBar : "timeline",
-            preview : false
+            preview : false,
+            published : true
         }
     }
 
@@ -43,6 +44,12 @@ class Workstation extends Component {
         this.setState(newState);
     }
 
+    togglePublish() {
+        let newState = Object.assign({}, this.state);
+        newState.published = !this.state.published;
+        this.setState(newState);
+    }
+
     generateManyValues() {
         let values = [];
         for (let i = 0; i < 50; i++) {
@@ -68,6 +75,8 @@ class Workstation extends Component {
                     </div>
                     <div className="col-3">
                         <div className="sidebar">
+                        <div className={`col-12 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                onClick = {() => this.togglePublish()}>{this.state.published ? "Hide Series" : "Publish"}</div>
                             <div className={`col-12 ${this.state.theme}-btn-two ${this.state.theme}-font-color2` + " btn"}
                                 onClick = {() => this.togglePreview()}>{"Preview: " + (this.state.preview ? "enabled" : "disabled")}</div>
                             <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}

@@ -49,8 +49,6 @@ class SubmitReview extends Component {
   }
 
   handleReviewResponse(review) {
-    console.log("review:");
-    console.log(review);
     let newState = Object.assign({}, this.state);
     newState.rating = review.personalRating;
     newState.message = review.description;
@@ -95,8 +93,6 @@ class SubmitReview extends Component {
         if (data.reviews.length == 1){ 
           this.handleReviewResponse(data.reviews[0]);
         }
-    } else {
-        alert('Error with retrieving review');
     }
   }
 
