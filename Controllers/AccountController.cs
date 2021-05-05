@@ -700,9 +700,7 @@ namespace capstone.Controllers
                         response.User = account.UserName;
                         response.Theme = values.Item1.Theme;
                         response.Font = values.Item1.Font;
-                        // Process resources and Panels using Comic
-                        response.Resources = new List<Resource>();
-                        response.Panels = new List<PanelObj>();
+                        response.Panels = await GetAllPanels(values.Item1.Id, request.Edit);
                     }
                     response.Result = "Success";
                     return Ok(response);
@@ -716,6 +714,122 @@ namespace capstone.Controllers
             {
                 return StatusCode(500, response);
             }
+        }
+
+        [HttpPut("UpdatePanels")]
+        public async Task<IActionResult> UpdatePanels([FromBody] ComicSeriesRequest request)
+        {
+            ComicSeriesResponse response = new ComicSeriesResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    Tuple<Models.Account, Comic> values = await _context.Comics.Include(c => c.Artist).Where(c => c.Name == request.ComicName)
+                        .Select(c => new Tuple<Models.Account, Comic>(c.Artist, c)).SingleOrDefaultAsync();
+                    if (values != null && values.Item1 != null && values.Item2 != null)
+                    {
+                        response.Author = values.Item1.UserName;
+                        response.User = account.UserName;
+                        response.Theme = values.Item1.Theme;
+                        response.Font = values.Item1.Font;
+                        response.Panels = await GetAllPanels(values.Item1.Id, request.Edit);
+                    }
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("UpdateActions")]
+        public async Task<IActionResult> UpdateActions([FromBody] ComicSeriesRequest request)
+        {
+            ComicSeriesResponse response = new ComicSeriesResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(500, response);
+                    }
+                    Tuple<Models.Account, Comic> values = await _context.Comics.Include(c => c.Artist).Where(c => c.Name == request.ComicName)
+                        .Select(c => new Tuple<Models.Account, Comic>(c.Artist, c)).SingleOrDefaultAsync();
+                    if (values != null && values.Item1 != null && values.Item2 != null)
+                    {
+                        response.Author = values.Item1.UserName;
+                        response.User = account.UserName;
+                        response.Theme = values.Item1.Theme;
+                        response.Font = values.Item1.Font;
+                        response.Panels = await GetAllPanels(values.Item1.Id, request.Edit);
+                    }
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        private async Task<List<PanelObj>> GetAllPanels(int id, bool edit)
+        {
+            List<PanelObj> panels = await _context.Panels.Where(p => p.ComicId == id
+                &&(edit || p.Active)).OrderBy(p => p.Active).ThenBy(p => p.PanelNumber)
+                .Select(p => new PanelObj { Id = p.Id, Active = p.Active, Start = p.StartingPanel, Number = p.PanelNumber }).ToListAsync();
+            for (int i = 0; i < panels.Count; i++)
+            {
+                panels[i].Actions = await GetAction(panels[i].Id, edit);
+            }
+            return panels;
+        }
+
+        private async Task<List<ActionObj>> GetAction(int id, bool edit)
+        {
+            List<ActionObj> actions = await _context.ComicActions.Where(ca => ca.PanelId == id && (edit || ca.Active))
+                .OrderBy(ca => ca.Active).ThenBy(ca => ca.Timing).ThenBy(ca => ca.Priority)
+                .Select(ca => new ActionObj
+                {
+                    Id = ca.Id,
+                    ActionType = ca.ActionType,
+                    Active = ca.Active,
+                    IsTrigger = ca.IsTrigger,
+                    Layer = ca.Layer,
+                    NextPanelId = ca.NextPanelId,
+                    Options = ca.Options,
+                    PanelId = ca.PanelId,
+                    Priority = ca.Priority,
+                    ResourceId = ca.ResourceId,
+                    Timing = ca.Timing,
+                    Transition = ca.Transition
+                }).ToListAsync();
+            return actions;
         }
 
         private async Task<List<DonationObj>> GetAllDonations(int id, bool received)

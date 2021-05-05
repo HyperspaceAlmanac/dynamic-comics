@@ -10,12 +10,14 @@ class Timeline extends Component {
         super(props);
 
         this.state = {
-            panels = []
+            panels : []
         }
     }
 
     componentDidMount() {
-        this.getResources();
+        let newState = Object.assign({}, this.state);
+        newState.panels = this.props.panels;
+        this.setState(newState);
     }
 
     componentDidUpdate(prevProps, prevState) {

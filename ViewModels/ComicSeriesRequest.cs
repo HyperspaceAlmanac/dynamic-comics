@@ -7,6 +7,7 @@ namespace capstone.ViewModels
 {
     public class ComicSeriesRequest
     {
+        public bool Edit { get; set; }
         public string ComicName { get; set; }
     }
 }

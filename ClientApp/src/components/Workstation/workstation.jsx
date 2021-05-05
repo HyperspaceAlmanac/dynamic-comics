@@ -4,7 +4,9 @@ import authService from '../api-authorization/AuthorizeService';
 import Canvas from '../Canvas/canvas';
 import ResourceList from './resourceList';
 import Reviews from '../Reviews/reviews';
+import TimelineEditor from './timelineEditor';
 import Timeline from '../Timeline/timeline';
+import PanelEditor from './panelEditor';
 import '../themes.css';
 
 class Workstation extends Component {
@@ -47,6 +49,16 @@ class Workstation extends Component {
         this.setState(newState);
     }
 
+    panelActive(id) {
+        let i;
+        for(i = 0; i < this.state.panels.length; i++) {
+            if (this.state.panels[i].id === id) {
+                return this.state.panels[i].active;
+            }
+        }
+        return true;
+    }
+
     initializePageState() {
 
     }
@@ -62,12 +74,8 @@ class Workstation extends Component {
     addAction(action) {
 
     }
-    updatePanel(panel) {
-
-    }
-
-    updateAction(action) {
-        
+    updateAllValues() {
+        alert("Sending request to backend");
     }
 
 
@@ -90,6 +98,10 @@ class Workstation extends Component {
         let newState = Object.assign({}, this.state);
         newState.published = !this.state.published;
         this.setState(newState);
+    }
+    
+    getPanelActions() {
+        return [];
     }
 
     generateManyValues() {
@@ -125,10 +137,6 @@ class Workstation extends Component {
                                 onClick = {() => this.setSideBarState("timeline")}>Timeline</div>
                             {!this.state.preview &&
                                 <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
-                                onClick = {() => this.setSideBarState("panel")}>Panel</div>
-                            }
-                            {!this.state.preview &&
-                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
                                 onClick = {() => this.setSideBarState("resources")}>Resources</div>
                             }
                             {this.state.preview &&
@@ -156,7 +164,15 @@ class Workstation extends Component {
                             }
                             {!this.state.preview &&
                               this.state.sideBar == "timeline" &&
-                              <TimelineEditor panels={this.state.panels} panelState = {this.state.panel} goToPanel = {(num) => this.goToPanel(num) />
+                              <TimelineEditor panels={this.state.panels} panelState = {this.state.panel}
+                                goToPanel = {(num) => this.goToPanel(num)}
+                                updateAll = {() => this.updateAllValues()}/>
+                            }
+                            {!this.state.preview &&
+                              this.state.sideBar == "panel" &&
+                              <PanelEditor theme = {this.state.theme} actions={this.getPanelActions()}
+                                paneId = {this.state.panel} active = {this.panelActive(this.state.panel)}
+                                updateAll = {() => this.updateAllValues()} />
                             }
                         </div>
                     </div>

@@ -13,7 +13,6 @@ namespace capstone.ViewModels
         public string Author { get; set; }
         public string Theme { get; set; }
         public string Font { get; set; }
-        public List<Resource> Resources { get; set; }
         public List<PanelObj> Panels { get; set; }
     }
 }
