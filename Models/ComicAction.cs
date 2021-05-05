@@ -15,6 +15,7 @@ namespace capstone.Models
         public bool IsTrigger { get; set; }
         public bool Transition { get; set; }
         public string ActionType { get; set; }
+        public int Priority { get; set; }
         
         public int PanelId { get; set; }
         [ForeignKey("PanelId")]
