@@ -16,7 +16,11 @@ class Workstation extends Component {
             user : "",
             sideBar : "timeline",
             preview : false,
-            published : true
+            published : true,
+            panel : 1,
+            panels: [],
+            current : 1,
+            pageState : []
         }
     }
 
@@ -30,6 +34,41 @@ class Workstation extends Component {
         newState.sideBar = value;
         this.setState(newState);
     }
+
+    increment() {
+        let newState = Object.assign({}, this.state);
+        newState.current = this.state.current + 1;
+        this.setState(newState);
+    }
+    goToPanel(num) {
+        let newState = Object.assign({}, this.state);
+        newState.current = this.state.current + 1;
+        this.setState(newState);
+    }
+
+    initializePageState() {
+
+    }
+
+    updatePageState() {
+        
+    }
+
+    addPanel(panel) {
+
+    }
+
+    addAction(action) {
+
+    }
+    updatePanel(panel) {
+
+    }
+
+    updateAction(action) {
+        
+    }
+
 
     togglePreview() {
         let newState = Object.assign({}, this.state);
@@ -68,12 +107,12 @@ class Workstation extends Component {
                     <div className={`${this.state.theme}-btn-two ${this.state.theme}-font-color2` + " btn"} onClick = {() => this.props.navCallback('profile', this.state.user)}>Back to Profile</div>
                 </div>
                 <div className="h3">{this.props.comicTitle}</div>
-                <div>
-                    Page for creating and editing a comic! Starting with a mock layout
-                </div>
+                <div>Add in form for updating Title and genres if other features are done</div>
                 <div className="row">
                     <div className="col-9">
-                        <Canvas />
+                        <Canvas disableInteraction = {false} pageState = {this.state.pageState} 
+                            increment = {() => this.increment()}
+                            goToPanel = {(panel) => this.goToPanel(panel)}/>
                     </div>
                     <div className="col-3">
                         <div className="sidebar">

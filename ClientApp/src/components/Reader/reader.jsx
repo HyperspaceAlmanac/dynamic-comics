@@ -15,7 +15,11 @@ class Reader extends Component {
             font : 'arial',
             user : "",
             author : "",
-            sideBar : "reviews"
+            sideBar : "timeline",
+            panels : [],
+            panel : 1,
+            current: 1,
+            pageState : []
         }
     }
     componentDidMount() {
@@ -47,6 +51,28 @@ class Reader extends Component {
         this.setState(newState);
     }
 
+    increment() {
+        let newState = Object.assign({}, this.state);
+        newState.current = this.state.current + 1;
+        newState.pageState = this.updatePageState();
+        this.setState(newState);
+    }
+    goToPanel(num) {
+        let newState = Object.assign({}, this.state);
+        newState.panel = num;
+        newState.current = 0;
+        newState.pageState = this.initializePageState(num);
+        this.setState(newState);
+    }
+
+    initializePageState(panelNumber) {
+        return [];
+    }
+
+    updatePageState() {
+        return [];
+    }
+
     render() {
         console.log(this.state);
         return (
@@ -62,7 +88,7 @@ class Reader extends Component {
                 </div>
                 <div className="row">
                     <div className="col-9">
-                        <Canvas />
+                        <Canvas disableInteraction = {false} increment = {() => this.increment()} goToPanel = {(panel) => this.goToPanel(panel)}/>
                     </div>
                     <div className="col-3">
                         <div className={"sidebar " + `${this.state.theme}-bg2`}>

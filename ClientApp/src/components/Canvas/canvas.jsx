@@ -8,7 +8,8 @@ class Canvas extends Component {
         super(props);
 
         this.state = {
-            hovered : true
+            hovered : true,
+            renderList : []
         }
         this.toggleHover = this.toggleHover.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
@@ -16,10 +17,39 @@ class Canvas extends Component {
 
     componentDidMount() {
         window.addEventListener('wheel', this.handleScroll);
+        this.processProperties();
     }
 
     componentWillUnmount() {
         window.removeEventListener('wheel', this.handleScroll);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.pageState !== this.props.pageState) {
+            this.processProperties();
+        }
+    }
+
+    doNothing() {
+
+    }
+
+    processProperties() {
+        let newState = Object.assign({}, this.state);
+        this.state.renderList = [];
+        this.setState(newState);
+    }
+
+    increment() {
+        if (!this.props.disableInteraction) {
+            this.props.increment();
+        }
+    }
+
+    goToPanel(val) {
+        if (!this.props.disableInteraction) {
+            this.props.goToPanel(val);
+        }
     }
 
     toggleHover(value) {
@@ -30,8 +60,10 @@ class Canvas extends Component {
     }
     
     handleScroll(event) {
-        if(this.state.hovered) {
-            //console.log("Scrolling when hovered");
+        if (!this.props.disableInteraction) {
+            if(this.state.hovered) {
+                //console.log("Scrolling when hovered");
+            }
         }   
     }
 
