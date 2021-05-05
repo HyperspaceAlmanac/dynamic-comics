@@ -1,10 +1,9 @@
 'use strict';
-'use strict';
 import React, { Component } from 'react';
 import authService from '../api-authorization/AuthorizeService';
 import '../themes.css';
 
-class Timeline extends Component {
+class TimeLineEditor extends Component {
 
     constructor(props) {
         super(props);
@@ -39,4 +38,4 @@ class Timeline extends Component {
     }
 }
 
-export default Timeline;
+export default TimelineEditor;

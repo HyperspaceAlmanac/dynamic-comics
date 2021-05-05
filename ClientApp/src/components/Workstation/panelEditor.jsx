@@ -1,16 +1,15 @@
 'use strict';
-'use strict';
 import React, { Component } from 'react';
 import authService from '../api-authorization/AuthorizeService';
 import '../themes.css';
 
-class Timeline extends Component {
+class PanelEditor extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            panels = []
+            actions = []
         }
     }
 
@@ -19,14 +18,14 @@ class Timeline extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.panels !== this.props.panels) {
-            this.updatePanels();
+        if (prevProps.actions !== this.props.actions) {
+            this.updateActions();
         }
     }
 
-    updatePanels() {
+    updateActions() {
         let newState = Object.assign({}, this.state);
-        newState.panels = [];
+        newState.actions = [];
         this.setState(newState);
     }
 
@@ -39,4 +38,4 @@ class Timeline extends Component {
     }
 }
 
-export default Timeline;
+export default PanelEditor;

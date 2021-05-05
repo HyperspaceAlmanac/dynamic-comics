@@ -18,6 +18,7 @@ namespace capstone.Models
         public int Priority { get; set; }
         public string Options { get; set; }
         public int Layer { get; set; }
+        public bool Active { get; set; }
         
         public int PanelId { get; set; }
         [ForeignKey("PanelId")]

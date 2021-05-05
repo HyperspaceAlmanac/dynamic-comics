@@ -4,6 +4,7 @@ import authService from '../api-authorization/AuthorizeService';
 import Canvas from '../Canvas/canvas';
 import ResourceList from './resourceList';
 import Reviews from '../Reviews/reviews';
+import Timeline from '../Timeline/timeline';
 import '../themes.css';
 
 class Workstation extends Component {
@@ -148,6 +149,14 @@ class Workstation extends Component {
                                 seriesName = {this.props.comicTitle}
                                 visitComic = {(name) => this.props.navCallback("reader", name)}
                                 visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
+                            }
+                            {this.state.preview &&
+                              this.state.sideBar == "timeline" &&
+                              <Timeline />
+                            }
+                            {!this.state.preview &&
+                              this.state.sideBar == "timeline" &&
+                              <TimelineEditor panels={this.state.panels} panelState = {this.state.panel} goToPanel = {(num) => this.goToPanel(num) />
                             }
                         </div>
                     </div>

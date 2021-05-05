@@ -4,6 +4,7 @@ import authService from '../api-authorization/AuthorizeService';
 import Canvas from '../Canvas/canvas';
 import SubmitReview from './submitReview';
 import Reviews from '../Reviews/reviews';
+import Timeline from '../Timeline/timeline';
 import '../themes.css';
 
 class Reader extends Component {
@@ -100,7 +101,7 @@ class Reader extends Component {
                                 onClick = {() => this.setSideBarState("comments")}>Comments</div>
                             
                             {this.state.sideBar === "timeline" &&
-                                <div>Timeline</div>
+                                <Timeline panels={this.state.panels} panelState = {this.state.panel} goToPanel = {(num) => this.goToPanel(num)}/>
                             }
                             {this.state.sideBar === "reviews" &&
                                 <div>

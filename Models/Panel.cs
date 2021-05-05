@@ -13,6 +13,7 @@ namespace capstone.Models
         public int Id { get; set; }
         public int PanelNumber { get; set; }
         public bool StartingPanel { get; set; }
+        public bool Active { get; set; }
         [ForeignKey("Comic")]
         public int ComicId { get; set; }
         public Comic Comic { get; set; }

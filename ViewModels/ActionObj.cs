@@ -15,6 +15,7 @@ namespace capstone.ViewModels
         public string Options { get; set; }
         public int Layer { get; set; }
         public int Priority { get; set; }
+        public bool Active { get; set; }
 
         public int PanelId { get; set; }
         public int NextPanelId { get; set; }

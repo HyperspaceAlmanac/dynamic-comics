@@ -10,6 +10,7 @@ namespace capstone.ViewModels
         public int Id { get; set; }
         public int Number { get; set; }
         public bool Start { get; set; }
+        public bool Active { get; set; }
         public List<ActionObj> Actions { get; set; } 
     }
 }
