@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import authService from '../api-authorization/AuthorizeService';
 import Canvas from '../Canvas/canvas';
+import ResourceList from './resourceList';
+import Reviews from '../Reviews/reviews';
 import '../themes.css';
 
 class Workstation extends Component {
@@ -97,7 +99,17 @@ class Workstation extends Component {
                                 <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
                                 onClick = {() => this.setSideBarState("comments")}>Comments</div>
                             }
-                            {this.generateManyValues()}
+                            {!this.state.preview &&
+                              this.state.sideBar == "resources" &&
+                              <ResourceList theme = {this.state.theme} />
+                            }
+                            {this.state.preview &&
+                              this.state.sideBar == "reviews" &&
+                              <Reviews profileOwner = {this.state.user} theme = {this.state.theme} perUser = {false}
+                                seriesName = {this.props.comicTitle}
+                                visitComic = {(name) => this.props.navCallback("reader", name)}
+                                visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
+                            }
                         </div>
                     </div>
                 </div>
