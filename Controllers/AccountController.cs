@@ -514,8 +514,8 @@ namespace capstone.Controllers
             }
         }
 
-        [HttpPut("GetResources")]
-        public async Task<IActionResult> GetResources([FromBody] ReviewRequest request)
+        [HttpGet("GetResources")]
+        public async Task<IActionResult> GetResources()
         {
             ResourceResponse response = new ResourceResponse()
             {

@@ -149,5 +149,14 @@
   overflow-y: scroll;
 }
 
+.scrollable-horizontal > .row {
+  display : block;
+  overflow-x : auto;
+  white-space: nowrap;
+}
+
+.scrollable-horizontal > .row > .scroll-element {
+  display: inline-block
+}
 
 

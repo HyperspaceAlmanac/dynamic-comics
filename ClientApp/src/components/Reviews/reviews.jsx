@@ -77,7 +77,7 @@ class Reviews extends Component {
             for (let i = 0; i < reviewsJson.length; i++) {
                 if (this.props.perUser) {
                     reviews.push(
-                        <div className="col-3" key={i}>
+                        <div className={"col-3" + (this.props.hScroll ? " scroll-element" : "")} key={i}>
                             <div className={`${this.props.theme}-btn-one ${this.props.theme}-font-color` + " btn col-12"} onClick={() => this.props.visitComic(reviewsJson[i].name)}>{reviewsJson[i].name}</div>
                             <div className={`${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn col-12"} onClick={() => this.props.visitAuthor(reviewsJson[i].author)}>{reviewsJson[i].author}</div>
                             <div>{"Average Rating: " + reviewsJson[i].averageRating + "/5"}</div>
