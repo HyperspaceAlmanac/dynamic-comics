@@ -20,7 +20,6 @@ class Reader extends Component {
             panels : [],
             panel : {id : -1},
             current: 0,
-            pageState : []
         }
     }
     componentDidMount() {
@@ -48,7 +47,6 @@ class Reader extends Component {
         newState.theme = data.theme;
         newState.font = data.font;
         newState.panels = data.panels;
-        newState.pageState = [];
         newState.panel = this.getCurrentPanel(data.panels, data.currentPanelId)
         newState.current = 0;
         this.setState(newState);
@@ -67,14 +65,12 @@ class Reader extends Component {
     increment() {
         let newState = Object.assign({}, this.state);
         newState.current = this.state.current + 1;
-        newState.pageState = this.updatePageState();
         this.setState(newState);
     }
     goToPanel(num) {
         let newState = Object.assign({}, this.state);
         newState.panel = this.findPanel(num);
         newState.current = 0;
-        newState.pageState = [];
         this.setState(newState);
     }
 
@@ -86,10 +82,6 @@ class Reader extends Component {
             }
         }
         return {};
-    }
-
-    updatePageState() {
-        return [];
     }
 
     render() {
@@ -108,7 +100,10 @@ class Reader extends Component {
                 </div>
                 <div className="row">
                     <div className="col-9">
-                        <Canvas disableInteraction = {false} increment = {() => this.increment()} goToPanel = {(panel) => this.goToPanel(panel)}/>
+                        <Canvas disableInteraction = {false} panel = {this.state.panel}
+                        current = {this.state.current}
+                        increment = {() => this.increment()}
+                        goToPanel = {(panel) => this.goToPanel(panel)}/>
                     </div>
                     <div className="col-3">
                         <div className={"sidebar " + `${this.state.theme}-bg2`}>

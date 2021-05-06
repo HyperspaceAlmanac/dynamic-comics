@@ -136,9 +136,10 @@ class Workstation extends Component {
                 <div>Add in form for updating Title and genres if other features are done</div>
                 <div className="row">
                     <div className="col-9">
-                        <Canvas disableInteraction = {this.state.preview} pageState = {this.state.pageState} 
-                            increment = {() => this.increment()}
-                            goToPanel = {(panel) => this.goToPanel(panel)}/>
+                        <Canvas disableInteraction = {!this.state.preview} panel = {this.state.panel}
+                            current = {this.state.current}
+                            goToPanel = {(panel) => this.goToPanel(panel)}
+                            increment = {() => this.increment()}/>
                     </div>
                     <div className="col-3">
                         <div className="sidebar">

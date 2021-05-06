@@ -9,7 +9,9 @@ class Canvas extends Component {
 
         this.state = {
             hovered : false,
-            renderList : []
+            timeMap : {},
+            resources : [],
+            current : 0
         }
         this.toggleHover = this.toggleHover.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
@@ -17,7 +19,6 @@ class Canvas extends Component {
 
     componentDidMount() {
         window.addEventListener('wheel', this.handleScroll);
-        this.processProperties();
     }
 
     componentWillUnmount() {
@@ -25,8 +26,12 @@ class Canvas extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.pageState !== this.props.pageState) {
-            this.processProperties();
+        if (prevProps.panel !== this.props.panel) {
+            this.loadPanel();
+        } else if (prevProps.current !== this.props.current) {
+            let newState = Object.assign({}, this.state);
+            newState.current = this.props.current;
+            this.setState(newState);
         }
     }
 
@@ -34,7 +39,7 @@ class Canvas extends Component {
 
     }
 
-    processProperties() {
+    loadPanel() {
         let newState = Object.assign({}, this.state);
         this.state.renderList = [];
         this.setState(newState);
@@ -63,7 +68,7 @@ class Canvas extends Component {
     handleScroll(event) {
         if (!this.props.disableInteraction) {
             if(this.state.hovered) {
-                console.log("Scrolling when hovered");
+                this.increment();
             }
         }   
     }
@@ -73,6 +78,7 @@ class Canvas extends Component {
         //console.log(this.props);
         return (
             <div className="main-canvas" onMouseOver={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}>
+                <div>Current Value: {this.state.current}</div>
                 <div className="overflow-wrapper">
                     <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover"/>
                     <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover" style={{position : "absolute", top : "10vh", left: "10vw"}}/>
