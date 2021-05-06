@@ -7,6 +7,7 @@ import Reviews from '../Reviews/reviews';
 import TimelineEditor from './timelineEditor';
 import Timeline from '../Timeline/timeline';
 import PanelEditor from './panelEditor';
+import Comments from '../Comments/comments';
 import '../themes.css';
 
 class Workstation extends Component {
@@ -200,6 +201,10 @@ class Workstation extends Component {
                                 workStationCallBack = {(data) => this.handleResponse(data) }
                               />
                             }
+                            {this.state.sideBar === "comments" &&
+	                        	<Comments theme = {this.state.theme} panel = {this.state.panel}
+		                            current = {this.state.current} />
+	                        }
                         </div>
                     </div>
                 </div>
