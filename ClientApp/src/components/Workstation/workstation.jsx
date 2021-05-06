@@ -22,8 +22,7 @@ class Workstation extends Component {
             published : true,
             panels: [],
             current : 1,
-            panel : {id : -1},
-            pageState : []
+            panel : {id : -1}
         }
     }
 
@@ -38,7 +37,6 @@ class Workstation extends Component {
             newState.font = data.font;
             newState.user = data.user;
             newState.panels = data.panels;
-            newState.pageState = [];
             newState.current = 0;
             newState.sideBar = "timeline";
             newState.published = data.published;
@@ -74,7 +72,6 @@ class Workstation extends Component {
     goToPanel(id) {
         let newState = Object.assign({}, this.state);
         newState.current = 0;
-        newState.pageState = [];
         newState.panel = this.findPanel(id);
         this.setState(newState);
     }
@@ -85,7 +82,6 @@ class Workstation extends Component {
         } else {
             let newState = Object.assign({}, this.state);
             newState.current = 0;
-            newState.pageState = [];
             newState.panel = this.findPanel(id);
             newState.sideBar = "panel";
             this.setState(newState);
@@ -100,26 +96,6 @@ class Workstation extends Component {
             }
         }
         return {};
-    }
-
-    initializePageState() {
-
-    }
-
-    updatePageState() {
-        
-    }
-
-    addPanel(panel) {
-
-    }
-
-    addAction(action) {
-
-    }
-
-    getPanelActions() {
-        return [];
     }
 
     togglePreview() {
