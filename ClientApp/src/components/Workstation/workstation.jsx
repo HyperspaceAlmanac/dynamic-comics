@@ -28,11 +28,11 @@ class Workstation extends Component {
     }
 
     componentDidMount() {
-        this.handleResponse(this.getSereis());
+        this.getSeries();
     }
 
     handleResponse(data) {
-        if (data.result == "Success") {
+        if (data.result === "Success") {
             let newState = Object.assign({}, this.state);
             newState.theme = data.theme;
             newState.font = data.font;
@@ -127,11 +127,11 @@ class Workstation extends Component {
         let newState = Object.assign({}, this.state);
         newState.preview = !this.state.preview;
         if (newState.preview) {
-            if (newState.sideBar == "panels" || newState.sideBar == "resources") {
+            if (newState.sideBar === "panels" || newState.sideBar === "resources") {
                 newState.sideBar = "timeline";
             }
         } else {
-            if (newState.sideBar == "comments" || newState.sideBar == "reviews") {
+            if (newState.sideBar === "comments" || newState.sideBar === "reviews") {
                 newState.sideBar = "timeline";
             }
         }
@@ -190,22 +190,25 @@ class Workstation extends Component {
                                 onClick = {() => this.setSideBarState("comments")}>Comments</div>
                             }
                             {!this.state.preview &&
-                              this.state.sideBar == "resources" &&
+                              this.state.sideBar === "resources" &&
                               <ResourceList theme = {this.state.theme} />
                             }
                             {this.state.preview &&
-                              this.state.sideBar == "reviews" &&
+                              this.state.sideBar === "reviews" &&
                               <Reviews profileOwner = {this.state.user} theme = {this.state.theme} perUser = {false}
                                 seriesName = {this.props.comicTitle}
                                 visitComic = {(name) => this.props.navCallback("reader", name)}
                                 visitAuthor = {(name) => this.props.navCallback("profile", name)}/>
                             }
                             {this.state.preview &&
-                              this.state.sideBar == "timeline" &&
-                              <Timeline />
+                              this.state.sideBar === "timeline" &&
+                              <Timeline theme = {this.state.theme}
+                                panels={this.state.panels}
+                                panel = {this.state.panel}
+                                goToPanel = {(num) => this.goToPanel(num)}/>
                             }
                             {!this.state.preview &&
-                              this.state.sideBar == "timeline" &&
+                              this.state.sideBar === "timeline" &&
                               <TimelineEditor theme = {this.state.theme}
                                 panels={this.state.panels} panel = {this.state.panel}
                                 comicName = {this.props.comicTitle}
@@ -214,7 +217,7 @@ class Workstation extends Component {
                                 workStationCallBack = {(data) => this.handleResponse(data) }/>
                             }
                             {!this.state.preview &&
-                              this.state.sideBar == "panel" &&
+                              this.state.sideBar === "panel" &&
                               <PanelEditor theme = {this.state.theme}
                                 panel = {this.state.panel} user = {this.state.user}
                                 comicName = {this.props.comicTitle}
@@ -247,7 +250,7 @@ class Workstation extends Component {
             }
         }
     }
-    async getSereis() {
+    async getSeries() {
         const token = await authService.getAccessToken();
         let requestParam = this.props.showProgress ? "history" : "partial";
         const requestOptions = {
@@ -257,7 +260,7 @@ class Workstation extends Component {
         }
         const response = await fetch('api/Account/GetComicSeries', requestOptions);
         const data = await response.json();
-        if (data.result == "Success") {
+        if (data.result === "Success") {
             this.handleResponse(data);
         } else {
             alert("Something went wrong with get series");

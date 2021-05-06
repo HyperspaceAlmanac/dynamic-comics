@@ -18,15 +18,13 @@ class Reader extends Component {
             author : "",
             sideBar : "timeline",
             panels : [],
-            panel : 1,
-            current: 1,
+            panel : {id : -1},
+            current: 0,
             pageState : []
         }
     }
     componentDidMount() {
-        let newState = Object.assign({}, this.state);
         this.fetchComic();
-        this.setState(newState);
     }
 
     generateManyValues() {
@@ -49,7 +47,21 @@ class Reader extends Component {
         newState.author = data.author;
         newState.theme = data.theme;
         newState.font = data.font;
+        newState.panels = data.panels;
+        newState.pageState = [];
+        newState.panel = this.getCurrentPanel(data.panels, data.currentPanelId)
+        newState.current = 0;
         this.setState(newState);
+    }
+
+    getCurrentPanel(panels, id) {
+        let i;
+        for (i = 0; i < panels.length; i++) {
+            if (panels[i].id === id) {
+                return panels[i];
+            }
+        }
+        return {id : -1}
     }
 
     increment() {
@@ -60,14 +72,20 @@ class Reader extends Component {
     }
     goToPanel(num) {
         let newState = Object.assign({}, this.state);
-        newState.panel = num;
+        newState.panel = this.findPanel(num);
         newState.current = 0;
-        newState.pageState = this.initializePageState(num);
+        newState.pageState = [];
         this.setState(newState);
     }
 
-    initializePageState(panelNumber) {
-        return [];
+    findPanel(id) {
+        let i;
+        for(i = 0; i < this.state.panels.length; i++) {
+            if (this.state.panels[i].id === id) {
+                return this.state.panels[i];
+            }
+        }
+        return {};
     }
 
     updatePageState() {
@@ -75,13 +93,14 @@ class Reader extends Component {
     }
 
     render() {
+        console.log("Reader state");
         console.log(this.state);
         return (
             <div className={`${this.state.font} ${this.state.theme}-font-color ${this.state.theme}-bg1`}>
                 <div className="h2">Comic Reader</div>
                 <div>
-                    <div className={`${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"} onClick = {() => this.props.navCallback('main', "")}>Back to Main</div>
-                    <div className={`${this.state.theme}-btn-two ${this.state.theme}-font-color2` + " btn"} onClick = {() => this.props.navCallback('profile', this.state.user)}>Back to Profile</div>
+                    <div className={`${this.state.theme}-btn-one ${this.state.theme}-font-color btn`} onClick = {() => this.props.navCallback('main', "")}>Back to Main</div>
+                    <div className={`${this.state.theme}-btn-two ${this.state.theme}-font-color2 btn`} onClick = {() => this.props.navCallback('profile', this.state.user)}>Back to Profile</div>
                 </div>
                 <div className="h3">{this.props.comicTitle}</div>
                 <div>
@@ -101,7 +120,7 @@ class Reader extends Component {
                                 onClick = {() => this.setSideBarState("comments")}>Comments</div>
                             
                             {this.state.sideBar === "timeline" &&
-                                <Timeline panels={this.state.panels} panelState = {this.state.panel} goToPanel = {(num) => this.goToPanel(num)}/>
+                                <Timeline theme = {this.state.theme} panels={this.state.panels} panel = {this.state.panel} goToPanel = {(num) => this.goToPanel(num)}/>
                             }
                             {this.state.sideBar === "reviews" &&
                                 <div>
@@ -129,16 +148,16 @@ class Reader extends Component {
         const requestOptions = {
           method: 'Put',
           headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
-          body: JSON.stringify({ comicName : this.props.comicTitle})
+          body: JSON.stringify({ comicName : this.props.comicTitle, edit : false})
         }
         const response = await fetch('api/Account/GetComicSeries', requestOptions);
         const data = await response.json();
-        if (data.result == "Success") {
+        if (data.result === "Success") {
             this.handleServerResponse(data);
         } else {
             alert("Something Went Wrong");
         }
-      }
+    }
 }
 
 export default Reader;

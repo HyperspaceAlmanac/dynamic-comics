@@ -754,9 +754,24 @@ namespace capstone.Controllers
                     Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
                     if (account == null)
                     {
-                        return StatusCode(500, response);
+                        return StatusCode(400, response);
                     }
                     response = await PopulateComicSeriesResponse(account, request.ComicName, request.Edit);
+                    if (!request.Edit)
+                    {
+                        Progress progress = await _context.ProgressTable.Include(p => p.Comic)
+                            .Where(p => p.AccountId == account.Id && p.Comic.Name == request.ComicName).SingleOrDefaultAsync();
+                        if (progress == null)
+                        {
+                            Panel panel = await _context.Panels.Include(p => p.Comic)
+                                .Where(p => p.StartingPanel && p.Comic.Name == request.ComicName).SingleOrDefaultAsync();
+                            if (panel == null)
+                            {
+                                return StatusCode(400, response);
+                            }
+                            response.CurrentPanelId = panel.Id;
+                        }
+                    }
                     
                     return Ok(response);
                 }
