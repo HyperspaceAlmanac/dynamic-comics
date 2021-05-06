@@ -10,19 +10,39 @@ class PanelEditor extends Component {
         super(props);
 
         this.state = {
+            file : null,
             actions : []
+        }
+        this.fileUpdate = this.fileUpdate.bind(this);
+    }
+
+    fileUpdate(event) {
+        let newState = Object.assign({}, this.state);
+        newState.file = event.target.files[0];
+        this.setState(newState);
+    }
+
+    handleImageSubmit() {
+        if (this.state.file !== null &&
+            (this.state.file.name.endsWith(".png")
+            || this.state.file.ame.endsWith(".jpg"))) {
+            this.postResource();
+        } else {
+            alert("Please Only Upload PNG or JPEG");
         }
     }
 
     componentDidMount() {
         let newState = Object.assign({}, this.state);
-        newState.actions = this.props.actions;
+        newState.actions = this.props.panel.actions;
         this.setState(newState);
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.actions !== this.props.actions) {
-            this.updateActions();
+        if (prevProps.panel !== this.props.panel) {
+            let newState = Object.assign({}, this.state);
+            newState.actions = this.props.panel.actions;
+            this.setState(newState);
         }
     }
 
@@ -40,12 +60,6 @@ class PanelEditor extends Component {
         return values;
     }
 
-    updateActions() {
-        let newState = Object.assign({}, this.state);
-        newState.actions = [];
-        this.setState(newState);
-    }
-
     addPanel() {
 
     }
@@ -53,6 +67,16 @@ class PanelEditor extends Component {
     render() {
       return (
         <div>
+            {this.props.panel.start &&
+                <div>
+                    <div>Thumbnail Image</div>
+                    <form>
+                            <input type="file" onChange={this.fileUpdate} accept="image/jpeg, image/png" />
+                    </form>
+                    <div className={`${this.props.theme}-btn-one ${this.props.theme}-font-color btn`}
+                      onClick={() => this.handleImageSubmit()}>Submit</div>
+                </div>
+            }
             <div>
                 Panels Editor
             </div>
@@ -82,6 +106,31 @@ class PanelEditor extends Component {
         //const data = await response.json();
         
              
+    }
+
+    async postResource() {
+        const token = await authService.getAccessToken();
+        const formData = new FormData();
+        formData.append(
+            "file",
+            this.state.file,
+            this.state.file.name
+        );
+        formData.append("comic", this.props.comicName);
+
+        const requestOptions = {
+            method: 'Put',
+            headers: {'Authorization': `Bearer ${token}`},
+            body: formData
+        }
+        // In case user continues typing and it becomes something different
+        const response = await fetch('api/Account/PostThumbnail', requestOptions);
+        const data = await response.json();
+        if (data.result === "Success") {
+            alert("Image upload successful!");
+        } else {
+            alert('Error Uploading. Please try again.');
+        }
     }
 }
 

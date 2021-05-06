@@ -606,6 +606,69 @@ namespace capstone.Controllers
             }
         }
 
+        [HttpPut("PostThumbnail")]
+        public async Task<IActionResult> PostThumbnail()
+        {
+            SimpleResponse response = new SimpleResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                var userId = this.User.FindFirstValue("sub");
+                Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                if (account == null)
+                {
+                    return StatusCode(500, response);
+                }
+                string comicName = Request.Form["comic"];
+
+                Resource resource = new Resource
+                {
+                    ResourceType = "image",
+                };
+                await _context.AddAsync(resource);
+                await _context.SaveChangesAsync();
+
+                // Create Resource and add to DB first
+                var file = Request.Form.Files[0];
+                resource.ImageURL = $"{account.Id}.{resource.Id}.{file.FileName}";
+
+
+                _context.Update(resource);
+                await _context.SaveChangesAsync();
+
+                Comic comic = await _context.Comics.Where(c => c.Name == comicName).SingleOrDefaultAsync();
+                if (comic == null)
+                {
+                    return StatusCode(400, response);
+                }
+                comic.ComicCoverId = resource.Id;
+                _context.Update(comic);
+                await _context.SaveChangesAsync();
+
+                using (var stream = System.IO.File.Create(_resources + resource.ImageURL))
+                {
+                    await file.CopyToAsync(stream);
+                    stream.Close();
+                }
+                UserResource userResource = new UserResource
+                {
+                    AccountId = account.Id,
+                    ResourceId = resource.Id
+                };
+                await _context.AddAsync(userResource);
+                await _context.SaveChangesAsync();
+
+                response.Result = "Success";
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
         [HttpPut("PostResource")]
         public async Task<IActionResult> PostResource()
         {

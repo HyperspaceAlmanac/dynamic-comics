@@ -44,11 +44,14 @@ class TimelineEditor extends Component {
         let i;
         let options;
         let active = this.props.panel ? this.props.panel.id : -1;
+        console.log("Panels");
+        console.log(this.state.panels);
         for (i = 0; i < this.state.panels.length; i++) {
+            let id = this.state.panels[i].id;
             options = this.state.panels[i].id === active?
                 (`col-11 ${this.props.theme}-btn-one ${this.props.theme}-font-color` + " btn")
                 : (`col-11 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn");
-            result.push(<div key={i} className = {options}>
+            result.push(<div key={i} className = {options} onClick = {() => this.props.visitPanel(id)}>
                 {"Id: " + this.state.panels[i].id + ", Number: "
                   + this.state.panels[i].number + (this.state.panels[i].active ? ", Active" : ", Hidden")}
                 </div>)

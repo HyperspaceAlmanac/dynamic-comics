@@ -35,7 +35,7 @@ class Timeline extends Component {
     render() {
       return (
         <div>
-            Panels Editor
+            Timeline
         </div>
       );
     }

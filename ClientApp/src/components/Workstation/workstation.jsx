@@ -71,20 +71,35 @@ class Workstation extends Component {
         newState.current = this.state.current + 1;
         this.setState(newState);
     }
-    goToPanel(num) {
+    goToPanel(id) {
         let newState = Object.assign({}, this.state);
-        newState.current = this.state.current + 1;
+        newState.current = 0;
+        newState.pageState = [];
+        newState.panel = this.findPanel(id);
         this.setState(newState);
     }
 
-    panelActive(id) {
+    visitPanel(id) {
+        if (id === 0) {
+            alert("Please save the newly created panels first");
+        } else {
+            let newState = Object.assign({}, this.state);
+            newState.current = 0;
+            newState.pageState = [];
+            newState.panel = this.findPanel(id);
+            newState.sideBar = "panel";
+            this.setState(newState);
+        }
+    }
+
+    findPanel(id) {
         let i;
         for(i = 0; i < this.state.panels.length; i++) {
             if (this.state.panels[i].id === id) {
-                return this.state.panels[i].active;
+                return this.state.panels[i];
             }
         }
-        return true;
+        return {};
     }
 
     initializePageState() {
@@ -196,13 +211,14 @@ class Workstation extends Component {
                               this.state.sideBar == "timeline" &&
                               <TimelineEditor theme = {this.state.theme}
                                 panels={this.state.panels} panel = {this.state.panel}
-                                goToPanel = {(num) => this.goToPanel(num)}
+                                visitPanel = {(num) => this.visitPanel(num)}
                                 updateAll = {() => this.updateAllValues()}/>
                             }
                             {!this.state.preview &&
                               this.state.sideBar == "panel" &&
                               <PanelEditor theme = {this.state.theme}
-                                panel = {this.state.panel}
+                                panel = {this.state.panel} user = {this.state.user}
+                                comicName = {this.props.comicTitle}
                                 updateAll = {() => this.updateAllValues()} />
                             }
                         </div>
