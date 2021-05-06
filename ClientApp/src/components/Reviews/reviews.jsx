@@ -53,7 +53,7 @@ class Reviews extends Component {
             } else {
                 return (
                     <div className="h3">
-                        No Reviews Found
+                        No Other Reviews Found
                     </div>
                 );
             }

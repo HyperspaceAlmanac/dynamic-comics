@@ -427,17 +427,20 @@ namespace capstone.Controllers
                         .Where(r => r.ReviewerId == account.Id && r.Comic.Name == request.Target).SingleOrDefaultAsync();
                     if (review == null)
                     {
-                        return StatusCode(400, response);
+                        response.Reviews = new List<ReviewObj>();
                     }
-                    response.Reviews = new List<ReviewObj>() {
-                        new ReviewObj {
-                            Name = review.Comic.Name,
-                            Author = account.UserName,
-                            PersonalRating = review.Stars,
-                            Description = review.Description,
-                            Date = review.Date
-                        } 
-                    };
+                    else
+                    {
+                        response.Reviews = new List<ReviewObj>() {
+                            new ReviewObj {
+                                Name = review.Comic.Name,
+                                Author = account.UserName,
+                                PersonalRating = review.Stars,
+                                Description = review.Description,
+                                Date = review.Date
+                            }
+                        };
+                    }
                     response.Result = "Success";
                     return Ok(response);
                 }
@@ -916,9 +919,10 @@ namespace capstone.Controllers
         }
 
         [HttpPut("UpdateActions")]
-        public async Task<IActionResult> UpdateActions([FromBody] ComicSeriesRequest request)
+        public async Task<IActionResult> UpdateActions([FromBody] UpdateActionsRequest request)
         {
-            ComicSeriesResponse response = new ComicSeriesResponse()
+            //ComicSeriesResponse response = new ComicSeriesResponse()
+            SimpleResponse response = new SimpleResponse()
             {
                 Result = "Fail"
             };
@@ -934,7 +938,8 @@ namespace capstone.Controllers
                     }
 
                     // Logic for processing request
-                    response = await PopulateComicSeriesResponse(account, request.ComicName, true);
+                    //response = await PopulateComicSeriesResponse(account, request.ComicName, true);
+                    response.Result = "Success";
                     return Ok(response);
                 }
                 else

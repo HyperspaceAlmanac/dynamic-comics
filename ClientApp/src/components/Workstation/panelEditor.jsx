@@ -11,8 +11,9 @@ class PanelEditor extends Component {
 
         this.state = {
             file : null,
-            actions : [],
-            panelNum : 0
+            actions : this.props.panel.actions,
+            panelNum : this.props.panel.number,
+            active : this.props.panel.active
         }
         this.fileUpdate = this.fileUpdate.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -54,6 +55,7 @@ class PanelEditor extends Component {
         let newState = Object.assign({}, this.state);
         newState.actions = this.props.panel.actions;
         newState.panelNum = this.props.panel ? this.props.panel.number : 0;
+        newState.active = this.props.panel.active
         this.setState(newState);
     }
 
@@ -61,26 +63,53 @@ class PanelEditor extends Component {
         if (prevProps.panel !== this.props.panel) {
             let newState = Object.assign({}, this.state);
             newState.actions = this.props.panel.actions;
+            newState.panelNum = this.props.panel ? this.props.panel.number : 0;
+            newState.active = this.props.panel.active
             this.setState(newState);
         }
     }
 
-    UpdateEntry(index, key, value) {
+    UpdateEntry(index, newValues) {
         let newState = Object.assign({}, this.state);
-        newState.actions[index][key] = value;
+        newState.actions[index] = newValues;
         this.setState(newState);
     }
 
     generateActionEdits() {
         let values = [];
         for (let i = 0; i < this.state.actions.length; i++) {
-            values.push(<ActionEdit key={i} actionObj = {this.state.actions[i]} updateAction = {(i, key, value) => this.UpdateEntry(key, value)}/>)
+            values.push(<ActionEdit key={i} actionObj = {this.state.actions[i]}
+                updateAll = {(values) => this.UpdateEntry(i, values)}
+                theme = {this.props.theme}/>)
         }
+        console.log("ActionEdit props");
+        console.log(values);
         return values;
     }
 
-    addPanel() {
+    toggleActive() {
+        let newState = Object.assign({}, this.state);
+        newState.active = !this.state.active;
+        this.setState(newState);
+    }
 
+    addPanel() {
+        let action = {id : 0, timing : 0, isTrigger : false, transition : false,
+            actionType : "default", priority : 1, options : "empty", layer : 0, active : false,
+            panelId : this.props.panel.id, nextPanelId : this.props.panel.id, resourceId : 1};
+        let newState = Object.assign({}, this.state);
+        newState.actions.push(action);
+        this.setState(newState);
+    }
+
+    removeUnsaved() {
+        let newState = Object.assign({}, this.state);
+        newState.actions = newState.actions.filter(a => a.id !== 0);
+        this.setState(newState);
+    }
+
+    updateRequest() {
+        this.updateActions();
     }
     
     render() {
@@ -106,29 +135,45 @@ class PanelEditor extends Component {
                       onChange = {this.handleChange } />
                 </div>
             }
+            
             <div>
+                {!this.props.panel.start &&
+                    <div className = {`${this.props.theme}-btn-one ${this.props.theme}-font-color btn`}
+                      onClick = {() => this.toggleActive() }>{this.state.active ? "Active" : "Hidden"}
+                    </div>
+                }
+                <div className = {`${this.props.theme}-btn-two ${this.props.theme}-font-color2 btn`}
+                    onClick = {() => this.addPanel() }>
+                        Add
+                </div>
+                <div className = {`${this.props.theme}-btn-one ${this.props.theme}-font-color btn`}
+                    onClick = {() => this.updateRequest() }>
+                        Submit
+                </div>
+                <div className = {`${this.props.theme}-btn-one ${this.props.theme}-font-color btn`}
+                    onClick = {() => this.removeUnsaved() }>
+                        Cancel
+                </div>
             </div>
             <div>
-                Need to pass in Panel Number
+                Please save changes and then submit
             </div>
-            <div>
-                Make Sure to save before going to Timeline or Resources page!
-            </div>
+            {this.generateActionEdits()}
         </div>
       );
     }
 
     async updateActions() {
         const token = await authService.getAccessToken();
-        let requestParam = this.props.showProgress ? "history" : "partial";
         const requestOptions = {
             method: 'Put',
             headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
-            body: JSON.stringify({ panelId : this.props.panel.Id, })
+            body: JSON.stringify({ comic : this.props.comicName, panelId : this.props.panel.id, 
+                number : this.state.panelNum, actions : this.state.actions, active : this.state.active})
         }
         // In case user continues typing and it becomes something different
-        //const response = await fetch('api/Account/GetComics', requestOptions);
-        //const data = await response.json();
+        const response = await fetch('api/Account/UpdateActions', requestOptions);
+        const data = await response.json();
         
              
     }
