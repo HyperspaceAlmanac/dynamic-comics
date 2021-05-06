@@ -53,6 +53,9 @@ class Reader extends Component {
     }
 
     getCurrentPanel(panels, id) {
+        console.log("Get Current Panel");
+        console.log(panels);
+        console.log(id);
         let i;
         for (i = 0; i < panels.length; i++) {
             if (panels[i].id === id) {

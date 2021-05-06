@@ -115,6 +115,7 @@ class Main extends Component {
       console.log(this.state.allComics);
       return (
         <div className={`row ${this.state.theme}-bg1 ${this.state.font} ${this.state.theme}-font-color`}>
+          <div className="h1 col-12 text-center">Welcome to Dynamic Paintbrush!</div>
           <div className="btn btn-info" onClick = {() => this.props.navCallback("profile", this.props.userName)}>Got to Profile</div>
           <Tabs buttons={this.addButtons()}/>
           <br/>

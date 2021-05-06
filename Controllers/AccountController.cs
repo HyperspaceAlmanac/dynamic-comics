@@ -774,6 +774,10 @@ namespace capstone.Controllers
                             }
                             response.CurrentPanelId = panel.Id;
                         }
+                        else
+                        {
+                            response.CurrentPanelId = progress.PanelId;
+                        }
                     }
                     
                     return Ok(response);

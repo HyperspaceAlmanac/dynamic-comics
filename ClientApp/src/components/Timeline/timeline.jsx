@@ -25,8 +25,7 @@ class Timeline extends Component {
             prevProps.panel !== this.props.panel) {
             let newState = Object.assign({}, this.state);
             newState.panels = this.props.panels;
-            console.log("In component update");
-            console.log(newState);
+            newState.panel = this.props.panel;
             this.setState(newState);
         }
     }
@@ -36,8 +35,9 @@ class Timeline extends Component {
         let i;
         let options;
         let active = this.props.panel ? this.props.panel.id : -1;
+        console.log("Active Panel is:");
+        console.log(active);
         for (i = 0; i < this.state.panels.length; i++) {
-            /** */
             let id = this.state.panels[i].id;
             options = this.state.panels[i].id === active ?
                 (`col-11 ${this.props.theme}-btn-one ${this.props.theme}-font-color` + " btn")
@@ -48,7 +48,6 @@ class Timeline extends Component {
                     </div>)
             }
         }
-        console.log(result.length);
         return result;
     }
 
