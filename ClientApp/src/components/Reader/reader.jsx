@@ -5,6 +5,7 @@ import Canvas from '../Canvas/canvas';
 import SubmitReview from './submitReview';
 import Reviews from '../Reviews/reviews';
 import Timeline from '../Timeline/timeline';
+import Comments from '../Comments/comments';
 import '../themes.css';
 
 class Reader extends Component {
@@ -53,9 +54,6 @@ class Reader extends Component {
     }
 
     getCurrentPanel(panels, id) {
-        console.log("Get Current Panel");
-        console.log(panels);
-        console.log(id);
         let i;
         for (i = 0; i < panels.length; i++) {
             if (panels[i].id === id) {
@@ -133,7 +131,8 @@ class Reader extends Component {
                                 </div>
                             }
                             {this.state.sideBar === "comments" &&
-                                <div>Comments</div>
+                                <Comments theme = {this.state.theme} panel = {this.state.panel}
+                                  current = {this.state.current} />
                             }
                         </div>
                     </div>

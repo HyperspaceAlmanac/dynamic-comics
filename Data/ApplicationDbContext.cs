@@ -48,8 +48,6 @@ namespace capstone.Data
                 .HasKey(review => new { review.ReviewerId, review.ComicId });
             builder.Entity<Progress>()
                 .HasKey(progress => new { progress.ComicId, progress.AccountId });
-            builder.Entity<Comment>()
-                .HasKey(comment => new { comment.CommentorId, comment.PanelId });
 
             builder.Entity<Tip>()
                 .HasOne(typeof(Account), "Artist")

@@ -74,8 +74,6 @@ class Canvas extends Component {
     }
 
     render() {
-        //onMouseEnter={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}
-        //console.log(this.props);
         return (
             <div className="main-canvas" onMouseOver={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}>
                 <div>Current Value: {this.state.current}</div>
