@@ -8,7 +8,7 @@ class Canvas extends Component {
         super(props);
 
         this.state = {
-            hovered : true,
+            hovered : false,
             renderList : []
         }
         this.toggleHover = this.toggleHover.bind(this);
@@ -53,24 +53,26 @@ class Canvas extends Component {
     }
 
     toggleHover(value) {
-        let newState = Object.assign({}, this.state);
-        newState.hovered = value;
-        this.setState(newState);
-        //console.log("Toggle Hover");
+        if (value !== this.state.hovered) {
+            let newState = Object.assign({}, this.state);
+            newState.hovered = value;
+            this.setState(newState);
+        }
     }
     
     handleScroll(event) {
         if (!this.props.disableInteraction) {
             if(this.state.hovered) {
-                //console.log("Scrolling when hovered");
+                console.log("Scrolling when hovered");
             }
         }   
     }
 
     render() {
+        //onMouseEnter={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}
         //console.log(this.props);
         return (
-            <div className="main-canvas" onMouseEnter={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}>
+            <div className="main-canvas" onMouseOver={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}>
                 <div className="overflow-wrapper">
                     <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover"/>
                     <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover" style={{position : "absolute", top : "10vh", left: "10vw"}}/>
