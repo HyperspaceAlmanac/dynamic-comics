@@ -46,8 +46,7 @@ class Reviews extends Component {
             if (this.state.reviews.length > 0) {
                 return (
                     <div className="row col-12">
-                        <div className="col-12 h3">Reviews for:</div>
-                        <div className="col-12 h5">{this.props.seriesName}</div>
+                        <div className="col-12 h3">Reviews (Latest):</div>
                         {this.state.reviews}
                     </div>);
             } else {

@@ -1216,7 +1216,7 @@ namespace capstone.Controllers
         private async Task<List<ReviewObj>> GetComicReviews(int id, int userId)
         {
             List<ReviewObj> reviews = await _context.Reviews.Include(r => r.Comic).Include(r => r.Reviewer).Where(r => r.ComicId == id && r.ReviewerId != userId)
-                .Select(r => new ReviewObj
+                .OrderByDescending(r => r.Date).Select(r => new ReviewObj
                 {
                     Name = r.Comic.Name,
                     Author = r.Reviewer.UserName,

@@ -97,9 +97,10 @@ class Comments extends Component {
         if (data.result === "Success") {
             let newState = Object.assign({}, this.state);
             newState.comments = data.comments;
+            newState.comment = "";
             this.setState(newState);
         } else {
-            alert("Error with Get Comments");
+            alert("Error when trying to add comment");
         }
     }
 
