@@ -81,7 +81,7 @@ class PanelEditor extends Component {
                 Panels Editor
             </div>
             <div>
-                {"Panel ID: " + this.props.panel.Id}
+                {"Panel ID: " + this.props.panel.id}
             </div>
             <div>
                 Need to pass in Panel Number

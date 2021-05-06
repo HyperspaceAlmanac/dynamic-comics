@@ -785,9 +785,51 @@ namespace capstone.Controllers
                 response.Theme = values.Item1.Theme;
                 response.Font = values.Item1.Font;
                 response.Panels = await GetAllPanels(values.Item2.Id, edit);
+                response.Published = values.Item2.Published;
             }
             response.Result = "Success";
             return response;
+        }
+
+        [HttpPut("ToggleVisibility")]
+        public async Task<IActionResult> ToggleDisplay([FromBody] ToggleDisplayRequest request)
+        {
+            SimpleResponse response = new SimpleResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(400, response);
+                    }
+                    // Update Panels
+                    Comic comic = await _context.Comics.Where(c => c.Name == request.ComicName).SingleOrDefaultAsync();
+                    if (comic == null)
+                    {
+                        return StatusCode(400, response);
+                    }
+                    comic.Published = request.Enabled;
+                    _context.Update(comic);
+                    await _context.SaveChangesAsync();
+
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
         }
 
         [HttpPut("UpdatePanels")]

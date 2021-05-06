@@ -40,6 +40,7 @@ class Workstation extends Component {
             newState.panels = data.panels;
             newState.pageState = [];
             newState.current = 0;
+            newState.published = data.published;
             let index = this.findFirstPage(data.panels);
             newState.panel = data.panels[index];
             this.setState(newState);
@@ -50,8 +51,6 @@ class Workstation extends Component {
 
     findFirstPage(panels) {
         let i;
-        console.log("Panels");
-        console.log(panels);
         for (i = 0; i < panels.length; i++) {
             if (panels[i].start && panels[i].active) {
                 return i;
@@ -140,9 +139,7 @@ class Workstation extends Component {
     }
 
     togglePublish() {
-        let newState = Object.assign({}, this.state);
-        newState.published = !this.state.published;
-        this.setState(newState);
+        this.toggleDisplayRequest();
     }
 
     generateManyValues() {
@@ -228,6 +225,27 @@ class Workstation extends Component {
                 </div>
             </div>
         );
+    }
+
+    async toggleDisplayRequest() {
+        const token = await authService.getAccessToken();
+        const requestOptions = {
+            method: 'Put',
+            headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+            body: JSON.stringify({ comicName : this.props.comicTitle, enabled : !this.state.published})
+        }
+        const response = await fetch('api/Account/ToggleVisibility', requestOptions);
+        const data = await response.json();
+        if (data.result === "Success") {
+            let newState = Object.assign({}, this.state);
+            newState.published = !this.state.published;
+            this.setState(newState);
+            if (newState.published) {
+                alert("This series is now visible to other users!");
+            } else {
+                alert("This series is now hidden");
+            }
+        }
     }
     async getSereis() {
         const token = await authService.getAccessToken();

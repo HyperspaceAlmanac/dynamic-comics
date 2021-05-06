@@ -38,8 +38,6 @@ class TimelineEditor extends Component {
         let i;
         let options;
         let active = this.props.panel ? this.props.panel.id : -1;
-        console.log("Panels");
-        console.log(this.state.panels);
         for (i = 0; i < this.state.panels.length; i++) {
             let id = this.state.panels[i].id;
             options = this.state.panels[i].id === active?
