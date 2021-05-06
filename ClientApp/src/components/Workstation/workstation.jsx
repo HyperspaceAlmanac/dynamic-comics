@@ -211,8 +211,10 @@ class Workstation extends Component {
                               this.state.sideBar == "timeline" &&
                               <TimelineEditor theme = {this.state.theme}
                                 panels={this.state.panels} panel = {this.state.panel}
+                                comicName = {this.props.comicTitle}
                                 visitPanel = {(num) => this.visitPanel(num)}
-                                updateAll = {() => this.updateAllValues()}/>
+                                updateAll = {() => this.updateAllValues()}
+                                workStationCallBack = {(data) => this.handleResponse(data) }/>
                             }
                             {!this.state.preview &&
                               this.state.sideBar == "panel" &&

@@ -784,14 +784,14 @@ namespace capstone.Controllers
                 response.User = account.UserName;
                 response.Theme = values.Item1.Theme;
                 response.Font = values.Item1.Font;
-                response.Panels = await GetAllPanels(values.Item1.Id, edit);
+                response.Panels = await GetAllPanels(values.Item2.Id, edit);
             }
             response.Result = "Success";
             return response;
         }
 
         [HttpPut("UpdatePanels")]
-        public async Task<IActionResult> UpdatePanels([FromBody] ComicSeriesRequest request)
+        public async Task<IActionResult> UpdatePanels([FromBody] UpdatePanelsRequest request)
         {
             ComicSeriesResponse response = new ComicSeriesResponse()
             {
@@ -805,10 +805,46 @@ namespace capstone.Controllers
                     Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
                     if (account == null)
                     {
-                        return StatusCode(500, response);
+                        return StatusCode(400, response);
                     }
-                    // Logic for processing request
+                    // Update Panels
+                    Comic comic = await _context.Comics.Where(c => c.Name == request.ComicName).SingleOrDefaultAsync();
+                    if (comic == null)
+                    {
+                        return StatusCode(400, response);
+                    }
+                    PanelObj temp;
+                    Panel tempPanel;
+                    for (int i = 0; i < request.Panels.Count; i++)
+                    {
+                        temp = request.Panels[i];
+                        if (temp.Id == 0)
+                        {
+                            tempPanel = new Panel()
+                            {
+                                ComicId = comic.Id,
+                                StartingPanel = false,
+                                Active = temp.Active,
+                                PanelNumber = temp.Number
+                            };
+                            await _context.AddAsync(tempPanel);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            tempPanel = await _context.Panels.Where(p => p.Id == temp.Id).SingleOrDefaultAsync();
+                            if (tempPanel != null)
+                            {
+                                tempPanel.Active = temp.Active;
+                                tempPanel.PanelNumber = temp.Number;
+                                _context.Update(tempPanel);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
+
                     response = await PopulateComicSeriesResponse(account, request.ComicName, true);
+                    response.Result = "Success";
                     return Ok(response);
                 }
                 else
@@ -858,7 +894,7 @@ namespace capstone.Controllers
         private async Task<List<PanelObj>> GetAllPanels(int id, bool edit)
         {
             List<PanelObj> panels = await _context.Panels.Where(p => p.ComicId == id
-                &&(edit || p.Active)).OrderBy(p => p.Active).ThenBy(p => p.PanelNumber)
+                &&(edit || p.Active)).OrderByDescending(p => p.Active).ThenBy(p => p.PanelNumber)
                 .Select(p => new PanelObj { Id = p.Id, Active = p.Active, Start = p.StartingPanel, Number = p.PanelNumber }).ToListAsync();
             for (int i = 0; i < panels.Count; i++)
             {
@@ -870,7 +906,7 @@ namespace capstone.Controllers
         private async Task<List<ActionObj>> GetAction(int id, bool edit)
         {
             List<ActionObj> actions = await _context.ComicActions.Where(ca => ca.PanelId == id && (edit || ca.Active))
-                .OrderBy(ca => ca.Active).ThenBy(ca => ca.Timing).ThenBy(ca => ca.Priority)
+                .OrderByDescending(ca => ca.Active).ThenBy(ca => ca.Timing).ThenBy(ca => ca.Priority)
                 .Select(ca => new ActionObj
                 {
                     Id = ca.Id,

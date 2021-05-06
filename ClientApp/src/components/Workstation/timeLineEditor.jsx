@@ -27,15 +27,9 @@ class TimelineEditor extends Component {
         }
     }
 
-    updatePanels() {
-        let newState = Object.assign({}, this.state);
-        newState.panels = [];
-        this.setState(newState);
-    }
-
     addPanel() {
         let newState = Object.assign({}, this.state);
-        newState.panels.push({id: 0, number: 1, start: false, active : false, actions : []});
+        newState.panels.push({id: 0, number: newState.panels.length, start: false, active : false, actions : []});
         this.setState(newState);
     }
 
@@ -67,7 +61,6 @@ class TimelineEditor extends Component {
 
     saveChanges() {
         this.pushPanels();
-        this.props.updateAll();
     }
 
     render() {
@@ -77,7 +70,7 @@ class TimelineEditor extends Component {
                 <div className={`col-4 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"}
                     onClick = {() => this.addPanel()}>Add</div>
                 <div className={`col-4 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"}
-                    onClick = {() => this.saveChanges}>Save</div>
+                    onClick = {() => this.saveChanges()}>Save</div>
                 <div className={`col-4 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"}
                     onClick = {() => this.cancelNewEntries()}>Cancel</div>
             </div>
@@ -95,13 +88,14 @@ class TimelineEditor extends Component {
         const requestOptions = {
             method: 'Put',
             headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
-            body: JSON.stringify({ panelList : this.state.panels})
+            body: JSON.stringify({ comicName : this.props.comicName, panels : this.state.panels})
         }
         // In case user continues typing and it becomes something different
-        //const response = await fetch('api/Account/GetComics', requestOptions);
-        //const data = await response.json();
-        
-             
+        const response = await fetch('api/Account/UpdatePanels', requestOptions);
+        const data = await response.json();
+        if (data.result === "Success") {
+            this.props.workStationCallBack(data);
+        }
     }
 }
 
