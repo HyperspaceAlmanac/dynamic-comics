@@ -65,11 +65,11 @@ class TimelineEditor extends Component {
       return (
         <div>
             <div className="row">
-                <div className={`col-4 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"}
+                <div className={"col-4 btn btn-primary"}
                     onClick = {() => this.addPanel()}>Add</div>
-                <div className={`col-4 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"}
+                <div className={"col-4 btn btn-primary"}
                     onClick = {() => this.saveChanges()}>Save</div>
-                <div className={`col-4 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"}
+                <div className={"col-4 btn btn-primary"}
                     onClick = {() => this.cancelNewEntries()}>Cancel</div>
             </div>
             <br/>

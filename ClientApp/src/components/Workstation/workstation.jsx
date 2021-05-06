@@ -40,6 +40,7 @@ class Workstation extends Component {
             newState.panels = data.panels;
             newState.pageState = [];
             newState.current = 0;
+            newState.sideBar = "timeline";
             newState.published = data.published;
             let index = this.findFirstPage(data.panels);
             newState.panel = data.panels[index];
@@ -116,9 +117,7 @@ class Workstation extends Component {
     addAction(action) {
 
     }
-    updateAllValues() {
-        alert("Sending request to backend");
-    }
+
     getPanelActions() {
         return [];
     }
@@ -161,32 +160,32 @@ class Workstation extends Component {
                 <div>Add in form for updating Title and genres if other features are done</div>
                 <div className="row">
                     <div className="col-9">
-                        <Canvas disableInteraction = {false} pageState = {this.state.pageState} 
+                        <Canvas disableInteraction = {this.state.preview} pageState = {this.state.pageState} 
                             increment = {() => this.increment()}
                             goToPanel = {(panel) => this.goToPanel(panel)}/>
                     </div>
                     <div className="col-3">
                         <div className="sidebar">
-                        <div className={`col-12 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                        <div className={`col-12 ${this.state.theme}-btn-one ${this.state.theme}-font-color btn`}
                                 onClick = {() => this.togglePublish()}>{this.state.published ? "Hide Series" : "Publish"}</div>
-                            <div className={`col-12 ${this.state.theme}-btn-two ${this.state.theme}-font-color2` + " btn"}
+                            <div className={`col-12 ${this.state.theme}-btn-two ${this.state.theme}-font-color2 btn`}
                                 onClick = {() => this.togglePreview()}>{"Preview: " + (this.state.preview ? "enabled" : "disabled")}</div>
-                            <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                            <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color btn`}
                                 onClick = {() => this.setSideBarState("timeline")}>Timeline</div>
                             {!this.state.preview &&
-                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color btn`}
                                 onClick = {() => this.setSideBarState("panel")}>Panel</div>
                             }
                             {!this.state.preview &&
-                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color btn`}
                                 onClick = {() => this.setSideBarState("resources")}>Resources</div>
                             }
                             {this.state.preview &&
-                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color btn`}
                                 onClick = {() => this.setSideBarState("reviews")}>Reviews</div>
                             }
                             {this.state.preview &&
-                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color` + " btn"}
+                                <div className={`col-4 ${this.state.theme}-btn-one ${this.state.theme}-font-color btn`}
                                 onClick = {() => this.setSideBarState("comments")}>Comments</div>
                             }
                             {!this.state.preview &&
@@ -213,15 +212,16 @@ class Workstation extends Component {
                                 panels={this.state.panels} panel = {this.state.panel}
                                 comicName = {this.props.comicTitle}
                                 visitPanel = {(num) => this.visitPanel(num)}
-                                updateAll = {() => this.updateAllValues()}
-                                workStationCallBack = {(data) => this.handleResponse(data) }/>
+                                workStationCallBack = {(data) => this.handleResponse(data) }
+                              />
                             }
                             {!this.state.preview &&
                               this.state.sideBar === "panel" &&
                               <PanelEditor theme = {this.state.theme}
                                 panel = {this.state.panel} user = {this.state.user}
                                 comicName = {this.props.comicTitle}
-                                updateAll = {() => this.updateAllValues()} />
+                                workStationCallBack = {(data) => this.handleResponse(data) }
+                              />
                             }
                         </div>
                     </div>

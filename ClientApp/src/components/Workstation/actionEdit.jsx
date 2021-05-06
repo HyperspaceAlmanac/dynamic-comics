@@ -66,10 +66,6 @@ class ActionEdit extends Component {
         this.setState(newState);
     }
 
-    submitButton() {
-        this.props.updateAll(this.state.actionObj);
-    }
-
     render() {
       return (
             <div>

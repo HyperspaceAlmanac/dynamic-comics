@@ -79,7 +79,6 @@ class PanelEditor extends Component {
         let values = [];
         for (let i = 0; i < this.state.actions.length; i++) {
             values.push(<ActionEdit key={i} actionObj = {this.state.actions[i]}
-                updateAll = {(values) => this.UpdateEntry(i, values)}
                 theme = {this.props.theme}/>)
         }
         console.log("ActionEdit props");
@@ -142,15 +141,15 @@ class PanelEditor extends Component {
                       onClick = {() => this.toggleActive() }>{this.state.active ? "Active" : "Hidden"}
                     </div>
                 }
-                <div className = {`${this.props.theme}-btn-two ${this.props.theme}-font-color2 btn`}
+                <div className = {"col-3 btn btn-primary"}
                     onClick = {() => this.addPanel() }>
                         Add
                 </div>
-                <div className = {`${this.props.theme}-btn-one ${this.props.theme}-font-color btn`}
+                <div className = {"col-3 btn btn-primary"}
                     onClick = {() => this.updateRequest() }>
-                        Submit
+                        Save
                 </div>
-                <div className = {`${this.props.theme}-btn-one ${this.props.theme}-font-color btn`}
+                <div className = {"col-3 btn btn-primary"}
                     onClick = {() => this.removeUnsaved() }>
                         Cancel
                 </div>
@@ -164,18 +163,25 @@ class PanelEditor extends Component {
     }
 
     async updateActions() {
+        if (this.state.panelNum < 1 && !this.props.panel.start) {
+            alert("Only starting panel can be 0!");
+            return;
+        }
         const token = await authService.getAccessToken();
         const requestOptions = {
             method: 'Put',
             headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
-            body: JSON.stringify({ comic : this.props.comicName, panelId : this.props.panel.id, 
+            body: JSON.stringify({ comicName : this.props.comicName, panelId : this.props.panel.id, 
                 number : this.state.panelNum, actions : this.state.actions, active : this.state.active})
         }
         // In case user continues typing and it becomes something different
         const response = await fetch('api/Account/UpdateActions', requestOptions);
         const data = await response.json();
+
+        if (data.result === "Success") {
+            this.props.workStationCallBack(data);
+        }
         
-             
     }
 
     async postResource() {

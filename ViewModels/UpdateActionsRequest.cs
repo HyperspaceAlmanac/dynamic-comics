@@ -7,7 +7,7 @@ namespace capstone.ViewModels
 {
     public class UpdateActionsRequest
     {
-        public string Comic { get; set; }
+        public string ComicName { get; set; }
         public int PanelId { get; set; }
         public int Number { get; set; }
         public bool Active { get; set; }

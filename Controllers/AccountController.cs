@@ -922,7 +922,7 @@ namespace capstone.Controllers
         public async Task<IActionResult> UpdateActions([FromBody] UpdateActionsRequest request)
         {
             //ComicSeriesResponse response = new ComicSeriesResponse()
-            SimpleResponse response = new SimpleResponse()
+            ComicSeriesResponse response = new ComicSeriesResponse()
             {
                 Result = "Fail"
             };
@@ -937,8 +937,70 @@ namespace capstone.Controllers
                         return StatusCode(500, response);
                     }
 
+                    Comic comic = await _context.Comics.Where(c => c.Name == request.ComicName).SingleOrDefaultAsync();
+                    if (comic == null)
+                    {
+                        return StatusCode(400, response);
+                    }
+                    Panel panel = await _context.Panels.Where(p => p.Id == request.PanelId).SingleOrDefaultAsync();
+                    if (panel == null)
+                    {
+                        return StatusCode(400, response);
+                    }
+                    panel.PanelNumber = request.Number;
+                    panel.Active = request.Active;
+                    _context.Update(panel);
+                    await _context.SaveChangesAsync();
+
+                    ActionObj temp;
+                    ComicAction tempAction;
+                    for (int i = 0; i < request.Actions.Count; i++)
+                    {
+                        temp = request.Actions[i];
+                        if (temp.Id == 0)
+                        {
+                            tempAction = new ComicAction()
+                            {
+                                ActionType = temp.ActionType,
+                                Active = temp.Active,
+                                IsTrigger = temp.IsTrigger,
+                                Layer = temp.Layer,
+                                Options = temp.Options,
+                                Priority = temp.Priority,
+                                Timing = temp.Timing,
+                                Transition = temp.Transition,
+                                NextPanelId = temp.NextPanelId,
+                                PanelId = temp.PanelId,
+                                ResourceId = temp.ResourceId
+                            };
+                            await _context.AddAsync(tempAction);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            tempAction = await _context.ComicActions.Include(ca => ca.Panel)
+                                .Where(ca => ca.Id == temp.Id && ca.Panel.ComicId == comic.Id).SingleOrDefaultAsync();
+                            if (tempAction != null)
+                            {
+                                tempAction.ActionType = temp.ActionType;
+                                tempAction.Active = temp.Active;
+                                tempAction.IsTrigger = temp.IsTrigger;
+                                tempAction.Layer = temp.Layer;
+                                tempAction.Options = temp.Options;
+                                tempAction.Priority = temp.Priority;
+                                tempAction.Timing = temp.Timing;
+                                tempAction.Transition = temp.Transition;
+                                tempAction.NextPanelId = temp.NextPanelId;
+                                tempAction.PanelId = temp.PanelId;
+                                tempAction.ResourceId = temp.ResourceId;
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
+
                     // Logic for processing request
-                    //response = await PopulateComicSeriesResponse(account, request.ComicName, true);
+                    response = await PopulateComicSeriesResponse(account, request.ComicName, true);
+
                     response.Result = "Success";
                     return Ok(response);
                 }
