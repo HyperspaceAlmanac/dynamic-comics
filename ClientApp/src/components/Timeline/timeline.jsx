@@ -44,7 +44,7 @@ class Timeline extends Component {
                 : (`col-11 ${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn"); 
             if (this.state.panels[i].active) {
                 result.push(<div key={i} className = {options} onClick = {() => this.props.goToPanel(id)}>
-                    {"Id: " + this.state.panels[i].id + ", Number: " + this.state.panels[i].number}
+                    {"Panel Number: " + this.state.panels[i].number}
                     </div>)
             }
         }

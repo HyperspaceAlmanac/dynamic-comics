@@ -31,7 +31,11 @@ class Comics extends Component {
         if (this.props.profileOwner !== this.state.user) {
             this.props.visitOtherComic(comicName);
         } else {
-            this.props.visitOwnComic(comicName);
+            if (this.props.showProgress) {
+                this.props.visitOtherComic(comicName);
+            } else {
+                this.props.visitOwnComic(comicName);
+            }
         }
     }
 

@@ -71,6 +71,7 @@ class Reader extends Component {
         let newState = Object.assign({}, this.state);
         newState.panel = this.findPanel(num);
         newState.current = 0;
+        this.saveProgress(num);
         this.setState(newState);
     }
 
@@ -152,6 +153,17 @@ class Reader extends Component {
         } else {
             alert("Something Went Wrong");
         }
+    }
+
+    async saveProgress(num) {
+        const token = await authService.getAccessToken();
+        const requestOptions = {
+          method: 'Put',
+          headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+          body: JSON.stringify({ panelId : num})
+        }
+        const response = await fetch('api/Account/SaveProgress', requestOptions);
+        const data = await response.json();
     }
 }
 

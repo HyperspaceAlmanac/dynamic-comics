@@ -850,6 +850,141 @@ namespace capstone.Controllers
             }
         }
 
+        [HttpPut("GetComments")]
+        public async Task<IActionResult> GetComments([FromBody] PanelRequest request)
+        {
+            CommentsResponse response = new CommentsResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(400, response);
+                    }
+
+                    response.Comments = await _context.Comments.Include(c => c.Commentor).Where(c => c.PanelId == request.PanelId).OrderByDescending(c => c.Time)
+                        .Select(c => new CommentObj {Commentor = c.Commentor.UserName, Description = c.Description, PanelNumber = c.PanelNumber, Time = c.Time})
+                        .ToListAsync();
+
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("SaveComment")]
+        public async Task<IActionResult> SaveComment([FromBody] AddCommentRequest request)
+        {
+            CommentsResponse response = new CommentsResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(400, response);
+                    }
+                    Comment comment = new Comment()
+                    {
+                        CommentorId = account.Id,
+                        Description = request.Description,
+                        PanelId = request.PanelId,
+                        PanelNumber = request.PanelNumber,
+                        Time = DateTime.Now
+                    };
+
+                    await _context.AddAsync(comment);
+                    await _context.SaveChangesAsync();
+
+                    response.Comments = await _context.Comments.Include(c => c.Commentor).Where(c => c.PanelId == request.PanelId).OrderByDescending(c => c.Time)
+                        .Select(c => new CommentObj { 
+                            Commentor = c.Commentor.UserName, Description = c.Description, PanelNumber = c.PanelNumber, Time = c.Time
+                        }).ToListAsync();
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("SaveProgress")]
+        public async Task<IActionResult> SaveProgress([FromBody] PanelRequest request)
+        {
+            SimpleResponse response = new SimpleResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.User.FindFirstValue("sub");
+                    Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                    if (account == null)
+                    {
+                        return StatusCode(400, response);
+                    }
+
+                    Panel panel = await _context.Panels.Where(p => p.Id == request.PanelId).SingleOrDefaultAsync();
+                    if (panel == null) {
+                        return StatusCode(400, response);
+                    }
+                    Progress progress = await _context.ProgressTable.Where(p => p.AccountId == account.Id && p.ComicId == panel.ComicId).SingleOrDefaultAsync();
+                    if (progress == null)
+                    {
+                        progress = new Progress
+                        {
+                            AccountId = account.Id,
+                            ComicId = panel.ComicId,
+                            PanelId = request.PanelId
+                        };
+                        await _context.AddAsync(progress);
+                        await _context.SaveChangesAsync();
+                    } else {
+                        progress.PanelId = request.PanelId;
+                        _context.Update(progress);
+                        await _context.SaveChangesAsync();
+                    }                
+                    response.Result = "Success";
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(400, response);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
         [HttpPut("UpdatePanels")]
         public async Task<IActionResult> UpdatePanels([FromBody] UpdatePanelsRequest request)
         {
