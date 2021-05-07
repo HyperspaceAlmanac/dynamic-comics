@@ -545,6 +545,40 @@ namespace capstone.Controllers
             }
         }
 
+        [HttpPut("GetSeriesResources")]
+        public async Task<IActionResult> GetSeriesResources([FromBody] GetUserResources request)
+        {
+            ResourceResponse response = new ResourceResponse()
+            {
+                Result = "Fail"
+            };
+            try
+            {
+                var userId = this.User.FindFirstValue("sub");
+                Models.Account account = await _context.Accounts.Where(a => a.ApplicationUserId == userId).SingleOrDefaultAsync();
+                if (account == null)
+                {
+                    return StatusCode(500, response);
+                }
+
+                Models.Account author = await _context.Comics.Include(c => c.Artist)
+                    .Where(c => c.Name == request.ComicName && c.Artist.UserName == request.Author).Select(c => c.Artist).SingleOrDefaultAsync();
+                if (author == null)
+                {
+                    StatusCode(400, response);
+                }
+
+                response.User = await _context.UserResources.Include(ur => ur.Resource).Where(ur => ur.AccountId == author.Id).Select(ur => ur.Resource).ToListAsync();
+                response.Common = await _context.CommonResources.Include(cr => cr.Resource).Select(cr => cr.Resource).ToListAsync();
+                response.Result = "Success";
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(500, response);
+            }
+        }
+
         [HttpPut("PostTextResource")]
         public async Task<IActionResult> PostTextResource([FromBody] PostReviewRequest request)
         {

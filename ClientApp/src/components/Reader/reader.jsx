@@ -7,6 +7,7 @@ import Reviews from '../Reviews/reviews';
 import Timeline from '../Timeline/timeline';
 import Comments from '../Comments/comments';
 import '../themes.css';
+import { isThisTypeNode } from 'typescript';
 
 class Reader extends Component {
     constructor(props) {
@@ -20,19 +21,11 @@ class Reader extends Component {
             sideBar : "timeline",
             panels : [],
             panel : {id : -1},
-            current: 0,
+            current: 0
         }
     }
     componentDidMount() {
         this.fetchComic();
-    }
-
-    generateManyValues() {
-        let values = [];
-        for (let i = 0; i < 50; i++) {
-            values.push(<div key={i} className="h3">A lot of Text. Should Overflow</div>)
-        }
-        return values;
     }
 
     setSideBarState(value) {
@@ -102,10 +95,14 @@ class Reader extends Component {
                 </div>
                 <div className="row">
                     <div className="col-9">
-                        <Canvas disableInteraction = {false} panel = {this.state.panel}
-                        current = {this.state.current}
-                        increment = {() => this.increment()}
-                        goToPanel = {(panel) => this.goToPanel(panel)}/>
+                        {this.state.author !== "" &&
+                            <Canvas disableInteraction = {false} panel = {this.state.panel}
+                              current = {this.state.current}
+                              increment = {() => this.increment()}
+                              goToPanel = {(panel) => this.goToPanel(panel)}
+                              comicName = {this.props.comicTitle}
+                              author = {this.state.author}/>
+                        }
                     </div>
                     <div className="col-3">
                         <div className={"sidebar " + `${this.state.theme}-bg2`}>

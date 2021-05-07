@@ -79,7 +79,6 @@ class Main extends Component {
           return 0;
         });
       }
-      console.log(shallowCopy);
       let comics = [];
       for (let i = 0; i < shallowCopy.length; i++) {
         comics.push(<Comic key={i} comicName = {shallowCopy[i].comicName} theme = {this.state.theme}
@@ -91,7 +90,6 @@ class Main extends Component {
     }
 
     sortCriteria(criteria) {
-      console.log("In set sort Criteria for " + criteria);
       let newState = Object.assign({}, this.state);
       newState.sorting = criteria;
       if (criteria === "all") {
@@ -111,8 +109,6 @@ class Main extends Component {
       return buttons;
     }
     render() {
-      console.log("comics: ");
-      console.log(this.state.allComics);
       return (
         <div className={`row ${this.state.theme}-bg1 ${this.state.font} ${this.state.theme}-font-color`}>
           <div className="h1 col-12 text-center">Welcome to Dynamic Paintbrush!</div>

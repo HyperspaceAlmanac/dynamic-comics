@@ -10,8 +10,8 @@ class Canvas extends Component {
         this.state = {
             hovered : false,
             timeMap : {},
-            resources : [],
-            current : 0
+            renderedResources : [],
+            resourceMap : {}
         }
         this.toggleHover = this.toggleHover.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
@@ -19,6 +19,12 @@ class Canvas extends Component {
 
     componentDidMount() {
         window.addEventListener('wheel', this.handleScroll);
+        this.getResources();
+        let newState = Object.assign({}, this.state);
+        newState.current = this.props.current;
+        newState.renderedResources = [];
+        newState.timeMap = {};
+        this.setState(newState);
     }
 
     componentWillUnmount() {
@@ -27,22 +33,25 @@ class Canvas extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.panel !== this.props.panel) {
-            this.loadPanel();
-        } else if (prevProps.current !== this.props.current) {
-            let newState = Object.assign({}, this.state);
-            newState.current = this.props.current;
-            this.setState(newState);
+            this.updateState();
         }
     }
 
-    doNothing() {
-
+    moreActions() {
+        let timeStamps = Object.keys(this.state.timeMap);
+        if (timeStamps.length > 0) {
+            let maxVal = Math.max(...timeStamps);
+            return maxVal >= this.props.current;
+        }
+        return false;
     }
 
-    loadPanel() {
-        let newState = Object.assign({}, this.state);
-        this.state.renderList = [];
-        this.setState(newState);
+    updateState() {
+        if (this.props.current == 0) {
+
+        } else {
+
+        }
     }
 
     increment() {
@@ -64,11 +73,26 @@ class Canvas extends Component {
             this.setState(newState);
         }
     }
+
+    otherActions() {
+        let currentTime = this.props.current;
+        if (currentTime in this.state.timeMap) {
+            let i = 0;
+            let val;
+            for (i = 0; i < this.state.timeMap[currentTime].length; i++) {
+                val = this.state.timeMap[currentTime][i];
+            }
+        } else {
+            return false;
+        }
+    }
     
     handleScroll(event) {
         if (!this.props.disableInteraction) {
             if(this.state.hovered) {
-                this.increment();
+                if (this.moreActions() && !this.otherActions()) {
+                    this.increment();
+                }
             }
         }   
     }
@@ -85,6 +109,38 @@ class Canvas extends Component {
                 </div>
             </div>
         );
+    }
+
+    createImageMapping(data) {
+        let imageMapping = {}
+        let i;
+        let temp;
+        for (i = 0; i < data.common.length; i++) {
+            temp = data.common[i];
+            imageMapping[temp.id] = temp.imageURL; 
+        }
+        for (i = 0; i < data.user.length; i++) {
+            temp = data.user[i];
+            imageMapping[temp.id] = temp.imageURL; 
+        }
+        let newState = Object.assign({}, this.state);
+        newState.resourceMap = imageMapping;
+        this.setState(newState);
+        
+    }
+
+    async getResources() {
+        const token = await authService.getAccessToken();
+        const requestOptions = {
+            method: 'Put',
+            headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+            body: JSON.stringify({ comicName : this.props.comicName, author : this.props.author})
+        }
+        const response = await fetch('api/Account/GetSeriesResources', requestOptions);
+        const data = await response.json();
+        if (data.result === "Success") {
+            this.createImageMapping(data);
+        }
     }
 }
 
