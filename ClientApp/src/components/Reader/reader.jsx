@@ -21,7 +21,7 @@ class Reader extends Component {
             sideBar : "timeline",
             panels : [],
             panel : {id : -1},
-            resouceMap : null,
+            resourceMap : null,
             current: 0
         }
     }
@@ -43,7 +43,11 @@ class Reader extends Component {
         newState.font = data.font;
         newState.panels = data.panels;
         newState.panel = this.getCurrentPanel(data.panels, data.currentPanelId);
-        newState.resourceMap = data.resources;
+        newState.resourceMap = {};
+        let i;
+        for (i = 0; i < data.resources.length; i++) {
+            newState.resourceMap[data.resources[i].id] = data.resources[i];
+        }
         newState.current = 0;
         this.setState(newState);
     }
@@ -67,6 +71,7 @@ class Reader extends Component {
             if (temp.timing === this.state.current + 1) {
                 if (temp.active && temp.transition) {
                     this.goToPanel(temp.nextPanelId);
+                    return;
                 }
             }
         }
@@ -112,31 +117,28 @@ class Reader extends Component {
         let temp;
         let tempObj;
         console.log("Begginning of generate frame");
-        console.log(this.state);
+        console.log(this.state.panel.actions);
+        console.log(this.state.resourceMap);
         for (i = 0; i < this.state.panel.actions.length; i++) {
             temp = this.state.panel.actions[i];
-            if (removeTriggers.length > 0) {
-                for (j = 0; j < removeTriggers.length; j++) {
-                    renderValues[j].click = false;
-                    renderValues[j].hover = false;
-                }
-                removeTriggers = [];
-            }
             if (temp.active && temp.timing <= this.state.current) {
                 if (temp.isTrigger) {
+                    console.log(temp);
                     if (temp.actionType === "click" || temp.actionType === "hover") {
-                        for (j = 0; j < renderValues.length; j++) {
-                            if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
-                                renderValues[j].click = temp.actionType === "click";
-                                renderValues[j].hover = temp.actionType === "hover";
-                                removeTriggers.push(j);
-                                break;
+                        if (temp.timing === this.state.current) {
+                            for (j = 0; j < renderValues.length; j++) {
+                                if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                                    renderValues[j].click = temp.actionType === "click";
+                                    renderValues[j].hover = temp.actionType === "hover";
+                                    removeTriggers.push(j);
+                                    break;
+                                }
                             }
                         }
                     }
                 } else if (temp.actionType === "show") {
-                    tempObj = {type : "img", resourceId : temp.resourceId, url : this.state.resourceMap[temp.resourceId].imageURL,
-                      layer : temp.layer, visible : true, scale : "1", position: temp.options, hover : false, click : false}
+                    tempObj = {type : "img", resourceId : temp.resourceId, url : (temp.resourceId === 1 ? "grayDefault.png" : this.state.resourceMap[temp.resourceId].imageURL),
+                      layer : temp.layer, visible : true, scale : "5vw", position: temp.options, hover : false, click : false}
                     renderValues.push(tempObj);
                 } else if (temp.actionType === "hide") {
                     for (j = 0; j < renderValues.length; j++) {
@@ -162,19 +164,20 @@ class Reader extends Component {
 
                 } else if (temp.actionType === "showText") {
                     tempObj = {type : "text", resourceId : null, url : null,
-                      id : temp.layer, visible : true, position : "10 vw 10 vh", text : temp.options, hover : false, click : false}
+                      id : temp.layer, visible : true, position : "10vw 10vh", text : temp.options, hover : false, click : false}
                     renderValues.push(tempObj);
                 } else if (temp.actionType === "hideText") {
                     for (j = 0; j < renderValues.length; j++) {
-                        if (renderValues[j].type === "text" && renderValues[j].id === renderValues[j].layer) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === temp.layer) {
                             renderValues[j].visible = false;
                             break;
                         }
                     }
-                } else if (temp.actionType === "textPosition") {
+                } else if (temp.actionType === "moveText") {
                     for (j = 0; j < renderValues.length; j++) {
-                        if (renderValues[j].type === "text" && renderValues[j].id === renderValues[j].layer) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === temp.layer) {
                             renderValues[j].position = temp.options;
+                            console.log("Updated text locatoin");
                             break;
                         }
                     }
@@ -195,9 +198,6 @@ class Reader extends Component {
                     <div className={`${this.state.theme}-btn-two ${this.state.theme}-font-color2 btn`} onClick = {() => this.props.navCallback('profile', this.state.user)}>Back to Profile</div>
                 </div>
                 <div className="h3">{this.props.comicTitle}</div>
-                <div>
-                    Page for creating a Comic
-                </div>
                 <div className="row">
                     <div className="col-9">
                         {this.state.panel.id !== -1 &&

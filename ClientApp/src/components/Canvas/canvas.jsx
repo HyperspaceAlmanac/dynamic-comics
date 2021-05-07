@@ -53,7 +53,7 @@ class Canvas extends Component {
         let i;
         for (i = 0; i < this.props.frame.length; i++) {
             if (this.props.frame[i].click || this.props.frame[i].hover) {
-                return false;
+                return true;
             }
         }
         return false;
@@ -95,11 +95,13 @@ class Canvas extends Component {
                     tempProp.zIndex = temp.layer;
                     if (temp.click) {
                         result.push(
-                            <img key = {result.length} style={tempProp} src={process.env.PUBLIC_URL + "images/" + temp.url} alt="comic image"/>
+                            <img key = {result.length} style={tempProp} onClick = {() => this.increment()}
+                            src={process.env.PUBLIC_URL + "images/" + temp.url} alt="comic image"/>
                         );
                     } else if (temp.hover) {
                         result.push(
-                            <img key = {result.length} style={tempProp} src={process.env.PUBLIC_URL + "images/" + temp.url} alt="comic image"/>
+                            <img key = {result.length} style={tempProp} onMouseEnter = {() => this.increment()}
+                            src={process.env.PUBLIC_URL + "images/" + temp.url} alt="comic image"/>
                         );
                     } else {
                         result.push(
@@ -122,7 +124,6 @@ class Canvas extends Component {
         console.log(this.props);
         return (
             <div className="main-canvas" onMouseOver={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}>
-                <div>Current Value: {this.props.current}</div>
                 <div className="overflow-wrapper">
                     {this.displayValues()}
                 </div>

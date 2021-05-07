@@ -42,7 +42,11 @@ class Workstation extends Component {
             newState.current = 0;
             newState.sideBar = "timeline";
             newState.published = data.published;
-            newState.resourceMap = data.resources;
+            newState.resourceMap = {};
+            let i;
+            for (i = 0; i < data.resources.length; i++) {
+                newState.resourceMap[data.resources[i].id] = data.resources[i];
+            }
             let index = this.findFirstPage(data.panels);
             newState.panel = data.panels[index];
             this.setState(newState);
@@ -73,6 +77,7 @@ class Workstation extends Component {
             if (temp.timing === this.state.current + 1) {
                 if (temp.active && temp.transition) {
                     this.goToPanel(temp.nextPanelId);
+                    return;
                 }
             }
         }
@@ -149,29 +154,26 @@ class Workstation extends Component {
         let tempObj;
         console.log("Begginning of generate frame");
         console.log(this.state.panel.actions);
+        console.log(this.state.resourceMap);
         for (i = 0; i < this.state.panel.actions.length; i++) {
             temp = this.state.panel.actions[i];
-            if (removeTriggers.length > 0) {
-                for (j = 0; j < removeTriggers.length; j++) {
-                    renderValues[j].click = false;
-                    renderValues[j].hover = false;
-                }
-                removeTriggers = [];
-            }
             if (temp.active && temp.timing <= this.state.current) {
                 if (temp.isTrigger) {
+                    console.log(temp);
                     if (temp.actionType === "click" || temp.actionType === "hover") {
-                        for (j = 0; j < renderValues.length; j++) {
-                            if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
-                                renderValues[j].click = temp.actionType === "click";
-                                renderValues[j].hover = temp.actionType === "hover";
-                                removeTriggers.push(j);
-                                break;
+                        if (temp.timing === this.state.current) {
+                            for (j = 0; j < renderValues.length; j++) {
+                                if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                                    renderValues[j].click = temp.actionType === "click";
+                                    renderValues[j].hover = temp.actionType === "hover";
+                                    removeTriggers.push(j);
+                                    break;
+                                }
                             }
                         }
                     }
                 } else if (temp.actionType === "show") {
-                    tempObj = {type : "img", resourceId : temp.resourceId, url : this.state.resourceMap[temp.resourceId].imageURL,
+                    tempObj = {type : "img", resourceId : temp.resourceId, url : (temp.resourceId === 1 ? "grayDefault.png" : this.state.resourceMap[temp.resourceId].imageURL),
                       layer : temp.layer, visible : true, scale : "5vw", position: temp.options, hover : false, click : false}
                     renderValues.push(tempObj);
                 } else if (temp.actionType === "hide") {
@@ -202,7 +204,7 @@ class Workstation extends Component {
                     renderValues.push(tempObj);
                 } else if (temp.actionType === "hideText") {
                     for (j = 0; j < renderValues.length; j++) {
-                        if (renderValues[j].type === "text" && renderValues[j].id === renderValues[j].layer) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === temp.layer) {
                             renderValues[j].visible = false;
                             break;
                         }
@@ -231,7 +233,6 @@ class Workstation extends Component {
                     <div className={`${this.state.theme}-btn-two ${this.state.theme}-font-color2` + " btn"} onClick = {() => this.props.navCallback('profile', this.state.user)}>Back to Profile</div>
                 </div>
                 <div className="h3">{this.props.comicTitle}</div>
-                <div>Add in form for updating Title and genres if other features are done</div>
                 <div className="row">
                     <div className="col-9">
                         {this.state.panel.id !== -1 &&
@@ -335,7 +336,6 @@ class Workstation extends Component {
     }
     async getSeries() {
         const token = await authService.getAccessToken();
-        let requestParam = this.props.showProgress ? "history" : "partial";
         const requestOptions = {
             method: 'Put',
             headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
