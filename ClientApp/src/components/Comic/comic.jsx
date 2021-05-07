@@ -15,7 +15,7 @@ class Comic extends Component {
             {this.props.showAuthor &&
               <div className={`${this.props.theme}-btn-two ${this.props.theme}-font-color2` + " btn col-12"} onClick={() => this.props.visitAuthor()}>{"by " + this.props.author}</div>
             }
-            <img src={process.env.PUBLIC_URL + "images/" + this.props.coverURL} alt="Comic book cover" className="img-fluid" onClick={() => this.props.visitComic()}/>
+            <img src={process.env.PUBLIC_URL + "images/" + this.props.coverURL} alt="Comic book cover" className="img-fluid col-10" onClick={() => this.props.visitComic()}/>
             <div>{this.props.genreOne + ", " + this.props.genreTwo}</div>
             <div>{"Rating: " + this.props.rating + "/5 Comments: " + this.props.numComments}</div>
             {this.props.progress &&

@@ -21,6 +21,7 @@ class Reader extends Component {
             sideBar : "timeline",
             panels : [],
             panel : {id : -1},
+            resouceMap : null,
             current: 0
         }
     }
@@ -41,7 +42,8 @@ class Reader extends Component {
         newState.theme = data.theme;
         newState.font = data.font;
         newState.panels = data.panels;
-        newState.panel = this.getCurrentPanel(data.panels, data.currentPanelId)
+        newState.panel = this.getCurrentPanel(data.panels, data.currentPanelId);
+        newState.resourceMap = data.resources;
         newState.current = 0;
         this.setState(newState);
     }
@@ -56,11 +58,34 @@ class Reader extends Component {
         return {id : -1}
     }
 
+    
     increment() {
+        let i;
+        let temp;
+        for (i = 0; i < this.state.panel.actions.length; i++) {
+            temp = this.state.panel.actions[i];
+            if (temp.timing === this.state.current + 1) {
+                if (temp.active && temp.transition) {
+                    this.goToPanel(temp.nextPanelId);
+                }
+            }
+        }
         let newState = Object.assign({}, this.state);
         newState.current = this.state.current + 1;
         this.setState(newState);
     }
+
+    maxVal() {
+        let i;
+        let temp;
+        let maxVal = 0;
+        for (i = 0; i < this.state.panel.actions.length; i++) {
+            temp = this.state.panel.actions[i];
+            maxVal = Math.max(maxVal, temp.timing);
+        }
+        return maxVal;
+    }
+
     goToPanel(num) {
         let newState = Object.assign({}, this.state);
         newState.panel = this.findPanel(num);
@@ -79,6 +104,94 @@ class Reader extends Component {
         return {};
     }
 
+    generateCurrentFrame() {
+        let renderValues = [];
+        let removeTriggers = [];
+        let i;
+        let j;
+        let temp;
+        let tempObj;
+        console.log("Begginning of generate frame");
+        console.log(this.state);
+        console.log(this.state.panel.actions);
+        for (i = 0; i < this.state.panel.actions.length; i++) {
+            temp = this.state.panel.actions[i];
+            if (removeTriggers.length > 0) {
+                for (j = 0; j < removeTriggers.length; j++) {
+                    renderValues[j].click = false;
+                    renderValues[j].hover = false;
+                }
+                removeTriggers = [];
+            }
+            console.log("temp");
+            console.log(temp);
+            console.log(temp.actionType);
+            if (temp.active && temp.timing <= this.state.current) {
+                if (temp.isTrigger) {
+                    if (temp.actionType === "click" || temp.actionType === "hover") {
+                        for (j = 0; j < renderValues.length; j++) {
+                            if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                                renderValues[j].click = temp.actionType === "click";
+                                renderValues[j].hover = temp.actionType === "hover";
+                                removeTriggers.push(j);
+                                break;
+                            }
+                        }
+                    }
+                } else if (temp.actionType === "show") {
+                    console.log("Should reach here");
+                    console.log(temp);
+                    tempObj = {type : "img", resourceId : temp.resourceId, url : this.state.resourceMap[temp.resourceId].imageURL,
+                      layer : temp.layer, visible : true, scale : "1", position: temp.options, hover : false, click : false}
+                    renderValues.push(tempObj);
+                } else if (temp.actionType === "hide") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                            renderValues[j].visible = false;
+                            break;
+                        }
+                    }
+                } else if (temp.actionType === "move") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                            renderValues[j].position = temp.options;
+                            break;
+                        }
+                    }
+                } else if (temp.actionType === "scale") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                            renderValues[j].scale = temp.options;
+                            break;
+                        }
+                    }
+
+                } else if (temp.actionType === "showText") {
+                    tempObj = {type : "text", resourceId : null, url : null,
+                      id : temp.layer, visible : true, position : "10 vw 10 vh", text : temp.options, hover : false, click : false}
+                    renderValues.push(tempObj);
+                } else if (temp.actionType === "hideText") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === renderValues[j].layer) {
+                            renderValues[j].visible = false;
+                            break;
+                        }
+                    }
+                } else if (temp.actionType === "textPosition") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === renderValues[j].layer) {
+                            renderValues[j].position = temp.options;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        console.log("In genreate frame");
+        console.log(renderValues);
+        return renderValues;
+    }
+
     render() {
         console.log("Reader state");
         console.log(this.state);
@@ -95,13 +208,14 @@ class Reader extends Component {
                 </div>
                 <div className="row">
                     <div className="col-9">
-                        {this.state.author !== "" &&
+                        {this.state.panel.id !== -1 &&
                             <Canvas disableInteraction = {false} panel = {this.state.panel}
                               current = {this.state.current}
                               increment = {() => this.increment()}
                               goToPanel = {(panel) => this.goToPanel(panel)}
                               comicName = {this.props.comicTitle}
-                              author = {this.state.author}/>
+                              frame = {this.generateCurrentFrame()}
+                              maxVal = {this.maxVal()} />
                         }
                     </div>
                     <div className="col-3">

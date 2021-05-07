@@ -843,6 +843,9 @@ namespace capstone.Controllers
                 response.Panels = await GetAllPanels(values.Item2.Id, edit);
                 response.Published = values.Item2.Published;
             }
+            int authorId = values.Item1.Id;
+            response.Resources = await _context.UserResources.Include(ur => ur.Resource).Where(ur => ur.AccountId == authorId).Select(ur => ur.Resource).ToListAsync();
+            response.Resources.AddRange(await _context.CommonResources.Include(cr => cr.Resource).Select(cr => cr.Resource).ToListAsync());
             response.Result = "Success";
             return response;
         }

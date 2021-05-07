@@ -23,6 +23,7 @@ class Workstation extends Component {
             published : true,
             panels: [],
             current : 1,
+            resourceMap : null,
             panel : {id : -1}
         }
     }
@@ -41,6 +42,7 @@ class Workstation extends Component {
             newState.current = 0;
             newState.sideBar = "timeline";
             newState.published = data.published;
+            newState.resourceMap = data.resources;
             let index = this.findFirstPage(data.panels);
             newState.panel = data.panels[index];
             this.setState(newState);
@@ -66,10 +68,32 @@ class Workstation extends Component {
     }
 
     increment() {
+        let i;
+        let temp;
+        for (i = 0; i < this.state.panel.actions.length; i++) {
+            temp = this.state.panel.actions[i];
+            if (temp.timing === this.state.current + 1) {
+                if (temp.active && temp.transition) {
+                    this.goToPanel(temp.nextPanelId);
+                }
+            }
+        }
         let newState = Object.assign({}, this.state);
         newState.current = this.state.current + 1;
         this.setState(newState);
     }
+
+    maxVal() {
+        let i;
+        let temp;
+        let maxVal = 0;
+        for (i = 0; i < this.state.panel.actions.length; i++) {
+            temp = this.state.panel.actions[i];
+            maxVal = Math.max(maxVal, temp.timing);
+        }
+        return maxVal;
+    }
+
     goToPanel(id) {
         let newState = Object.assign({}, this.state);
         newState.current = 0;
@@ -118,12 +142,91 @@ class Workstation extends Component {
         this.toggleDisplayRequest();
     }
 
-    generateManyValues() {
-        let values = [];
-        for (let i = 0; i < 50; i++) {
-            values.push(<div key={i} className="h3">A lot of Text. Should Overflow</div>)
+    generateCurrentFrame() {
+        let renderValues = [];
+        let removeTriggers = [];
+        let i;
+        let j;
+        let temp;
+        let tempObj;
+        console.log("Begginning of generate frame");
+        console.log(this.state.panel.actions);
+        for (i = 0; i < this.state.panel.actions.length; i++) {
+            temp = this.state.panel.actions[i];
+            if (removeTriggers.length > 0) {
+                for (j = 0; j < removeTriggers.length; j++) {
+                    renderValues[j].click = false;
+                    renderValues[j].hover = false;
+                }
+                removeTriggers = [];
+            }
+            console.log("temp");
+            console.log(temp);
+            console.log(temp.actionType);
+            if (temp.active && temp.timing <= this.state.current) {
+                if (temp.isTrigger) {
+                    if (temp.actionType === "click" || temp.actionType === "hover") {
+                        for (j = 0; j < renderValues.length; j++) {
+                            if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                                renderValues[j].click = temp.actionType === "click";
+                                renderValues[j].hover = temp.actionType === "hover";
+                                removeTriggers.push(j);
+                                break;
+                            }
+                        }
+                    }
+                } else if (temp.actionType === "show") {
+                    console.log("Should reach here");
+                    console.log(temp);
+                    tempObj = {type : "img", resourceId : temp.resourceId, url : this.state.resourceMap[temp.resourceId].imageURL,
+                      layer : temp.layer, visible : true, scale : "1", position: temp.options, hover : false, click : false}
+                    renderValues.push(tempObj);
+                } else if (temp.actionType === "hide") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                            renderValues[j].visible = false;
+                            break;
+                        }
+                    }
+                } else if (temp.actionType === "move") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                            renderValues[j].position = temp.options;
+                            break;
+                        }
+                    }
+                } else if (temp.actionType === "scale") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                            renderValues[j].scale = temp.options;
+                            break;
+                        }
+                    }
+
+                } else if (temp.actionType === "showText") {
+                    tempObj = {type : "text", resourceId : null, url : null,
+                      id : temp.layer, visible : true, position : "10 vw 10 vh", text : temp.options, hover : false, click : false}
+                    renderValues.push(tempObj);
+                } else if (temp.actionType === "hideText") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === renderValues[j].layer) {
+                            renderValues[j].visible = false;
+                            break;
+                        }
+                    }
+                } else if (temp.actionType === "textPosition") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === renderValues[j].layer) {
+                            renderValues[j].position = temp.options;
+                            break;
+                        }
+                    }
+                }
+            }
         }
-        return values;
+        console.log("In genreate frame");
+        console.log(renderValues);
+        return renderValues;
     }
     render() {
         return (
@@ -137,13 +240,13 @@ class Workstation extends Component {
                 <div>Add in form for updating Title and genres if other features are done</div>
                 <div className="row">
                     <div className="col-9">
-                        {this.state.user !== "" &&
+                        {this.state.panel.id !== -1 &&
                             <Canvas disableInteraction = {!this.state.preview} panel = {this.state.panel}
                               current = {this.state.current}
                               goToPanel = {(panel) => this.goToPanel(panel)}
                               increment = {() => this.increment()}
-                              comicName = {this.props.comicTitle}
-                              author = {this.state.user}/>
+                              frame = {this.generateCurrentFrame()}
+                              maxVal = {this.maxVal()} />
                         }
                     </div>
                     <div className="col-3">
