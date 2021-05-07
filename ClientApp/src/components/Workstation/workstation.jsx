@@ -47,8 +47,6 @@ class Workstation extends Component {
             newState.panel = data.panels[index];
             this.setState(newState);
         }
-        console.log("Handle getSeries");
-        console.log(this.state);
     }
 
     findFirstPage(panels) {
@@ -160,9 +158,6 @@ class Workstation extends Component {
                 }
                 removeTriggers = [];
             }
-            console.log("temp");
-            console.log(temp);
-            console.log(temp.actionType);
             if (temp.active && temp.timing <= this.state.current) {
                 if (temp.isTrigger) {
                     if (temp.actionType === "click" || temp.actionType === "hover") {
@@ -176,10 +171,8 @@ class Workstation extends Component {
                         }
                     }
                 } else if (temp.actionType === "show") {
-                    console.log("Should reach here");
-                    console.log(temp);
                     tempObj = {type : "img", resourceId : temp.resourceId, url : this.state.resourceMap[temp.resourceId].imageURL,
-                      layer : temp.layer, visible : true, scale : "1", position: temp.options, hover : false, click : false}
+                      layer : temp.layer, visible : true, scale : "5vw", position: temp.options, hover : false, click : false}
                     renderValues.push(tempObj);
                 } else if (temp.actionType === "hide") {
                     for (j = 0; j < renderValues.length; j++) {
@@ -205,7 +198,7 @@ class Workstation extends Component {
 
                 } else if (temp.actionType === "showText") {
                     tempObj = {type : "text", resourceId : null, url : null,
-                      id : temp.layer, visible : true, position : "10 vw 10 vh", text : temp.options, hover : false, click : false}
+                      id : temp.layer, visible : true, position : "10vw 10vh", text : temp.options, hover : false, click : false}
                     renderValues.push(tempObj);
                 } else if (temp.actionType === "hideText") {
                     for (j = 0; j < renderValues.length; j++) {
@@ -214,10 +207,11 @@ class Workstation extends Component {
                             break;
                         }
                     }
-                } else if (temp.actionType === "textPosition") {
+                } else if (temp.actionType === "moveText") {
                     for (j = 0; j < renderValues.length; j++) {
-                        if (renderValues[j].type === "text" && renderValues[j].id === renderValues[j].layer) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === temp.layer) {
                             renderValues[j].position = temp.options;
+                            console.log("Updated text locatoin");
                             break;
                         }
                     }

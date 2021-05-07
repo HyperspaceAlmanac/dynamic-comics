@@ -85,7 +85,7 @@ class Canvas extends Component {
             pair = temp.position.split(" ");
             if (pair.length == 2) {
                 tempProp.left = pair[0];
-                tempProp.right = pair[1];
+                tempProp.top = pair[1];
             }
             
             if (temp.visible) {

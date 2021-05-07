@@ -113,7 +113,6 @@ class Reader extends Component {
         let tempObj;
         console.log("Begginning of generate frame");
         console.log(this.state);
-        console.log(this.state.panel.actions);
         for (i = 0; i < this.state.panel.actions.length; i++) {
             temp = this.state.panel.actions[i];
             if (removeTriggers.length > 0) {
@@ -123,9 +122,6 @@ class Reader extends Component {
                 }
                 removeTriggers = [];
             }
-            console.log("temp");
-            console.log(temp);
-            console.log(temp.actionType);
             if (temp.active && temp.timing <= this.state.current) {
                 if (temp.isTrigger) {
                     if (temp.actionType === "click" || temp.actionType === "hover") {
@@ -139,8 +135,6 @@ class Reader extends Component {
                         }
                     }
                 } else if (temp.actionType === "show") {
-                    console.log("Should reach here");
-                    console.log(temp);
                     tempObj = {type : "img", resourceId : temp.resourceId, url : this.state.resourceMap[temp.resourceId].imageURL,
                       layer : temp.layer, visible : true, scale : "1", position: temp.options, hover : false, click : false}
                     renderValues.push(tempObj);
@@ -193,8 +187,6 @@ class Reader extends Component {
     }
 
     render() {
-        console.log("Reader state");
-        console.log(this.state);
         return (
             <div className={`${this.state.font} ${this.state.theme}-font-color ${this.state.theme}-bg1`}>
                 <div className="h2">Comic Reader</div>
