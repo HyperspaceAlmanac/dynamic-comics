@@ -66,8 +66,8 @@ class CreateComic extends Component {
         const response = await fetch('api/Account/CreateComic', requestOptions);
         const data = await response.json();
         if (data.result === "Success") {
-            alert('Comic created successfully! Redirecting to workstation page');
-            this.props.navCallback("workstation", comicName);
+            alert('Comic created successfully! Redirecting to home page');
+            this.props.navCallback("main", "");
         } else {
             alert('A comic with this title already exists. Please try again.');
         }
