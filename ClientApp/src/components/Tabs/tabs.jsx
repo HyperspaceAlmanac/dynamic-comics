@@ -13,7 +13,6 @@ class Tabs extends Component {
 
     componentDidUpdate(prevProps, prevState) {
       if (prevProps.buttons !== this.props.buttons) {
-        //console.log("Comics component did change, updating state");
         let newState = Object.assign({}, this.state);
         newState.buttons = this.setupButtons();
         this.setState(newState);

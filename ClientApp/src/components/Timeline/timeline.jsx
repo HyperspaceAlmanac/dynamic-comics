@@ -15,8 +15,6 @@ class Timeline extends Component {
     ccomponentDidMount() {
         let newState = Object.assign({}, this.state);
         newState.panels = this.props.panels;
-        console.log("In did mount");
-        console.log(newState);
         this.setState(newState);
     }
 
@@ -35,8 +33,6 @@ class Timeline extends Component {
         let i;
         let options;
         let active = this.props.panel ? this.props.panel.id : -1;
-        console.log("Active Panel is:");
-        console.log(active);
         for (i = 0; i < this.state.panels.length; i++) {
             let id = this.state.panels[i].id;
             options = this.state.panels[i].id === active ?
@@ -52,9 +48,6 @@ class Timeline extends Component {
     }
 
     render() {
-        console.log("Inside of timeline");
-        console.log(this.state);
-        console.log(this.props);
         return (
           <div>
               <div>Timeline</div>

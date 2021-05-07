@@ -88,7 +88,6 @@ class Resources extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        console.log(this.state.file.name);
         if (this.state.file !== null &&
         (this.state.file.name.endsWith(".png") ||
         this.state.file.name.endsWith(".jpg"))) {
@@ -157,10 +156,7 @@ class Resources extends Component {
         const response = await fetch('api/Account/GetResources', requestOptions);
         const data = await response.json();
         if (data.result === "Success") {
-            console.log(data);
             this.processResources(data);
-        } else {
-            alert('Error Uploading. Please try again.');
         }
     }
 

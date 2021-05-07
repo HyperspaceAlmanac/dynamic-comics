@@ -23,7 +23,6 @@ class Comics extends Component {
             prevState.user !== this.state.user ||
             (this.state.user === this.props.profileOwner &&
                 this.props.theme !== prevProps.theme)) {
-                //console.log("Comics component did change, updating state");
                 this.getComics();
         }
     }

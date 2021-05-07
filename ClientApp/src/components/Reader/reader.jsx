@@ -116,14 +116,11 @@ class Reader extends Component {
         let j;
         let temp;
         let tempObj;
-        console.log("Begginning of generate frame");
-        console.log(this.state.panel.actions);
-        console.log(this.state.resourceMap);
+
         for (i = 0; i < this.state.panel.actions.length; i++) {
             temp = this.state.panel.actions[i];
             if (temp.active && temp.timing <= this.state.current) {
                 if (temp.isTrigger) {
-                    console.log(temp);
                     if (temp.actionType === "click" || temp.actionType === "hover") {
                         if (temp.timing === this.state.current) {
                             for (j = 0; j < renderValues.length; j++) {
@@ -177,15 +174,13 @@ class Reader extends Component {
                     for (j = 0; j < renderValues.length; j++) {
                         if (renderValues[j].type === "text" && renderValues[j].id === temp.layer) {
                             renderValues[j].position = temp.options;
-                            console.log("Updated text locatoin");
                             break;
                         }
                     }
                 }
             }
         }
-        console.log("In genreate frame");
-        console.log(renderValues);
+
         return renderValues;
     }
 

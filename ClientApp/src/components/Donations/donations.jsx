@@ -75,8 +75,7 @@ class Donations extends Component {
                 : entry.artist.toLowerCase().includes(this.state.filterName.toLowerCase())
             });
         }
-        console.log("Donations filter: " + this.state.filterName);
-        console.log(shallowCopy);
+
         if (this.state.sorting === "recent") {
           shallowCopy.sort((a, b) => {
             if (a.date > b.date) {

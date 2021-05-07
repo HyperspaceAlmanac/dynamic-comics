@@ -108,7 +108,6 @@ class ResourceList extends Component {
         const response = await fetch('api/Account/GetResources', requestOptions);
         const data = await response.json();
         if (data.result === "Success") {
-            console.log(data);
             this.processResources(data);
         } else {
             alert('Error Uploading. Please try again.');

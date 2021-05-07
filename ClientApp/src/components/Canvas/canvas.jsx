@@ -79,8 +79,6 @@ class Canvas extends Component {
 
         for (i = 0; i < this.props.frame.length; i++) {
             temp = this.props.frame[i];
-            console.log("display values for temp");
-            console.log(temp);
             tempProp = {position : "absolute", left : "10vw", top : "10vh"}
             pair = temp.position.split(" ");
             if (pair.length == 2) {
@@ -120,8 +118,6 @@ class Canvas extends Component {
     }
 
     render() {
-        console.log("In render");
-        console.log(this.props);
         return (
             <div className="main-canvas" onMouseOver={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}>
                 <div className="overflow-wrapper">

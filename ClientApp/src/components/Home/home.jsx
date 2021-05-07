@@ -21,7 +21,6 @@ class Home extends Component {
   }
 
   setPageFunction(page, target) {
-    console.log("Setting current page to " + page)
     let newState = Object.assign({}, this.state);
     newState.currentPage = page;
     newState.target = target;
@@ -94,7 +93,6 @@ class Home extends Component {
     });
     const data = await response.json();
     this.handleUserStatusResponse(data);
-    console.log("handling response data");
   }
 }
 

@@ -22,8 +22,6 @@ const CheckoutForm = ({author, amount, message, mainPage}) => {
     if (result.error) {
       alert("Unable to process the request. Please try again later.");
     } else {
-      console.log("Created Token!");
-      console.log(result.token);
 
       const token = await authService.getAccessToken();
       const requestOptions = {

@@ -81,8 +81,6 @@ class PanelEditor extends Component {
             values.push(<ActionEdit key={i} actionObj = {this.state.actions[i]}
                 theme = {this.props.theme}/>)
         }
-        console.log("ActionEdit props");
-        console.log(values);
         return values;
     }
 
