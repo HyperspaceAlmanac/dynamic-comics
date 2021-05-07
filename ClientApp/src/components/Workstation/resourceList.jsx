@@ -34,7 +34,7 @@ class ResourceList extends Component {
                     <div className="col-6" key={result.length}>
                         <div>{"Image ID: " + temp.id}</div>
                         <div>{"Image URL: " + temp.imageURL}</div>
-                        <img src={process.env.PUBLIC_URL + "images/" + temp.imageURL} alt="Resource Thumbnail" />
+                        <img className="img-fluid" src={process.env.PUBLIC_URL + "images/" + temp.imageURL} alt="Resource Thumbnail" />
                     </div>
                     );
                 }
@@ -48,7 +48,7 @@ class ResourceList extends Component {
                             <div className="col-6" key={result.length}>
                                 <div>{"Image ID: " + temp.id}</div>
                                 <div>{"Image URL: " + temp.imageURL}</div>
-                                <img src={process.env.PUBLIC_URL + "images/" + temp.imageURL} alt="Resource Thumbnail" />
+                                <img className='img-fluid' src={process.env.PUBLIC_URL + "images/" + temp.imageURL} alt="Resource Thumbnail" />
                             </div>
                         );
                 }

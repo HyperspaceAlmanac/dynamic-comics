@@ -38,7 +38,7 @@ class Resources extends Component {
                     result.push(
                     <div className="col-3" key={result.length}>
                         <div>{temp.imageURL}</div>
-                        <img src={process.env.PUBLIC_URL + "images/" + temp.imageURL} alt="Resource Thumbnail" />
+                        <img className="img-fluid col-12" src={process.env.PUBLIC_URL + "images/" + temp.imageURL} alt="Resource Thumbnail" />
                     </div>
                     );
                 }
@@ -51,7 +51,7 @@ class Resources extends Component {
                         result.push(
                             <div className="col-3" key={result.length}>
                                 <div>{temp.imageURL}</div>
-                                <img src={process.env.PUBLIC_URL + "images/" + temp.imageURL} alt="Resource Thumbnail" />
+                                <img className="img-fluid col-12" src={process.env.PUBLIC_URL + "images/" + temp.imageURL} alt="Resource Thumbnail" />
                             </div>
                         );
                 }
