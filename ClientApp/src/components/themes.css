@@ -139,7 +139,7 @@
 
 .main-canvas {
   position: relative;
-  background-color: black;
+  background-color: white;
   height : 75vh;
   overflow : hidden;
 }

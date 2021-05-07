@@ -16,5 +16,6 @@ namespace capstone.ViewModels
         public bool Published { get; set; }
         public int CurrentPanelId { get; set; }
         public List<PanelObj> Panels { get; set; }
+        public List<Resource> Resources { get; set; }
     }
 }

@@ -11,7 +11,8 @@ class Canvas extends Component {
             hovered : false,
             timeMap : {},
             renderedResources : [],
-            resourceMap : {}
+            resourceMap : {},
+            loading : false
         }
         this.toggleHover = this.toggleHover.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
@@ -24,7 +25,11 @@ class Canvas extends Component {
         newState.current = this.props.current;
         newState.renderedResources = [];
         newState.timeMap = {};
+        newState.loading = true;
         this.setState(newState);
+        console.log("Current state: ");
+        console.log(this.state);
+        this.processData();
     }
 
     componentWillUnmount() {
@@ -32,8 +37,12 @@ class Canvas extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.panel !== this.props.panel) {
-            this.updateState();
+        if (prevProps.panel !== this.props.panel ||
+            prevProps.current !== this.props.current) {
+            let newState = Object.assign({}, this.state);
+            newState.loading = true;
+            this.setState(newState);
+            this.processData();
         }
     }
 
@@ -46,12 +55,34 @@ class Canvas extends Component {
         return false;
     }
 
-    updateState() {
+    processData() {
+        
+        let newState;
         if (this.props.current == 0) {
-
-        } else {
-
+            newState = Object.assign({}, this.state);
+            newState.timeMap = {};
+            newState.renderedResources = [];
+            let i;
+            let actions = this.props.panel.actions;
+            console.log(actions);
+            let temp;
+            for (i = 0; i < actions.length; i++) {
+                temp = actions[i];
+                if (temp.timing in newState.timeMap) {
+                    newState.timeMap[temp.timing].push(temp);
+                } else {
+                    newState.timeMap[temp.timing] = [temp];
+                }
+            }
+            console.log(newState);
+            this.setState(newState);
         }
+        console.log("New timeMap");
+        console.log(this.state.timeMap);
+        newState = Object.assign({}, this.state);
+        newState.renderedResources = this.updateRendered();
+        newState.loading = false;
+        this.setState(newState);
     }
 
     increment() {
@@ -90,6 +121,9 @@ class Canvas extends Component {
     handleScroll(event) {
         if (!this.props.disableInteraction) {
             if(this.state.hovered) {
+                console.log("Inside of Scroll");
+                console.log(this.moreActions() + " " + this.otherActions());
+                console.log(this.state.timeMap);
                 if (this.moreActions() && !this.otherActions()) {
                     this.increment();
                 }
@@ -97,18 +131,35 @@ class Canvas extends Component {
         }   
     }
 
+    updateRendered() {
+
+    }
+
+    displayValues() {
+        let displayed = [];
+        let i;
+        let temp;
+        for (i = 0; i < this.state.renderedResources; i++) {
+            temp = this.state.renderedResources[i];
+        }
+        return displayed; 
+    }
+
     render() {
-        return (
-            <div className="main-canvas" onMouseOver={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}>
-                <div>Current Value: {this.state.current}</div>
-                <div className="overflow-wrapper">
-                    <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover"/>
-                    <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover" style={{position : "absolute", top : "10vh", left: "10vw"}}/>
-                    <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover" style={{position : "absolute", top : "10vh", left: "-5vw"}}/>
-                    <img src={process.env.PUBLIC_URL + "images/" + "green.png"} alt="Comic book cover" style={{position : "absolute", top : "-5vh", right: "5vw"}}/>
+        if (this.state.loading) {
+            return(
+                <div className="h1">Loading</div>
+            )
+        } else {
+            return (
+                <div className="main-canvas" onMouseOver={() => this.toggleHover(true)} onMouseLeave={() => this.toggleHover(false)}>
+                    <div>Current Value: {this.state.current}</div>
+                    <div className="overflow-wrapper">
+                        {this.displayValues()}
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
     }
 
     createImageMapping(data) {
@@ -125,11 +176,14 @@ class Canvas extends Component {
         }
         let newState = Object.assign({}, this.state);
         newState.resourceMap = imageMapping;
+        console.log("Setting image resources");
         this.setState(newState);
         
     }
 
     async getResources() {
+        console.log("Inside of getResources");
+        console.log(this.props.comicName + ", " + this.props.author)
         const token = await authService.getAccessToken();
         const requestOptions = {
             method: 'Put',
