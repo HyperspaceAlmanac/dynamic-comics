@@ -54,7 +54,7 @@ Show Image and Show Text should be set to priority value lower than move / scale
 
 Position of image (and text) based on offset from top left corner of screen. Only used vw vh so far, but other units such as px should work as long as it is given as {"width height"}.
 
-ActionType = "show", Options = string of width, space, height,ResourceId = Id of image, layer: z-index
+ActionType = "show", Options = string of {width height},ResourceId = Id of image, layer: z-index
 
 2. Hide Image
 
