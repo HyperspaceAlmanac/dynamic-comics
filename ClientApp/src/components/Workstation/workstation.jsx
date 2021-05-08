@@ -51,7 +51,7 @@ class Workstation extends Component {
             }
             let index = this.findFirstPage(data.panels);
             newState.panel = data.panels[index];
-            this.setState(newState);
+            this.setState(newState, () => {this.generateAllFrames()});
         }
     }
 
@@ -347,8 +347,7 @@ class Workstation extends Component {
                               increment = {() => this.increment()}
                               frame = {this.state.allFrames[this.state.frameMap[this.state.current]]}
                               maxVal = {this.maxVal()}
-                              debugAllFrames = {this.state.allFrames}
-                              debugAllTime = {this.state.frameMap} />
+                            />
                         }
                     </div>
                     <div className="col-3">

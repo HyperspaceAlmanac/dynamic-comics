@@ -22,7 +22,9 @@ class Reader extends Component {
             panels : [],
             panel : {id : -1},
             resourceMap : null,
-            current: 0
+            current: 0,
+            allFrames : null,
+            frameMap : {}
         }
     }
     componentDidMount() {
@@ -49,7 +51,7 @@ class Reader extends Component {
             newState.resourceMap[data.resources[i].id] = data.resources[i];
         }
         newState.current = 0;
-        this.setState(newState);
+        this.setState(newState, () => {this.generateAllFrames()});
     }
 
     getCurrentPanel(panels, id) {
@@ -96,7 +98,8 @@ class Reader extends Component {
         newState.panel = this.findPanel(num);
         newState.current = 0;
         this.saveProgress(num);
-        this.setState(newState);
+        this.setState(newState,
+            () => {this.generateAllFrames()});
     }
 
     findPanel(id) {
@@ -107,6 +110,114 @@ class Reader extends Component {
             }
         }
         return {};
+    }
+
+    deepCopy(values) {
+        let result = [];
+        let i;
+        for (i = 0; i < values.length; i++) {
+            result.push(JSON.parse(JSON.stringify(values[i])));
+        }
+        return result;
+    }
+
+    removeTriggers(values) {
+        let i;
+        for (i = 0; i < values.length; i++) {
+            values[i].hover = false;
+            values[i].click = false;
+        } 
+    }
+
+    generateAllFrames() {
+        let allFrames = [];
+        let timeMap = {};
+
+        let renderValues = [];
+        let i;
+        let j;
+        let temp;
+        let tempObj;
+
+        let currentPage = 0;
+        for (i = 0; i < this.state.panel.actions.length; i++) {
+            temp = this.state.panel.actions[i];
+            if (temp.active) {
+                if (temp.timing > currentPage) {
+                    allFrames.push(renderValues);
+                    renderValues = this.deepCopy(renderValues);
+                    this.removeTriggers(renderValues);
+                    let k;
+                    for (k = currentPage; k < temp.timing; k++) {
+                        timeMap[k] = allFrames.length - 1;
+                    }
+                    currentPage = temp.timing;
+                }
+                if (temp.isTrigger) {
+                    if (temp.actionType === "click" || temp.actionType === "hover") {
+                        for (j = 0; j < renderValues.length; j++) {
+                            if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                                renderValues[j].click = temp.actionType === "click";
+                                renderValues[j].hover = temp.actionType === "hover";
+                                break;
+                            }
+                        }
+                    }
+                } else if (temp.actionType === "show") {
+                    tempObj = {type : "img", resourceId : temp.resourceId, url : (temp.resourceId === 1 ? "grayDefault.png" : this.state.resourceMap[temp.resourceId].imageURL),
+                      layer : temp.layer, visible : true, scale : "5vw", position: temp.options, hover : false, click : false}
+                    renderValues.push(tempObj);
+                } else if (temp.actionType === "hide") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                            renderValues[j].visible = false;
+                            break;
+                        }
+                    }
+                } else if (temp.actionType === "move") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                            renderValues[j].position = temp.options;
+                            break;
+                        }
+                    }
+                } else if (temp.actionType === "scale") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "img" && renderValues[j].resourceId === temp.resourceId) {
+                            renderValues[j].scale = temp.options;
+                            break;
+                        }
+                    }
+
+                } else if (temp.actionType === "showText") {
+                    tempObj = {type : "text", resourceId : null, url : null,
+                      id : temp.layer, visible : true, position : "10vw 10vh", text : temp.options, hover : false, click : false}
+                    renderValues.push(tempObj);
+                } else if (temp.actionType === "hideText") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === temp.layer) {
+                            renderValues[j].visible = false;
+                            break;
+                        }
+                    }
+                } else if (temp.actionType === "moveText") {
+                    for (j = 0; j < renderValues.length; j++) {
+                        if (renderValues[j].type === "text" && renderValues[j].id === temp.layer) {
+                            renderValues[j].position = temp.options;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        allFrames.push(renderValues);
+        timeMap[currentPage] = allFrames.length - 1;
+
+        
+        let newState = Object.assign({}, this.state);
+        newState.allFrames = allFrames;
+        newState.frameMap = timeMap;
+        this.setState(newState);
     }
 
     generateCurrentFrame() {
@@ -196,12 +307,13 @@ class Reader extends Component {
                 <div className="row">
                     <div className="col-9">
                         {this.state.panel.id !== -1 &&
+                          this.state.allFrames !== null &&
                             <Canvas disableInteraction = {false} panel = {this.state.panel}
                               current = {this.state.current}
                               increment = {() => this.increment()}
                               goToPanel = {(panel) => this.goToPanel(panel)}
                               comicName = {this.props.comicTitle}
-                              frame = {this.generateCurrentFrame()}
+                              frame = {this.state.allFrames[this.state.frameMap[this.state.current]]}
                               maxVal = {this.maxVal()} />
                         }
                     </div>
