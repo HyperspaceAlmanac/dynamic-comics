@@ -1,7 +1,16 @@
-# Welcome to Dynamic Comics!
-This is a full stack platform for interactive comics to be shared and enjoyed.
+# Welcome to Dynamic Paintbrush!
 
 This is my Capstone project at DevCodeCamp.
+
+This is a full stack platform for interactive graphic novels platform for artists to make and share interactive graphic novels. This is a asp.net backend with react.js front end, and has features such as profile page, reviews, comments, and donations button using Stripes API.
+
+The artist can upload images, and then put them together into interactive graphic novels in the workstation.
+
+The workstation lets the artists add panels, and then specify actions that should take place at certain times.
+
+The data is then saved to database, and readers can enjoy these.
+
+
 # Unsplash Images Used:
 
 City Landscape:
