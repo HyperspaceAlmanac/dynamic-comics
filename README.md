@@ -2,11 +2,11 @@
 
 This is my Capstone project at DevCodeCamp.
 
-This is a full stack platform for interactive graphic novels platform for artists to make and share interactive graphic novels. This is a asp.net backend with react.js front end, and has features such as profile page, reviews, comments, and donations button using Stripes API.
+This is a full stack platform for interactive graphic novels platform for artists to make and share interactive graphic novels.
 
-The artist can upload images, and then put them together into interactive graphic novels in the workstation.
+The project has an asp.net backend (with Entity Framework for handling user account management) and react.js front end. It has features such as profile page, reviews, comments, and supports donations through Stripes API (API key saved to Secrets.cs added to .gitignore). The website has a lot of features such as average review, comments attached to specific pages of the grpahic novels, and bookmark to help readers keep track of where they are at (will not show up in history if user goes back to first page).
 
-The workstation lets the artists add panels, and then specify actions that should take place at certain times.
+The main idea is that the users can create interactive graphic novels by creating panels that have actions that happen at certain frames (like pages). Others can interact with and read through the grpahic novels.
 
 The data is then saved to database, and readers can enjoy these.
 
@@ -54,7 +54,7 @@ Show Image and Show Text should be set to priority value lower than move / scale
 
 Position of image (and text) based on offset from top left corner of screen. Only used vw vh so far, but other units such as px should work as long as it is given as {"width height"}.
 
-ActionType = "show", Options = string of width, space, height,ResourceId = Id of image, layer: z-index
+ActionType = "show", Options = string of {width height},ResourceId = Id of image, layer: z-index
 
 2. Hide Image
 
