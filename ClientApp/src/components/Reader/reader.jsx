@@ -82,6 +82,15 @@ class Reader extends Component {
         this.setState(newState);
     }
 
+    decrement() {
+        let i;
+        let newState = Object.assign({}, this.state);
+        if (this.state.current > 0) {
+            newState.current -= 1;
+        }
+        this.setState(newState);
+    }
+
     maxVal() {
         let i;
         let temp;
@@ -314,7 +323,8 @@ class Reader extends Component {
                               goToPanel = {(panel) => this.goToPanel(panel)}
                               comicName = {this.props.comicTitle}
                               frame = {this.state.allFrames[this.state.frameMap[this.state.current]]}
-                              maxVal = {this.maxVal()} />
+                              maxVal = {this.maxVal()}
+                              decrement = {() => this.decrement()}/>
                         }
                     </div>
                     <div className="col-3">

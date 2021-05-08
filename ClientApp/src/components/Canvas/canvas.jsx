@@ -35,6 +35,12 @@ class Canvas extends Component {
         }
     }
 
+    decrement() {
+        if (!this.props.disableInteraction) {
+            this.props.decrement();
+        }
+    }
+
     goToPanel(val) {
         if (!this.props.disableInteraction) {
             this.props.goToPanel(val);
@@ -62,8 +68,12 @@ class Canvas extends Component {
     handleScroll(event) {
         if (!this.props.disableInteraction) {
             if(this.state.hovered) {
-                if (this.props.maxVal > this.props.current && !this.otherActions()) {
-                    this.increment();
+                if (this.props.maxVal > this.props.current) {
+                    if (event.deltaY > 0 && !this.otherActions()) {
+                        this.increment();
+                    } else if (event.deltaY < 0 && this.props.current > 0) {
+                        this.decrement();
+                    }
                 }
             }
         }   

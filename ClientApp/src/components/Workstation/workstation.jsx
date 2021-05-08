@@ -88,6 +88,15 @@ class Workstation extends Component {
         this.setState(newState);
     }
 
+    decrement() {
+        let i;
+        let newState = Object.assign({}, this.state);
+        if (this.state.current > 0) {
+            newState.current -= 1;
+        }
+        this.setState(newState);
+    }
+
     maxVal() {
         let i;
         let temp;
@@ -347,6 +356,7 @@ class Workstation extends Component {
                               increment = {() => this.increment()}
                               frame = {this.state.allFrames[this.state.frameMap[this.state.current]]}
                               maxVal = {this.maxVal()}
+                              decrement = {() => this.decrement()}
                             />
                         }
                     </div>
